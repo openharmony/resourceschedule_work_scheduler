@@ -322,7 +322,7 @@ void WorkQueueManager::AsyncStopWork(std::shared_ptr<WorkStatus> workStatus)
             return;
         }
         service->StopWorkInner(workStatus, workStatus->uid_, false, true);
-        workStatus->SetTimeout(false);
+        workStatus->SetTimeout(true);
     };
     auto handler = service->GetHandler();
     if (!handler) {

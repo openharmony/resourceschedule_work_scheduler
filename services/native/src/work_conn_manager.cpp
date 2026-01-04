@@ -138,13 +138,13 @@ bool WorkConnManager::StopWork(shared_ptr<WorkStatus> workStatus, bool isTimeOut
         WS_HILOGE("%{public}s %{public}d connection is null", workStatus->workId_.c_str(), isTimeOut);
         return false;
     }
-    if (!conn->IsConnected()) {
+    if (!conn->IsConnected() && !isTimeOut) {
         WS_HILOGE("%{public}s %{public}d is not connected, work will be stopped  by timeout",
             workStatus->workId_.c_str(), isTimeOut);
         return false;
     }
     conn->StopWork();
-    DisConnect(conn);
+    bool ret = DisConnect(conn);
 
     RemoveConnInfo(workStatus->workId_);
 
@@ -156,11 +156,13 @@ bool WorkConnManager::StopWork(shared_ptr<WorkStatus> workStatus, bool isTimeOut
         workStatus->uid_, "PID", pid, "NAME", workStatus->bundleName_, "WORKID", workStatus->workId_,
         "REASON", isTimeOut, "DURATION", workStatus->duration_);
 #ifdef DEVICE_STANDBY_ENABLE
-    WS_HILOGI("OnWorkStop uid:%{public}d bundleName:%{public}s workId:%{public}s duration:%{public}" PRIu64
-        ", startTime:%{public}" PRIu64, workStatus->uid_, workStatus->bundleName_.c_str(),
-        workStatus->workId_.c_str(), workStatus->duration_, workStatus->workStartTime_);
-    DevStandbyMgr::StandbyServiceClient::GetInstance().ReportWorkSchedulerStatus(false,
-        workStatus->uid_, workStatus->bundleName_);
+    if (ret) {
+        WS_HILOGI("OnWorkStop uid:%{public}d bundleName:%{public}s workId:%{public}s duration:%{public}" PRIu64
+            ", startTime:%{public}" PRIu64, workStatus->uid_, workStatus->bundleName_.c_str(),
+            workStatus->workId_.c_str(), workStatus->duration_, workStatus->workStartTime_);
+        DevStandbyMgr::StandbyServiceClient::GetInstance().ReportWorkSchedulerStatus(false,
+            workStatus->uid_, workStatus->bundleName_);
+    }
 #endif // DEVICE_STANDBY_ENABLE
     return true;
 }
