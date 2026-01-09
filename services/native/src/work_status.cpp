@@ -433,7 +433,7 @@ bool WorkStatus::IsStandbyExemption()
         return false;
     }
     if (dataManager->GetDeviceSleep()) {
-        if (workInfo->IsSA()) {
+        if (workInfo_->IsSA()) {
             return false;
         }
         return dataManager->IsInDeviceStandyWhitelist(bundleName_);

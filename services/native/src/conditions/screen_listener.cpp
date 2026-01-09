@@ -97,7 +97,7 @@ bool ScreenListener::Start()
 {
     WS_HILOGD("screen listener start.");
     if (service_->HasDeepIdleTime()) {
-        std::map<int32_t, std::pair<int32_t, int32_t>> deepIdleTimeMap_ = service_->GetDeepIdleTimeNap();
+        std::map<int32_t, std::pair<int32_t, int32_t>> deepIdleTimeMap_ = service_->GetDeepIdleTimeMap();
         saIdTimeInfoMap_.clear();
         for (const auto &entry : deepIdleTimeMap_) {
             saIdTimeInfoMap_[entry.first] = SaTimerInfo(entry.second.first, entry.second.second);
@@ -135,7 +135,7 @@ void ScreenListener::OnConditionChanged(WorkCondition::Type conditionType,
 void ScreenListener::StartTimer()
 {
     for (auto &entry : saIdTimeInfoMap_) {
-        if (entry.second.timerId !=0) {
+        if (entry.second.timerId != 0) {
             WS_HILOGW("SA %{public}d timer already exists", entry.first);
             continue;
         }
@@ -148,13 +148,13 @@ void ScreenListener::StartTimer()
             WS_HILOGW("SA %{public}d don't need create timer, time is %{public}d", entry.first, entry.second.time);
             continue;
         }
-        WS_HILOGI("SA %{public}d start timer with time %{public}", entry.first, entry.second.time);
+        WS_HILOGI("SA %{public}d start timer with time %{public}d", entry.first, entry.second.time);
         auto timerInfo = std::make_shared<TimerInfo>();
         uint8_t type = static_cast<uint8_t>(timerInfo->TIMER_TYPE_EXACT) |
             static_cast<uint8_t>(timerInfo->TIMER_TYPE_REALTIME);
         timerInfo->SetType(static_cast<int>(type));
         timerInfo->SetRepeat(false);
-        timerInfo->SetInterval(entrt.second.time);
+        timerInfo->SetInterval(entry.second.time);
         timerInfo->SetCallbackInfo([saId = entry.first, this]() {
             WS_HILOGI("SA %{public}d into deep idle mode", saId);
             if (saId == DEFAULT_SA_ID) {
@@ -167,7 +167,7 @@ void ScreenListener::StartTimer()
             WS_HILOGE("create timer failed, saId:%{public}d", entry.first);
             continue;
         }
-        bool res = TimeServiceClient::GetInstance()->StartTimer(timerId_,
+        bool res = TimeServiceClient::GetInstance()->StartTimer(timerId,
             TimeServiceClient::GetInstance()->GetBootTimeMs() + entry.second.time);
         entry.second.timerId = timerId;
         WS_HILOGI("timer start, res is %{public}d, timerId %{public}" PRIu64, res, timerId);
@@ -181,7 +181,7 @@ void ScreenListener::StopTimer()
             MiscServices::TimeServiceClient::GetInstance()->StopTimer(entry.second.timerId);
             MiscServices::TimeServiceClient::GetInstance()->DestroyTimer(entry.second.timerId);
             entry.second.timerId = 0;
-            WS_HILOGI("SA %{public} deep idle timer stop success", entry.first);
+            WS_HILOGI("SA %{public}d deep idle timer stop success", entry.first);
         }
     }
 }

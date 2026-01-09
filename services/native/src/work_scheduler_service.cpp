@@ -1825,7 +1825,7 @@ bool WorkSchedulerService::NeedCreateTimer(int32_t saId, int32_t uid, int32_t ti
 {
     auto sa = workPolicyManager_->FindSA(saId, uid);
     if (sa == nullptr) {
-        WS_HILOGE("the sa %{pubilc}d dose not exist", saId);
+        WS_HILOGE("the sa %{public}d dose not exist", saId);
         return false;
     }
     return (sa->workInfo_->GetTimeInterval() - sa->TimeUntilLast()) < time;

@@ -28,13 +28,12 @@ namespace WorkScheduler {
 class WorkQueueManager;
 class ScreenListener : public IConditionListener {
 public:
-    struct SaTimerInfo
-    {
+    struct SaTimerInfo {
         int32_t time;
         int32_t uid;
         uint64_t timerId;
-        SaTimerInfo() : time(0), uid(0), timerId(0) {};
-        SaTimerInfo(int32_t time, int32_t uid) : time(time), uid(uid), timerId(0) {};
+        SaTimerInfo() : time(0), uid(0), timerId(0) {}
+        SaTimerInfo(int32_t time, int32_t uid) : time(time), uid(uid), timerId(0) {}
     };
     explicit ScreenListener(std::shared_ptr<WorkQueueManager> workQueueManager,
         std::shared_ptr<WorkSchedulerService> service);
