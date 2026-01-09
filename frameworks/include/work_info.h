@@ -51,6 +51,7 @@ public:
         isInnerApply_ = workInfo.isInnerApply_;
         createTime_ = workInfo.createTime_;
         earliestStartTime_ = workInfo.earliestStartTime_;
+        deepIdleTime_ = workInfo.deepIdleTime_;
     }
     ~WorkInfo() override;
     /**
@@ -366,6 +367,16 @@ public:
      * @return The create time.
      */
     uint64_t GetCreateTime() const;
+    /**
+     * @brief Set deepIdle time.
+     */
+    void SetDeepIdleTime(int32_t deepIdleTime);
+    /**
+     * @brief Get deepIdle time.
+     *
+     * @return The deepIdleTime.
+     */
+    int32_t GetDeepIdleTime() const;
 
 private:
     int32_t workId_;
@@ -384,6 +395,7 @@ private:
     bool isInnerApply_ {false};
     int32_t earliestStartTime_ {0};
     uint64_t createTime_ {0};
+    int32_t deepIdleTime_ {0};
 private:
     static bool UnmarshallCondition(Parcel &parcel, WorkInfo* read, uint32_t mapsize);
     void ParseConditionToJsonStr(nlohmann::json &root);
