@@ -538,6 +538,7 @@ void WorkInfo::ParseConditionToJsonStr(nlohmann::json &root)
             }
             case WorkCondition::Type::DEEP_IDLE: {
                 conditions["isDeepIdle"] = it.second->boolVal;
+                conditions["deepIdleTime"] = GetDeepIdleTime();
                 break;
             }
             default: {}
@@ -650,6 +651,9 @@ void WorkInfo::ParseConditionFromJsonStr(const nlohmann::json &value)
     if (conditions.contains("isDeepIdle") && conditions["isDeepIdle"].is_boolean()) {
         this->RequestDeepIdle(conditions["isDeepIdle"].get<bool>());
     }
+    if (conditions.contains("deepIdelTime") && conditions["deepIdelTime"].is_number_integer()) {
+        this->SetDeepIdleTime(conditions["deepIdelTime"].get<int32_t>());
+    }
     ParseTimerFormJsonStr(conditions);
 }
 
@@ -746,6 +750,16 @@ int32_t WorkInfo::GetEarliestStartTime() const
 uint64_t WorkInfo::GetCreateTime() const
 {
     return createTime_;
+}
+
+void WorkInfo::SetDeepIdleTime(int32_t deepIdleTime)
+{
+    deepIdleTime_ = deepIdleTime;
+}
+
+int32_t WorkInfo::GetDeepIdleTime() const
+{
+    return deepIdleTime_;
 }
 } // namespace WorkScheduler
 } // namespace OHOS

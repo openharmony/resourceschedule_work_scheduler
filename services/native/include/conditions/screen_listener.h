@@ -28,6 +28,14 @@ namespace WorkScheduler {
 class WorkQueueManager;
 class ScreenListener : public IConditionListener {
 public:
+    struct SaTimerInfo
+    {
+        int32_t time;
+        int32_t uid;
+        uint64_t timerId;
+        SaTimerInfo() : time(0), uid(0), timerId(0) {};
+        SaTimerInfo(int32_t time, int32_t uid) : time(time), uid(uid), timerId(0) {};
+    };
     explicit ScreenListener(std::shared_ptr<WorkQueueManager> workQueueManager,
         std::shared_ptr<WorkSchedulerService> service);
     ~ScreenListener() override;
@@ -62,10 +70,10 @@ public:
     void StopTimer();
 public:
     std::shared_ptr<WorkSchedulerService> service_;
-    uint64_t timerId_ = 0;
 private:
     std::shared_ptr<WorkQueueManager> workQueueManager_;
     std::shared_ptr<EventFwk::CommonEventSubscriber> commonEventSubscriber = nullptr;
+    std::map<int32_t, SaTimerInfo> saIdTimeInfoMap_;
 };
 
 class ScreenEventSubscriber : public EventFwk::CommonEventSubscriber,

@@ -297,6 +297,10 @@ void WorkSchedulerService::LoadWorksFromFile(const char *path, list<shared_ptr<W
             WS_HILOGE("LoadWorksFromFile failed, parseFromJson error");
             continue;
         }
+        if (workinfo->IsSA() && workinfo->GetDeepIdleTime() != 0) {
+            deepIdleTimeMap_.emplace(
+                workinfo->GetSaId(), std::pair<int32_t, int32_t>{workinfo->GetDeepIdleTime(), workinfo->GetUid()});
+        }
         if (!workinfo->IsSA()) {
             int32_t uid;
             if (!GetUidByBundleName(workinfo->GetBundleName(), uid)) {
@@ -1699,15 +1703,17 @@ void WorkSchedulerService::DumpGetWorks(const std::string &uidStr, const std::st
     }
 }
 
-void WorkSchedulerService::HandleDeepIdleMsg()
+void WorkSchedulerService::HandleDeepIdleMsg(int32_t saId)
 {
     if (!ready_) {
         WS_HILOGE("service is not ready.");
         return;
     }
     workQueueManager_->OnConditionChanged(WorkCondition::Type::DEEP_IDLE,
-        std::make_shared<DetectorValue>(0, 0, true, std::string()));
-    WorkSchedUtil::HiSysEventStateChanged({"DEEP_IDLE", 1});
+        std::make_shared<DetectorValue>(saId, 0, true, std::string()));
+    if (saId == 0) {
+        WorkSchedUtil::HiSysEventStateChanged({"DEEP_IDLE", 1});
+    }
 }
 
 bool WorkSchedulerService::IsPreinstalledBundle(const std::string& checkBundleName)
@@ -1803,6 +1809,26 @@ void WorkSchedulerService::ReportUserDataSizeEvent()
         "REMAIN_PARTITION_SIZE", remainPartitionSize,
         "FILE_OR_FOLDER_PATH", paths,
         "FILE_OR_FOLDER_SIZE", folderSize);
+}
+
+bool WorkSchedulerService::HasDeepIdleTime()
+{
+    return !deepIdleTimeMap_.empty();
+}
+
+std::map<int32_t, std::pair<int32_t, int32_t>> WorkSchedulerService::GetDeepIdleTimeMap()
+{
+    return deepIdleTimeMap_;
+}
+
+bool WorkSchedulerService::NeedCreateTimer(int32_t saId, int32_t uid, int32_t time)
+{
+    auto sa = workPolicyManager_->FindSA(saId, uid);
+    if (sa == nullptr) {
+        WS_HILOGE("the sa %{pubilc}d dose not exist", saId);
+        return false;
+    }
+    return (sa->workInfo_->GetTimeInterval() - sa->TimeUntilLast()) < time;
 }
 } // namespace WorkScheduler
 } // namespace OHOS

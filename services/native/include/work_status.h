@@ -216,6 +216,7 @@ public:
     bool IsTimeout();
     void SetTimeout(bool timeout);
     bool IsSpecial();
+    double TimeUntilLast();
 private:
     Status currentStatus_;
     time_t baseTime_;
