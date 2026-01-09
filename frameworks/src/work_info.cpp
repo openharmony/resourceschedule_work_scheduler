@@ -651,8 +651,8 @@ void WorkInfo::ParseConditionFromJsonStr(const nlohmann::json &value)
     if (conditions.contains("isDeepIdle") && conditions["isDeepIdle"].is_boolean()) {
         this->RequestDeepIdle(conditions["isDeepIdle"].get<bool>());
     }
-    if (conditions.contains("deepIdelTime") && conditions["deepIdelTime"].is_number_integer()) {
-        this->SetDeepIdleTime(conditions["deepIdelTime"].get<int32_t>());
+    if (conditions.contains("deepIdleTime") && conditions["deepIdleTime"].is_number_integer()) {
+        this->SetDeepIdleTime(conditions["deepIdleTime"].get<int32_t>());
     }
     ParseTimerFormJsonStr(conditions);
 }
