@@ -838,5 +838,19 @@ HWTEST_F (WorkInfoTest, ParseFromJson001, Function | MediumTest | Level2)
     EXPECT_EQ(workInfo.GetCreateTime(), 2000);
     EXPECT_EQ(workInfo.GetEarliestStartTime(), 1000);
 }
+
+/**
+ * @tc.name GetDeepIdleTime001
+ * @tc.desc test get idleTime
+ * @tc.type FUNC
+ * @tc.require: 
+ */
+HWTEST_F (WorkInfoTest, GetDeepIdleTime001, Function | MediumTest | Level2)
+{
+    WorkInfo workInfo;
+    EXPECT_EQ(workInfo.GetDeepIdleTime(), 0);
+    workInfo.SetDeepIdleTime(1000);
+    EXPECT_EQ(workInfo.GetDeepIdleTime(), 1000);
+}
 } // namespace WorkScheduler
 } // namespace OHOS
