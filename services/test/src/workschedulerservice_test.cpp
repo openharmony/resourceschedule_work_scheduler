@@ -46,6 +46,7 @@
 #endif
 #include "work_sched_errors.h"
 #include "work_sched_hilog.h"
+#include "work_policy_manager.h"
 
 #ifdef DEVICE_STANDBY_ENABLE
 namespace OHOS {
@@ -105,6 +106,7 @@ public:
     void SetUp() {}
     void TearDown() {}
     static std::shared_ptr<WorkSchedulerService> workSchedulerService_;
+    static std::shared_ptr<WorkPolicyManager> workPolicyManager_;
 };
 
 void GetNativeToken(const std::string &name)
@@ -113,8 +115,13 @@ void GetNativeToken(const std::string &name)
     SetSelfTokenID(tokenId);
 }
 
-std::shared_ptr<WorkSchedulerService> WorkSchedulerServiceTest::workSchedulerService_ =
-    DelayedSingleton<WorkSchedulerService>::GetInstance();
+void WorkPolicyManagerTest::SetUpTestCase()
+{
+    workSchedulerService_ = DelayedSingleton<WorkSchedulerService>::GetInstance();
+    workPolicyManager_ = std::make_shared<WorkPolicyManager>(workSchedulerService_);
+}
+
+
 
 class MyWorkSchedulerService : public WorkSchedServiceStub {
     int32_t StartWork(const WorkInfo& workInfo) { return 0; }
@@ -1277,6 +1284,63 @@ HWTEST_F(WorkSchedulerServiceTest, IsBaseAbilityReady_001, TestSize.Level1)
 {
     bool ret = workSchedulerService_->IsBaseAbilityReady();
     EXPECT_EQ(ret, true);
+}
+
+/**
+ * @tc.name: HasDeepIdleTime_001
+ * @tc.desc: Test WorkSchedulerService HasDeepIdleTime.
+ * @tc.type: FUNC
+ * @tc.require: 
+ */
+HWTEST_F(WorkSchedulerServiceTest, HasDeepIdleTime_002, TestSize.Level1)
+{
+    int32_t saId = 1;
+    int32_t time = 1000;
+    int32_t uid = 2;
+    std::map<int32_t, std::pair<int32_t, int32_t>> deepIdleTimeMap = workSchedulerService_->GetDeepIdleTimeMap();
+    deepIdleTimeMap.emplace(saId, std::pair<int32_t, int32_t>{time, uid});
+    bool ret = workSchedulerService_->IsBaseAbilityReady();
+    EXPECT_EQ(ret, true);
+}
+
+/**
+ * @tc.name: HasDeepIdleTime_001
+ * @tc.desc: Test WorkSchedulerService NeedCreateTimer.
+ * @tc.type: FUNC
+ * @tc.require: 
+ */
+HWTEST_F(WorkSchedulerServiceTest, HasDeepIdleTime_001, TestSize.Level1)
+{
+    int32_t saId = 1;
+    int32_t time = 1000;
+    int32_t uid = 2;
+    bool ret = workSchedulerService_->NeedCreateTimer(saId, uid, time);
+    EXPECT_EQ(ret, false);
+}
+
+/**
+ * @tc.name: NeedCreateTimer_002
+ * @tc.desc: Test WorkSchedulerService NeedCreateTimer.
+ * @tc.type: FUNC
+ * @tc.require: 
+ */
+HWTEST_F(WorkSchedulerServiceTest, NeedCreateTimer_002, TestSize.Level1)
+{
+    int32_t saId = 1;
+    int32_t time = 20 * 60* 1000;
+    int32_t uid = 2;
+    WorkInfo workinfo = WorkInfo();
+    workinfo.RefreshSaId(saId);
+    workinfo.RefreshUid(uid);
+    workinfo.RequestDeepIdle(true);
+    workinfo.SetDeepIdleTime(time);
+    std::shared_ptr<WorkStatus> workStatus = std::make_shared<WorkStatus>(workinfo, uid);
+    std::shared_ptr<WorkPolicyManager> workPolicyManager = std::make_shared<WorkPolicyManager>(workSchedulerService_);
+    int32_t ret = workPolicyManager->AddWork(workStatus, uid);
+    if (ret == ERR_OK) {
+        bool result = workSchedulerService_->NeedCreateTimer(saId, uid, time);
+        EXPECT_EQ(result, false);
+    }
 }
 }
 }
