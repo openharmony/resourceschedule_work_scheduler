@@ -843,7 +843,7 @@ HWTEST_F (WorkInfoTest, ParseFromJson001, Function | MediumTest | Level2)
  * @tc.name GetDeepIdleTime001
  * @tc.desc test get idleTime
  * @tc.type FUNC
- * @tc.require: 
+ * @tc.require:
  */
 HWTEST_F (WorkInfoTest, GetDeepIdleTime001, Function | MediumTest | Level2)
 {

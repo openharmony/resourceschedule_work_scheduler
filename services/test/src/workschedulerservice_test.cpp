@@ -1284,7 +1284,7 @@ HWTEST_F(WorkSchedulerServiceTest, IsBaseAbilityReady_001, TestSize.Level1)
  * @tc.name: HasDeepIdleTime_001
  * @tc.desc: Test WorkSchedulerService HasDeepIdleTime.
  * @tc.type: FUNC
- * @tc.require: 
+ * @tc.require:
  */
 HWTEST_F(WorkSchedulerServiceTest, HasDeepIdleTime_001, TestSize.Level1)
 {
@@ -1301,7 +1301,7 @@ HWTEST_F(WorkSchedulerServiceTest, HasDeepIdleTime_001, TestSize.Level1)
  * @tc.name: NeedCreateTimer_001
  * @tc.desc: Test WorkSchedulerService NeedCreateTimer.
  * @tc.type: FUNC
- * @tc.require: 
+ * @tc.require:
  */
 HWTEST_F(WorkSchedulerServiceTest, NeedCreateTimer_001, TestSize.Level1)
 {
@@ -1316,7 +1316,7 @@ HWTEST_F(WorkSchedulerServiceTest, NeedCreateTimer_001, TestSize.Level1)
  * @tc.name: NeedCreateTimer_002
  * @tc.desc: Test WorkSchedulerService NeedCreateTimer.
  * @tc.type: FUNC
- * @tc.require: 
+ * @tc.require:
  */
 HWTEST_F(WorkSchedulerServiceTest, NeedCreateTimer_002, TestSize.Level1)
 {
