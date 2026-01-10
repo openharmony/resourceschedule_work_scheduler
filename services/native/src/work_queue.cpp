@@ -19,6 +19,7 @@
 #include "work_sched_hilog.h"
 #include "work_sched_errors.h"
 #include "work_scheduler_service.h"
+#include "work_sched_constants.h"
 
 using namespace std;
 
@@ -33,6 +34,12 @@ vector<shared_ptr<WorkStatus>> WorkQueue::OnConditionChanged(WorkCondition::Type
     std::lock_guard<ffrt::recursive_mutex> lock(workListMutex_);
     workList_.sort(WorkComp());
     for (auto it : workList_) {
+        if (type == WorkCondition::Type::DEEP_IDLE && value) {
+            int32_t saId = value->enumVal;
+            if (saId != DEFAULT_SA_ID && saId != it->workInfo_->GetSaId()) {
+                continue;
+            }
+        }
         if (it->OnConditionChanged(type, value) == E_GROUP_CHANGE_NOT_MATCH_HAP) {
             continue;
         }
@@ -90,7 +97,13 @@ shared_ptr<Condition> WorkQueue::ParseCondition(WorkCondition::Type type,
             value->strVal = conditionVal->strVal;
             break;
         }
-        case WorkCondition::Type::DEEP_IDLE:
+        case WorkCondition::Type::DEEP_IDLE: {
+            value->enumVal = conditionVal->intVal;
+            value->intVal = conditionVal->timeVal;
+            value->boolVal = conditionVal->boolVal;
+            value->strVal = conditionVal->strVal;
+            break;
+        }
         case WorkCondition::Type::STANDBY: {
             value->boolVal = conditionVal->boolVal;
             break;

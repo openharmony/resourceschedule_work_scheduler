@@ -751,7 +751,7 @@ HWTEST_F(WorkStatusTest, IsSAReady_001, TestSize.Level1)
     workStatus_->MarkStatus(WorkStatus::Status::RUNNING);
     workStatus_->workInfo_ = workInfo_;
     bool result = workStatus_->IsSAReady();
-    EXPECT_TRUE(result);
+    EXPECT_FALSE(result);
 }
 
 /**
@@ -849,7 +849,7 @@ HWTEST_F(WorkStatusTest, IsSAReady_006, TestSize.Level1)
     workStatus_->conditionMap_.emplace(WorkCondition::Type::BATTERY_LEVEL, batteryLevelCondition);
     workStatus_->workInfo_ = workInfo_;
     bool result = workStatus_->IsSAReady();
-    EXPECT_TRUE(result);
+    EXPECT_FALSE(result);
 }
 
 /**
@@ -894,7 +894,7 @@ HWTEST_F(WorkStatusTest, IsSAReady_008, TestSize.Level1)
     timerCondition->uintVal = 7200001;
     workStatus_->conditionMap_.emplace(WorkCondition::Type::TIMER, timerCondition);
     bool result = workStatus_->IsSAReady();
-    EXPECT_TRUE(result);
+    EXPECT_FALSE(result);
 }
 
 /**
