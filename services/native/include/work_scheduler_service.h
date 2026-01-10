@@ -298,8 +298,9 @@ public:
     bool LoadSa(std::shared_ptr<WorkStatus> workStatus, const std::string& action);
     /**
      * @brief Handle DeepIdle callback Msg.
+     * @param saId sa id
      */
-    void HandleDeepIdleMsg();
+    void HandleDeepIdleMsg(int32_t saId);
     /**
      * @brief Check If The bundle is in the whitelist.
      *
@@ -327,6 +328,9 @@ public:
      */
     int32_t StopWorkForSA(int32_t saId) override;
     bool StopWorkInner(std::shared_ptr<WorkStatus> workStatus, int32_t uid, const bool needCancel, bool isTimeOut);
+    bool NeedCreateTimer(int32_t saId, int32_t uid, int32_t time);
+    bool HasDeepIdleTime();
+    std::map<int32_t, std::pair<int32_t, int32_t>> GetDeepIdleTimeMap();
 private:
     void RegisterStandbyStateObserver();
     void WorkQueueManagerInit(const std::shared_ptr<AppExecFwk::EventRunner>& runner);
@@ -398,6 +402,7 @@ private:
     uint32_t minCheckTime_ = 0;
     ffrt::mutex specialMutex_;
     std::map<std::string, uint32_t> specialMap_;
+    std::map<int32_t, std::pair<int32_t, int32_t>> deepIdleTimeMap_;
 };
 } // namespace WorkScheduler
 } // namespace OHOS

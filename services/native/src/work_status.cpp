@@ -319,6 +319,9 @@ bool WorkStatus::IsReady()
 bool WorkStatus::IsSAReady()
 {
     conditionStatus_.clear();
+    if (!IsStandbyExemption()) {
+        return false;
+    }
     if (!IsConditionReady()) {
         return false;
     }
@@ -430,6 +433,9 @@ bool WorkStatus::IsStandbyExemption()
         return false;
     }
     if (dataManager->GetDeviceSleep()) {
+        if (workInfo_->IsSA()) {
+            return false;
+        }
         return dataManager->IsInDeviceStandyWhitelist(bundleName_);
     }
     return true;
@@ -457,6 +463,19 @@ bool WorkStatus::IsTimerReady(WorkCondition::Type type)
         return false;
     }
     return true;
+}
+
+double WorkStatus::TimeUntilLast()
+{
+    time_t lastTime;
+    if (s_uid_last_time_map.find(uid_) == s_uid_last_time_map.end()) {
+        lastTime = 0;
+    } else {
+        lastTime = s_uid_last_time_map[uid_];
+    }
+    double currentdel = difftime(getCurrentTime(), baseTime_) * ONE_SECOND;
+    double oppositedel = difftime(getOppositeTime(), lastTime);
+    return currentdel > oppositedel ? currentdel : oppositedel;
 }
 
 bool WorkStatus::IsNapReady(WorkCondition::Type type)
