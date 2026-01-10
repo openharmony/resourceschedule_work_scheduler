@@ -139,10 +139,6 @@ void ScreenListener::StartTimer()
             WS_HILOGW("SA %{public}d timer already exists", entry.first);
             continue;
         }
-        if (entry.second.time == 0) {
-            WS_HILOGW("SA %{public}d don't need create timer", entry.first);
-            continue;
-        }
         if (entry.first != DEFAULT_SA_ID && !service_->NeedCreateTimer(entry.first,
             entry.second.uid, entry.second.time)) {
             WS_HILOGW("SA %{public}d don't need create timer, time is %{public}d", entry.first, entry.second.time);

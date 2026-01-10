@@ -1711,7 +1711,7 @@ void WorkSchedulerService::HandleDeepIdleMsg(int32_t saId)
     }
     workQueueManager_->OnConditionChanged(WorkCondition::Type::DEEP_IDLE,
         std::make_shared<DetectorValue>(saId, 0, true, std::string()));
-    if (saId == 0) {
+    if (saId == DEFAULT_SA_ID) {
         WorkSchedUtil::HiSysEventStateChanged({"DEEP_IDLE", 1});
     }
 }
