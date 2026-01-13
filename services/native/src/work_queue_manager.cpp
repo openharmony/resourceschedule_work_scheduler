@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -236,6 +236,11 @@ void WorkQueueManager::OnConditionChanged(WorkCondition::Type conditionType,
         }
         for (auto it : readyWorkVector) {
             it->MarkStatus(WorkStatus::Status::CONDITION_READY);
+            if (it->workInfo_->IsCallBySystemApp()) {
+                it->workInfo_->SetTriggerType(conditionType);
+                WS_HILOGI("set trigger type for readyWork, WorkId:%{public}s, bundleName:%{public}s, type:%{public}d",
+                    work->workId_.c_str(), work->bundleName_.c_str(), conditionType);
+            }
         }
         service->OnConditionReady(make_shared<vector<shared_ptr<WorkStatus>>>(readyWorkVector));
     };
