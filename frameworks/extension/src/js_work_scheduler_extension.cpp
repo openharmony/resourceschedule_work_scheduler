@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,6 +28,10 @@
 
 namespace OHOS {
 namespace WorkScheduler {
+namespace {
+const char* CONDITION_KEY = "WORK_SCHEDULER_CONDITION";
+}
+
 JsWorkSchedulerExtension* JsWorkSchedulerExtension::Create(const std::unique_ptr<AbilityRuntime::Runtime>& runtime)
 {
     return new JsWorkSchedulerExtension(static_cast<AbilityRuntime::JsRuntime&>(*runtime));
@@ -493,6 +497,11 @@ bool JsWorkSchedulerExtension::GetExtrasJsonStr(const WorkInfo& workInfo, std::s
         } else {
             WS_HILOGE("parameters type not supported.");
         }
+    }
+    int32_t triggerType = workInfo.GetTriggerType();
+    if (triggerType != static_cast<int32_t>(WorkCondition::Type::UNKNOWN)) {
+        extrasJson[CONDITION_KEY] = triggerType;
+        WS_HILOGI("extras parameters triggerType:%{public}d.", triggerType);
     }
     extrasStr = extrasJson.dump(JSON_INDENT_WIDTH);
     return true;

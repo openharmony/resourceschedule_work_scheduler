@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -52,6 +52,7 @@ public:
         createTime_ = workInfo.createTime_;
         earliestStartTime_ = workInfo.earliestStartTime_;
         deepIdleTime_ = workInfo.deepIdleTime_;
+        triggerType_ = workInfo.triggerType_;
     }
     ~WorkInfo() override;
     /**
@@ -377,7 +378,16 @@ public:
      * @return The deepIdleTime.
      */
     int32_t GetDeepIdleTime() const;
-
+    /**
+     * @brief Set trigger type.
+     */
+    void SetTriggerType(const int32_t triggerType);
+    /**
+     * @brief Get trigger type.
+     *
+     * @return The trigger type.
+     */
+    int32_t GetTriggerType() const;
 private:
     int32_t workId_;
     std::string bundleName_;
@@ -396,6 +406,7 @@ private:
     int32_t earliestStartTime_ {0};
     uint64_t createTime_ {0};
     int32_t deepIdleTime_ {0};
+    int32_t triggerType_ {WorkCondition::Type::UNKNOWN};
 private:
     static bool UnmarshallCondition(Parcel &parcel, WorkInfo* read, uint32_t mapsize);
     void ParseConditionToJsonStr(nlohmann::json &root);
