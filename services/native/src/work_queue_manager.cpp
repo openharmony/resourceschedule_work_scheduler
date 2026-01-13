@@ -239,7 +239,7 @@ void WorkQueueManager::OnConditionChanged(WorkCondition::Type conditionType,
             if (it->workInfo_->IsCallBySystemApp()) {
                 it->workInfo_->SetTriggerType(conditionType);
                 WS_HILOGI("set trigger type for readyWork, WorkId:%{public}s, bundleName:%{public}s, type:%{public}d",
-                    work->workId_.c_str(), work->bundleName_.c_str(), conditionType);
+                    it->workId_.c_str(), it->bundleName_.c_str(), conditionType);
             }
         }
         service->OnConditionReady(make_shared<vector<shared_ptr<WorkStatus>>>(readyWorkVector));
