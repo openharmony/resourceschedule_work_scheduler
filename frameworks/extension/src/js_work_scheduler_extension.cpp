@@ -499,7 +499,7 @@ bool JsWorkSchedulerExtension::GetExtrasJsonStr(const WorkInfo& workInfo, std::s
         }
     }
     int32_t triggerType = workInfo.GetTriggerType();
-    if (triggerType != WorkCondition::Type::UNKNOWN) {
+    if (triggerType != static_cast<int32_t>(WorkCondition::Type::UNKNOWN)) {
         extrasJson[CONDITION_KEY] = triggerType;
         WS_HILOGI("extras parameters triggerType:%{public}d.", triggerType);
     }
