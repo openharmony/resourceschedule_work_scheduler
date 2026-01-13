@@ -852,5 +852,30 @@ HWTEST_F (WorkInfoTest, GetDeepIdleTime001, Function | MediumTest | Level2)
     workInfo.SetDeepIdleTime(1000);
     EXPECT_EQ(workInfo.GetDeepIdleTime(), 1000);
 }
+
+/**
+ * @tc.name GetTriggerType001
+ * @tc.desc test GetTriggerType
+ * @tc.type FUNC
+ * @tc.require:
+ */
+HWTEST_F (WorkInfoTest, GetTriggerType001, Function | MediumTest | Level2)
+{
+    WorkInfo workInfo;
+    EXPECT_EQ(workInfo.GetTriggerType(), WorkCondition::Type::UNKNOWN);
+}
+
+/**
+ * @tc.name SetTriggerType001
+ * @tc.desc test SetTriggerType
+ * @tc.type FUNC
+ * @tc.require:
+ */
+HWTEST_F (WorkInfoTest, SetTriggerType001, Function | MediumTest | Level2)
+{
+    WorkInfo workInfo;
+    workInfo.SetTriggerType(1);
+    EXPECT_EQ(workInfo.GetTriggerType(), 1);
+}
 } // namespace WorkScheduler
 } // namespace OHOS
