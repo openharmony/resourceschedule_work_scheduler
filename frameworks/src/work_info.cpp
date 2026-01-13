@@ -305,8 +305,7 @@ bool WorkInfo::IsCallBySystemApp()
 
 bool WorkInfo::Marshalling(Parcel &parcel) const
 {
-    bool ret = false;
-    ret = parcel.WriteInt32(workId_);
+    bool ret = parcel.WriteInt32(workId_);
     ret = ret && parcel.WriteString(bundleName_);
     ret = ret && parcel.WriteString(abilityName_);
     ret = ret && parcel.WriteInt32(earliestStartTime_);
