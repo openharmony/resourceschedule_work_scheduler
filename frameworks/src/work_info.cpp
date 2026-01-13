@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -305,12 +305,12 @@ bool WorkInfo::IsCallBySystemApp()
 
 bool WorkInfo::Marshalling(Parcel &parcel) const
 {
-    bool ret = false;
-    ret = parcel.WriteInt32(workId_);
+    bool ret = parcel.WriteInt32(workId_);
     ret = ret && parcel.WriteString(bundleName_);
     ret = ret && parcel.WriteString(abilityName_);
     ret = ret && parcel.WriteInt32(earliestStartTime_);
     ret = ret && parcel.WriteBool(persisted_);
+    ret = ret && parcel.WriteInt32(triggerType_);
     ret = ret && parcel.WriteInt32(uid_);
     ret = ret && parcel.WriteUint32(conditionMap_.size());
     for (auto it : conditionMap_) {
@@ -373,8 +373,8 @@ WorkInfo* WorkInfo::Unmarshalling(Parcel &parcel)
         delete read;
         return nullptr;
     }
-    if (!parcel.ReadInt32(read->uid_)) {
-        WS_HILOGE("Failed to read the uid.");
+    if (!parcel.ReadInt32(read->triggerType_) || !parcel.ReadInt32(read->uid_)) {
+        WS_HILOGE("Failed to read the triggerType or uid.");
         delete read;
         return nullptr;
     }
@@ -760,6 +760,16 @@ void WorkInfo::SetDeepIdleTime(int32_t deepIdleTime)
 int32_t WorkInfo::GetDeepIdleTime() const
 {
     return deepIdleTime_;
+}
+
+void WorkInfo::SetTriggerType(const int32_t triggerType)
+{
+    triggerType_ = triggerType;
+}
+
+int32_t WorkInfo::GetTriggerType() const
+{
+    return triggerType_;
 }
 } // namespace WorkScheduler
 } // namespace OHOS
