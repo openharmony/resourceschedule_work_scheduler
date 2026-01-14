@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -90,14 +90,8 @@ shared_ptr<Condition> WorkQueue::ParseCondition(WorkCondition::Type type,
         case WorkCondition::Type::TIMER: {
             break;
         }
+        case WorkCondition::Type::DEEP_IDLE:
         case WorkCondition::Type::GROUP: {
-            value->enumVal = conditionVal->intVal;
-            value->intVal = conditionVal->timeVal;
-            value->boolVal = conditionVal->boolVal;
-            value->strVal = conditionVal->strVal;
-            break;
-        }
-        case WorkCondition::Type::DEEP_IDLE: {
             value->enumVal = conditionVal->intVal;
             value->intVal = conditionVal->timeVal;
             value->boolVal = conditionVal->boolVal;
