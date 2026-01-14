@@ -403,7 +403,7 @@ private:
     ffrt::mutex specialMutex_;
     std::map<std::string, uint32_t> specialMap_;
     ffrt::mutex deepIdleTimeMutex_;
-    /* fisrt: saId, second.first: deepIdleTime, second.second: uid */
+    /* first: saId, second.first: deepIdleTime, second.second: uid */
     std::map<int32_t, std::pair<int32_t, int32_t>> deepIdleTimeMap_ {};
 };
 } // namespace WorkScheduler
