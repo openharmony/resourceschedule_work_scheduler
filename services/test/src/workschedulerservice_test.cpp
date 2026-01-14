@@ -1355,7 +1355,7 @@ HWTEST_F(WorkSchedulerServiceTest, NeedCreateTimer_003, TestSize.Level1)
     int32_t deepIdleTime = 1 * 60 * 1000;
     int32_t uid = 2;
     int32_t workId = 1;
-    uint32_t timeInterval = 7 * 24 * 60 *60 * 1000;
+    uint32_t timeInterval = 7 * 24 * 60 * 60 * 1000;
     time_t baseTime;
     (void)time(&baseTime);
     WorkInfo workinfo = WorkInfo();

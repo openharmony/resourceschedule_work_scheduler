@@ -402,8 +402,8 @@ private:
     uint32_t minCheckTime_ = 0;
     ffrt::mutex specialMutex_;
     std::map<std::string, uint32_t> specialMap_;
-    fftt::mutex deepIdleTimeMutex_;
-    /* fistt saId, second.first: deepIdleTime, second.second: uid */
+    ffrt::mutex deepIdleTimeMutex_;
+    /* fisrt saId, second.first: deepIdleTime, second.second: uid */
     std::map<int32_t, std::pair<int32_t, int32_t>> deepIdleTimeMap_ {};
 };
 } // namespace WorkScheduler
