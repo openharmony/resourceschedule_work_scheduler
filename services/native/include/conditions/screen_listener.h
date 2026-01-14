@@ -27,7 +27,7 @@ namespace OHOS {
 namespace WorkScheduler {
 class WorkQueueManager;
 class ScreenListener : public IConditionListener,
-                       public std::enable_shared_from_this<WorkSchedulerService> {
+                       public std::enable_shared_from_this<ScreenListener> {
 public:
     struct SaTimerInfo {
         /* time_ is setting the idle time delay duration */
