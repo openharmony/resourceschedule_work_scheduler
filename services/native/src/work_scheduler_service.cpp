@@ -1814,11 +1814,13 @@ void WorkSchedulerService::ReportUserDataSizeEvent()
 
 bool WorkSchedulerService::HasDeepIdleTime()
 {
+    std::lock_guard<ffrt::mutex> lock(deepIdleTimeMutex_);
     return !deepIdleTimeMap_.empty();
 }
 
 std::map<int32_t, std::pair<int32_t, int32_t>> WorkSchedulerService::GetDeepIdleTimeMap()
 {
+    std::lock_guard<ffrt::mutex> lock(deepIdleTimeMutex_);
     return deepIdleTimeMap_;
 }
 
@@ -1834,7 +1836,7 @@ bool WorkSchedulerService::NeedCreateTimer(int32_t saId, int32_t uid, int32_t ti
     if (intervalTime < lastTime) {
         return true;
     }
-    int32_t nextTime = static_cast<int32_t>(std::floor(intervalTime - lastTime));
+    double nextTime = intervalTime - lastTime;
     return nextTime < time;
 }
 } // namespace WorkScheduler
