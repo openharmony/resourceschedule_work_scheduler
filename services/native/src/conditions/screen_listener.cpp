@@ -164,7 +164,7 @@ void ScreenListener::StartTimer()
                 DelayedSingleton<DataManager>::GetInstance()->SetDeepIdle(true);
             }
             auto self = weak.lock();
-            if (self) {
+            if (self && self->service_) {
                 self->service_->HandleDeepIdleMsg(saId);
             }
         });
@@ -183,9 +183,9 @@ void ScreenListener::StartTimer()
 void ScreenListener::StopTimer()
 {
     for (auto &entry : saIdTimeInfoMap_) {
-        if (entry.second.timerId_ > 0) {
-            MiscServices::TimeServiceClient::GetInstance()->StopTimer(entry.second.timerId_);
-            MiscServices::TimeServiceClient::GetInstance()->DestroyTimer(entry.second.timerId_);
+        if (entry.second.timerId_ > 0 &&
+            MiscServices::TimeServiceClient::GetInstance()->StopTimer(entry.second.timerId_) &&
+            MiscServices::TimeServiceClient::GetInstance()->DestroyTimer(entry.second.timerId_)) {
             entry.second.timerId_ = 0;
             WS_HILOGI("SA %{public}d deep idle timer stop success", entry.first);
         }
