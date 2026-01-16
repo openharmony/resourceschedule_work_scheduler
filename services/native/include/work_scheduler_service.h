@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -402,7 +402,9 @@ private:
     uint32_t minCheckTime_ = 0;
     ffrt::mutex specialMutex_;
     std::map<std::string, uint32_t> specialMap_;
-    std::map<int32_t, std::pair<int32_t, int32_t>> deepIdleTimeMap_;
+    ffrt::mutex deepIdleTimeMutex_;
+    /* first: saId, second.first: deepIdleTime, second.second: uid */
+    std::map<int32_t, std::pair<int32_t, int32_t>> deepIdleTimeMap_ {};
 };
 } // namespace WorkScheduler
 } // namespace OHOS

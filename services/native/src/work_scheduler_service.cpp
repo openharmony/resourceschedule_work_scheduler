@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -298,6 +298,7 @@ void WorkSchedulerService::LoadWorksFromFile(const char *path, list<shared_ptr<W
             continue;
         }
         if (workinfo->IsSA() && workinfo->GetDeepIdleTime() != 0) {
+            std::lock_guard<ffrt::mutex> lock(deepIdleTimeMutex_);
             deepIdleTimeMap_.emplace(
                 workinfo->GetSaId(), std::pair<int32_t, int32_t>{workinfo->GetDeepIdleTime(), workinfo->GetUid()});
         }
@@ -1813,11 +1814,13 @@ void WorkSchedulerService::ReportUserDataSizeEvent()
 
 bool WorkSchedulerService::HasDeepIdleTime()
 {
+    std::lock_guard<ffrt::mutex> lock(deepIdleTimeMutex_);
     return !deepIdleTimeMap_.empty();
 }
 
 std::map<int32_t, std::pair<int32_t, int32_t>> WorkSchedulerService::GetDeepIdleTimeMap()
 {
+    std::lock_guard<ffrt::mutex> lock(deepIdleTimeMutex_);
     return deepIdleTimeMap_;
 }
 
@@ -1828,7 +1831,13 @@ bool WorkSchedulerService::NeedCreateTimer(int32_t saId, int32_t uid, int32_t ti
         WS_HILOGE("the sa %{public}d dose not exist", saId);
         return false;
     }
-    return (sa->workInfo_->GetTimeInterval() - sa->TimeUntilLast()) < time;
+    uint32_t intervalTime = sa->workInfo_->GetTimeInterval();
+    double lastTime = sa->TimeUntilLast();
+    if (intervalTime < lastTime) {
+        return true;
+    }
+    double nextTime = intervalTime - lastTime;
+    return nextTime < time;
 }
 } // namespace WorkScheduler
 } // namespace OHOS
