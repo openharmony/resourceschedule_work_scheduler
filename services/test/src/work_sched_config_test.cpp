@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,12 +16,20 @@
 #include <functional>
 #include <gtest/gtest.h>
  
+#include "res_sched_signature_validator.h"
 #include "work_sched_config.h"
 #include "work_sched_hilog.h"
  
 using namespace testing::ext;
  
 namespace OHOS {
+ResourceSchedule::SignatureCheckResult ResourceSchedule::ResSchedSignatureValidator::CheckSignatureByBundleName(
+    const std::string &bundle)
+{
+    return bundle == "invalid_bundle" ? ResourceSchedule::SignatureCheckResult::ERR_SIGNATURE_NO_MATCH
+                                      : ResourceSchedule::SignatureCheckResult::CHECK_OK;
+}
+
 namespace WorkScheduler {
 namespace {
 const std::string APP1 = "test1";
@@ -63,6 +71,17 @@ HWTEST_F(WorkSchedConfigTest, InitActiveGroupWhitelist_001, TestSize.Level3)
     EXPECT_TRUE(DelayedSingleton<WorkSchedulerConfig>::GetInstance()->IsInActiveGroupWhitelist(APP3));
     EXPECT_TRUE(DelayedSingleton<WorkSchedulerConfig>::GetInstance()->IsInActiveGroupWhitelist(APP4));
     EXPECT_FALSE(DelayedSingleton<WorkSchedulerConfig>::GetInstance()->IsInActiveGroupWhitelist(APP5));
+}
+
+/**
+ * @tc.name: IsInActiveGroupWhitelist_CheckSignature
+ * @tc.desc: Test IsInActiveGroupWhitelist.
+ * @tc.type: FUNC
+ */
+HWTEST_F(WorkSchedConfigTest, IsInActiveGroupWhitelist_CheckSignature, TestSize.Level3)
+{
+    DelayedSingleton<WorkSchedulerConfig>::GetInstance()->activeGroupWhitelist_.insert("invalid_bundle");
+    EXPECT_FALSE(DelayedSingleton<WorkSchedulerConfig>::GetInstance()->IsInActiveGroupWhitelist("invalid_bundle"));
 }
 }
 }

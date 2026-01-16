@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,6 +14,7 @@
  */
  
 #include "work_sched_config.h"
+#include "res_sched_signature_validator.h"
 #include "work_sched_hilog.h"
 #include "nlohmann/json.hpp"
  
@@ -51,8 +52,14 @@ void WorkSchedulerConfig::InitActiveGroupWhitelist(const std::string &configData
  
 bool WorkSchedulerConfig::IsInActiveGroupWhitelist(const std::string &bundleName)
 {
-    std::lock_guard<std::mutex> lock(configMutex_);
-    return activeGroupWhitelist_.count(bundleName) > 0;
+    {
+        std::lock_guard<std::mutex> lock(configMutex_);
+        if (!activeGroupWhitelist_.count(bundleName)) {
+            return false;
+        }
+    }
+    return ResourceSchedule::ResSchedSignatureValidator::GetInstance().CheckSignatureByBundleName(bundleName) ==
+           ResourceSchedule::SignatureCheckResult::CHECK_OK;
 }
 } // WorkScheduler
 } // OHOS
