@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,14 +26,16 @@
 namespace OHOS {
 namespace WorkScheduler {
 class WorkQueueManager;
-class ScreenListener : public IConditionListener {
+class ScreenListener : public IConditionListener,
+                       public std::enable_shared_from_this<ScreenListener> {
 public:
     struct SaTimerInfo {
-        int32_t time;
-        int32_t uid;
-        uint64_t timerId;
-        SaTimerInfo() : time(0), uid(0), timerId(0) {}
-        SaTimerInfo(int32_t time, int32_t uid) : time(time), uid(uid), timerId(0) {}
+        /* time_ is setting the idle time delay duration */
+        int32_t time_;
+        int32_t uid_;
+        uint64_t timerId_;
+        SaTimerInfo() : time_(0), uid_(0), timerId_(0) {}
+        SaTimerInfo(int32_t time, int32_t uid) : time_(time), uid_(uid), timerId_(0) {}
     };
     explicit ScreenListener(std::shared_ptr<WorkQueueManager> workQueueManager,
         std::shared_ptr<WorkSchedulerService> service);
@@ -72,7 +74,7 @@ public:
 private:
     std::shared_ptr<WorkQueueManager> workQueueManager_;
     std::shared_ptr<EventFwk::CommonEventSubscriber> commonEventSubscriber = nullptr;
-    std::map<int32_t, SaTimerInfo> saIdTimeInfoMap_;
+    std::map<int32_t, SaTimerInfo> saIdTimeInfoMap_ {};
 };
 
 class ScreenEventSubscriber : public EventFwk::CommonEventSubscriber,

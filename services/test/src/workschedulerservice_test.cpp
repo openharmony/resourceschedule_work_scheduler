@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,6 +15,7 @@
 
 #include <functional>
 #include <gtest/gtest.h>
+#include "timer.h"
 #define private public
 #include "work_scheduler_service.h"
 #include "work_status.h"
@@ -1293,6 +1294,7 @@ HWTEST_F(WorkSchedulerServiceTest, HasDeepIdleTime_001, TestSize.Level1)
     int32_t uid = 2;
     std::map<int32_t, std::pair<int32_t, int32_t>> deepIdleTimeMap = workSchedulerService_->GetDeepIdleTimeMap();
     deepIdleTimeMap.emplace(saId, std::pair<int32_t, int32_t>{time, uid});
+    workSchedulerService_->deepIdleTimeMap_ = deepIdleTimeMap;
     bool ret = workSchedulerService_->HasDeepIdleTime();
     EXPECT_EQ(ret, true);
 }
@@ -1322,17 +1324,55 @@ HWTEST_F(WorkSchedulerServiceTest, NeedCreateTimer_002, TestSize.Level1)
 {
     int32_t saId = 1;
     int32_t time = 20 * 60 * 1000;
-    int32_t uid = 2;
+    int32_t uid = 1;
+    int32_t workId = 1;
     WorkInfo workinfo = WorkInfo();
+    workinfo.SetWorkId(workId);
     workinfo.RefreshSaId(saId);
     workinfo.RefreshUid(uid);
     workinfo.RequestDeepIdle(true);
     workinfo.SetDeepIdleTime(time);
     std::shared_ptr<WorkStatus> workStatus = std::make_shared<WorkStatus>(workinfo, uid);
-    std::shared_ptr<WorkPolicyManager> workPolicyManager = std::make_shared<WorkPolicyManager>(workSchedulerService_);
-    int32_t ret = workPolicyManager->AddWork(workStatus, uid);
+    auto instance = DelayedSingleton<WorkSchedulerService>::GetInstance();
+    std::shared_ptr<WorkPolicyManager> workPolicyManager = std::make_shared<WorkPolicyManager>(instance);
+    workSchedulerService_->workPolicyManager_ = workPolicyManager;
+    int32_t ret = workSchedulerService_->workPolicyManager_->AddWork(workStatus, uid);
     if (ret == ERR_OK) {
         bool result = workSchedulerService_->NeedCreateTimer(saId, uid, time);
+        EXPECT_EQ(result, true);
+    }
+}
+
+/**
+ * @tc.name: NeedCreateTimer_003
+ * @tc.desc: Test WorkSchedulerService NeedCreateTimer.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(WorkSchedulerServiceTest, NeedCreateTimer_003, TestSize.Level1)
+{
+    int32_t saId = 2;
+    int32_t deepIdleTime = 1 * 60 * 1000;
+    int32_t uid = 2;
+    int32_t workId = 1;
+    uint32_t timeInterval = 7 * 24 * 60 * 60 * 1000;
+    time_t baseTime;
+    (void)time(&baseTime);
+    WorkInfo workinfo = WorkInfo();
+    workinfo.SetWorkId(workId);
+    workinfo.RefreshSaId(saId);
+    workinfo.RefreshUid(uid);
+    workinfo.RequestDeepIdle(true);
+    workinfo.SetDeepIdleTime(deepIdleTime);
+    workinfo.RequestRepeatCycle(timeInterval);
+    workinfo.RequestBaseTime(baseTime);
+    std::shared_ptr<WorkStatus> workStatus = std::make_shared<WorkStatus>(workinfo, uid);
+    auto instance = DelayedSingleton<WorkSchedulerService>::GetInstance();
+    std::shared_ptr<WorkPolicyManager> workPolicyManager = std::make_shared<WorkPolicyManager>(instance);
+    workSchedulerService_->workPolicyManager_ = workPolicyManager;
+    int32_t ret = workSchedulerService_->workPolicyManager_->AddWork(workStatus, uid);
+    if (ret == ERR_OK) {
+        bool result = workSchedulerService_->NeedCreateTimer(saId, uid, deepIdleTime);
         EXPECT_EQ(result, false);
     }
 }
