@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -783,10 +783,10 @@ void WorkStatus::ToString(WorkCondition::Type type)
     }
 }
 
-void WorkStatus::HasTimeout()
+bool WorkStatus::HasTimeout()
 {
     if (!IsRunning() || IsPaused()) {
-        return;
+        return false;
     }
 
     if (workWatchDogTime_ > LONG_WATCHDOG_TIME) {
@@ -794,7 +794,7 @@ void WorkStatus::HasTimeout()
             " workStartTime:%{public}" PRIu64, bundleName_.c_str(), workId_.c_str(), workWatchDogTime_, workStartTime_);
         workWatchDogTime_ = 0;
         timeout_.store(true);
-        return;
+        return true;
     }
 
     uint64_t runningTime = WorkSchedUtils::GetCurrentTimeMs() - workStartTime_;
@@ -804,7 +804,9 @@ void WorkStatus::HasTimeout()
             workWatchDogTime_, workStartTime_, runningTime);
         workWatchDogTime_ = 0;
         timeout_.store(true);
+        return true;
     }
+    return false;
 }
 
 void WorkStatus::SetTimeout(bool timeout)

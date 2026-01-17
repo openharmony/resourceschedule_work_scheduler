@@ -489,6 +489,7 @@ bool JsWorkSchedulerExtension::GetExtrasJsonStr(const WorkInfo& workInfo, std::s
     }
     auto extrasMap = extras->GetParams();
     int typeId = INVALID_VALUE;
+    bool hasConditionKey = false;
     for (auto it : extrasMap) {
         typeId = AAFwk::WantParams::GetDataType(it.second);
         if (typeId != INVALID_VALUE) {
@@ -497,9 +498,12 @@ bool JsWorkSchedulerExtension::GetExtrasJsonStr(const WorkInfo& workInfo, std::s
         } else {
             WS_HILOGE("parameters type not supported.");
         }
+        if (it.first == CONDITION_KEY) {
+            hasConditionKey = true;
+        }
     }
     int32_t triggerType = workInfo.GetTriggerType();
-    if (triggerType != static_cast<int32_t>(WorkCondition::Type::UNKNOWN)) {
+    if (!hasConditionKey && triggerType != static_cast<int32_t>(WorkCondition::Type::UNKNOWN)) {
         extrasJson[CONDITION_KEY] = triggerType;
         WS_HILOGI("extras parameters triggerType:%{public}d.", triggerType);
     }
