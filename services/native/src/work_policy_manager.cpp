@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -999,7 +999,7 @@ void WorkPolicyManager::SetSystemPolicyEventSend(bool systemPolicyEventSend)
 
 bool WorkPolicyManager::IsNeedDiscreteScheduled()
 {
-    const std::vector<int32_t> mins{ 0, 29, 30, 59 };
+    const std::vector<int32_t> mins{0, 30};
     constexpr int32_t MIN_HOUR = 6;
     constexpr int32_t MAX_HOUR = 9;
     time_t t;
