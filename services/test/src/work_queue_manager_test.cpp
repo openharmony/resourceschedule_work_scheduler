@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,6 +22,7 @@
 #include "work_condition.h"
 #include "work_sched_hilog.h"
 #include "work_info.h"
+#include "work_sched_utils.h"
 
 using namespace testing::ext;
 
@@ -90,8 +91,36 @@ HWTEST_F(WorkQueueManagerTest, ClearTimeOutWorkStatus_002, TestSize.Level1)
     workinfo.RequestBatteryLevel(80);
     int32_t uid = 10000;
     std::shared_ptr<WorkStatus> workStatus = std::make_shared<WorkStatus>(workinfo, uid);
-    workStatus->SetTimeout(true);
+    workStatus->workWatchDogTime_ = 120000;
+    uint64_t baseTime = WorkSchedUtils::GetCurrentTimeMs();
+    workStatus->workStartTime_ = baseTime - 10000;
     workQueueManager_->AddWork(workStatus);
+    workQueueManager_->ClearTimeOutWorkStatus();
+    workStatus->SetTimeout(true);
+    workQueueManager_->ClearTimeOutWorkStatus();
+    EXPECT_EQ(workQueueManager_->queueMap_.size(), 3);
+}
+
+/**
+ * @tc.name: ClearTimeOutWorkStatus_003
+ * @tc.desc: Test WorkQueueManagerTest ClearTimeOutWorkStatus.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(WorkQueueManagerTest, ClearTimeOutWorkStatus_003, TestSize.Level1)
+{
+    workQueueManager_->queueMap_.clear();
+    WorkInfo workinfo;
+    uint32_t timeInterval = 120000;
+    workinfo.SetWorkId(10000);
+    workinfo.RequestBatteryStatus(WorkCondition::BatteryStatus::BATTERY_STATUS_LOW);
+    workinfo.RequestRepeatCycle(timeInterval);
+    workinfo.RequestBatteryLevel(80);
+    int32_t uid = 10000;
+    std::shared_ptr<WorkStatus> workStatus = std::make_shared<WorkStatus>(workinfo, uid);
+    workQueueManager_->AddWork(workStatus);
+    workQueueManager_->ClearTimeOutWorkStatus();
+    workStatus->SetTimeout(true);
     workQueueManager_->ClearTimeOutWorkStatus();
     EXPECT_EQ(workQueueManager_->queueMap_.size(), 3);
 }
