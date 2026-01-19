@@ -137,7 +137,7 @@ WorkSchedulerService::~WorkSchedulerService() {}
 
 void WorkSchedulerService::OnStart()
 {
-    if (ready_) {
+    if (ready_.load()) {
         WS_HILOGI("OnStart is ready, nothing to do.");
         return;
     }
@@ -201,7 +201,7 @@ WEAK_FUNC bool WorkSchedulerService::IsBaseAbilityReady()
 void WorkSchedulerService::InitPersistedWork()
 {
     WS_HILOGD("init persisted work");
-    std::lock_guard<ffrt::mutex> lock(mutex_);
+    std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
     list<shared_ptr<WorkInfo>> persistedWorks = ReadPersistedWorks();
     for (auto it : persistedWorks) {
         WS_HILOGI("get persisted work, id: %{public}d, isSa:%{public}d", it->GetWorkId(), it->IsSA());
@@ -214,7 +214,7 @@ void WorkSchedulerService::InitPreinstalledWork()
 {
     WS_HILOGD("init preinstalled work");
     list<shared_ptr<WorkInfo>> preinstalledWorks = ReadPreinstalledWorks();
-    std::lock_guard<ffrt::mutex> lock(mutex_);
+    std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
     for (auto work : preinstalledWorks) {
         WS_HILOGI("preinstalled workinfo id %{public}s, isSa:%{public}d", work->GetBriefInfo().c_str(), work->IsSA());
         time_t baseTime;
@@ -308,6 +308,7 @@ void WorkSchedulerService::LoadWorksFromFile(const char *path, list<shared_ptr<W
                 continue;
             }
             workinfo->RefreshUid(uid);
+            std::lock_guard<ffrt::mutex> lock(preinstalledBundlesMutex_);
             preinstalledBundles_.insert(workinfo->GetBundleName());
         }
         workinfo->SetPreinstalled(true);
@@ -335,6 +336,7 @@ void WorkSchedulerService::LoadExemptionBundlesFromFile(const char *path)
         return;
     }
 
+    std::lock_guard<ffrt::mutex> lock(exemptionBundlesMutex_);
     for (const auto &exemptionBundleName : exemptionBundlesRoot) {
         if (exemptionBundleName.empty() || !exemptionBundleName.is_string()) {
             WS_HILOGE("Item type error");
@@ -377,6 +379,7 @@ void WorkSchedulerService::LoadMinRepeatTimeFromFile(const char *path)
         return;
     }
     minCheckTime_ = workQueueManager_->GetTimeCycle();
+    std::lock_guard<ffrt::mutex> lock(specialMutex_);
     for (const auto &it : specialRoot) {
         if (!it.contains("bundleName") || !it["bundleName"].is_string() ||
             !it.contains("time") || !it["time"].is_number_unsigned()) {
@@ -459,7 +462,7 @@ void WorkSchedulerService::OnStop()
 #endif
     eventRunner_.reset();
     handler_.reset();
-    ready_ = false;
+    ready_.store(false);
 }
 
 bool WorkSchedulerService::Init(const std::shared_ptr<AppExecFwk::EventRunner>& runner)
@@ -481,8 +484,8 @@ bool WorkSchedulerService::Init(const std::shared_ptr<AppExecFwk::EventRunner>& 
         WorkSchedUtil::HiSysEventException(EventErrorCode::SERVICE_INIT, "register to system ability manager failed");
         return false;
     }
-    checkBundle_ = true;
-    ready_ = true;
+    checkBundle_.store(true);
+    ready_.store(true);
     WS_HILOGI("start init background task subscriber!");
     if (!InitBgTaskSubscriber()) {
         WS_HILOGE("subscribe background task failed!");
@@ -714,11 +717,11 @@ int32_t WorkSchedulerService::StartWork(const WorkInfo& workInfo)
 int32_t WorkSchedulerService::StartWorkInner(const WorkInfo& workInfo, int32_t uid)
 {
     WorkInfo workInfo_ = workInfo;
-    if (!ready_) {
+    if (!ready_.load()) {
         WS_HILOGE("service is not ready.");
         return E_SERVICE_NOT_READY;
     }
-    if (checkBundle_ && !CheckWorkInfo(workInfo_, uid)) {
+    if (checkBundle_.load() && !CheckWorkInfo(workInfo_, uid)) {
         WS_HILOGE("check workInfo failed, bundleName inconsistency.");
         return E_CHECK_WORKINFO_FAILED;
     }
@@ -740,7 +743,7 @@ int32_t WorkSchedulerService::StartWorkInner(const WorkInfo& workInfo, int32_t u
     if (ret == ERR_OK) {
         workQueueManager_->AddWork(workStatus);
         if (workInfo_.IsPersisted()) {
-            std::lock_guard<ffrt::mutex> lock(mutex_);
+            std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
             workStatus->workInfo_->RefreshUid(uid);
             persistedMap_.emplace(workStatus->workId_, workStatus->workInfo_);
             RefreshPersistedWorks();
@@ -788,12 +791,12 @@ int32_t WorkSchedulerService::StopWork(const WorkInfo& workInfo)
 {
     HitraceScoped traceScoped(HITRACE_TAG_OHOS, "WorkSchedulerService::StopWork");
     WorkInfo workInfo_ = workInfo;
-    if (!ready_) {
+    if (!ready_.load()) {
         WS_HILOGE("service is not ready.");
         return E_SERVICE_NOT_READY;
     }
     int32_t uid = IPCSkeleton::GetCallingUid();
-    if (checkBundle_ && !CheckWorkInfo(workInfo_, uid)) {
+    if (checkBundle_.load() && !CheckWorkInfo(workInfo_, uid)) {
         WS_HILOGE("check workInfo failed, bundleName inconsistency.");
         return E_CHECK_WORKINFO_FAILED;
     }
@@ -815,7 +818,7 @@ int32_t WorkSchedulerService::StopWorkForInner(const WorkInfo& workInfo, bool ne
         return E_PERMISSION_DENIED;
     }
     WorkInfo workInfo_ = workInfo;
-    if (!ready_) {
+    if (!ready_.load()) {
         WS_HILOGE("service is not ready.");
         return E_SERVICE_NOT_READY;
     }
@@ -836,13 +839,13 @@ int32_t WorkSchedulerService::StopWorkForInner(const WorkInfo& workInfo, bool ne
 
 int32_t WorkSchedulerService::StopAndCancelWork(const WorkInfo& workInfo)
 {
-    if (!ready_) {
+    if (!ready_.load()) {
         WS_HILOGE("service is not ready.");
         return E_SERVICE_NOT_READY;
     }
     WorkInfo workInfo_ = workInfo;
     int32_t uid = IPCSkeleton::GetCallingUid();
-    if (checkBundle_ && !CheckWorkInfo(workInfo_, uid)) {
+    if (checkBundle_.load() && !CheckWorkInfo(workInfo_, uid)) {
         WS_HILOGE("check workInfo failed, bundleName inconsistency.");
         return E_CHECK_WORKINFO_FAILED;
     }
@@ -853,7 +856,7 @@ int32_t WorkSchedulerService::StopAndCancelWork(const WorkInfo& workInfo)
     }
     StopWorkInner(workStatus, uid, true, false);
     if (workStatus->persisted_) {
-        std::lock_guard<ffrt::mutex> lock(mutex_);
+        std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
         persistedMap_.erase(workStatus->workId_);
         RefreshPersistedWorks();
     }
@@ -883,7 +886,7 @@ void WorkSchedulerService::WatchdogTimeOut(std::shared_ptr<WorkStatus> workStatu
 int32_t WorkSchedulerService::StopAndClearWorks()
 {
     HitraceScoped traceScoped(HITRACE_TAG_OHOS, "WorkSchedulerService::StopAndClearWorks");
-    if (!ready_) {
+    if (!ready_.load()) {
         WS_HILOGE("service is not ready.");
         return E_SERVICE_NOT_READY;
     }
@@ -901,7 +904,7 @@ bool WorkSchedulerService::StopAndClearWorksByUid(int32_t uid)
     bool ret = workQueueManager_->StopAndClearWorks(allWorks)
         && workPolicyManager_->StopAndClearWorks(uid);
     if (ret) {
-        std::lock_guard<ffrt::mutex> lock(mutex_);
+        std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
         for (auto workId : workIdList) {
             if (persistedMap_.count(workId) != 0) {
                 persistedMap_.erase(workId);
@@ -915,7 +918,7 @@ bool WorkSchedulerService::StopAndClearWorksByUid(int32_t uid)
 int32_t WorkSchedulerService::IsLastWorkTimeout(int32_t workId, bool &result)
 {
     HitraceScoped traceScoped(HITRACE_TAG_OHOS, "WorkSchedulerService::IsLastWorkTimeout");
-    if (!ready_) {
+    if (!ready_.load()) {
         WS_HILOGE("service is not ready.");
         return E_SERVICE_NOT_READY;
     }
@@ -932,7 +935,7 @@ int32_t WorkSchedulerService::ObtainAllWorks(std::vector<WorkInfo>& workInfos)
 {
     HitraceScoped traceScoped(HITRACE_TAG_OHOS, "WorkSchedulerService::ObtainAllWorks");
     int32_t uid = IPCSkeleton::GetCallingUid();
-    if (!ready_) {
+    if (!ready_.load()) {
         WS_HILOGE("service is not ready.");
         return E_SERVICE_NOT_READY;
     }
@@ -944,7 +947,7 @@ int32_t WorkSchedulerService::ObtainWorksByUidAndWorkIdForInner(int32_t uid,
     std::vector<WorkInfo>& workInfos, int32_t workId)
 {
     HitraceScoped traceScoped(HITRACE_TAG_OHOS, "WorkSchedulerService::ObtainWorksByUidAndWorkIdForInner");
-    if (!ready_) {
+    if (!ready_.load()) {
         WS_HILOGE("service is not ready.");
         return E_SERVICE_NOT_READY;
     }
@@ -970,7 +973,7 @@ int32_t WorkSchedulerService::GetWorkStatus(int32_t workId, WorkInfo& workInfo)
 {
     HitraceScoped traceScoped(HITRACE_TAG_OHOS, "WorkSchedulerService::GetWorkStatus");
     int32_t uid = IPCSkeleton::GetCallingUid();
-    if (!ready_) {
+    if (!ready_.load()) {
         WS_HILOGE("service is not ready.");
         return E_SERVICE_NOT_READY;
     }
@@ -984,7 +987,7 @@ int32_t WorkSchedulerService::GetWorkStatus(int32_t workId, WorkInfo& workInfo)
 
 int32_t WorkSchedulerService::GetAllRunningWorks(std::vector<WorkInfo>& workInfos)
 {
-    if (!ready_) {
+    if (!ready_.load()) {
         WS_HILOGE("service is not ready.");
         return E_SERVICE_NOT_READY;
     }
@@ -1004,7 +1007,7 @@ void WorkSchedulerService::UpdateWorkBeforeRealStart(std::shared_ptr<WorkStatus>
     if (work->NeedRemove()) {
         workQueueManager_->RemoveWork(work);
         if (work->persisted_ && !work->IsRepeating()) {
-            std::lock_guard<ffrt::mutex> lock(mutex_);
+            std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
             persistedMap_.erase(work->workId_);
             RefreshPersistedWorks();
         }
@@ -1078,7 +1081,7 @@ int32_t WorkSchedulerService::Dump(int32_t fd, const std::vector<std::u16string>
         return ERR_OK;
     }
     std::string result;
-    if (!ready_) {
+    if (!ready_.load()) {
         WS_HILOGE("service is not ready.");
         result.append("service is not ready.");
         if (!SaveStringToFd(fd, result)) {
@@ -1145,7 +1148,7 @@ void WorkSchedulerService::DumpAllInfo(std::string &result)
         workPolicyManager_->Dump(result);
     }
     result.append("================Other Infos================\n");
-    result.append("Need check bundle:" + std::to_string(checkBundle_) + "\n")
+    result.append("Need check bundle:" + std::to_string(checkBundle_.load()) + "\n")
         .append("Dump set memory:" + std::to_string(workPolicyManager_->GetDumpSetMemory()) + "\n")
         .append("Repeat cycle time min:" + std::to_string(workQueueManager_->GetTimeCycle()) + "\n")
         .append("Watchdog time:" + std::to_string(workPolicyManager_->GetWatchdogTime()) + "\n")
@@ -1256,6 +1259,7 @@ std::string WorkSchedulerService::DumpEffiResApplyUid()
 
 std::string WorkSchedulerService::DumpExemptionBundles()
 {
+    std::lock_guard<ffrt::mutex> lock(exemptionBundlesMutex_);
     if (exemptionBundles_.empty()) {
         return "[]";
     }
@@ -1303,6 +1307,7 @@ void WorkSchedulerService::DumpParamSet(std::string &key, std::string &value, st
 void WorkSchedulerService::RefreshPersistedWorks()
 {
     nlohmann::json root;
+    std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
     for (auto &it : persistedMap_) {
         if (it.second == nullptr) {
             WS_HILOGE("workInfo is nullptr");
@@ -1566,7 +1571,7 @@ void WorkSchedulerService::TriggerWorkIfConditionReady()
 
 int32_t WorkSchedulerService::StopDeepIdleWorks()
 {
-    if (!ready_) {
+    if (!ready_.load()) {
         WS_HILOGE("service is not ready.");
         return E_SERVICE_NOT_READY;
     }
@@ -1590,7 +1595,7 @@ int32_t WorkSchedulerService::StopDeepIdleWorks()
 
 int32_t WorkSchedulerService::SetWorkSchedulerConfig(const std::string &configData, int32_t sourceType)
 {
-    if (!ready_) {
+    if (!ready_.load()) {
         WS_HILOGE("service is not ready");
         return E_SERVICE_NOT_READY;
     }
@@ -1608,6 +1613,7 @@ bool WorkSchedulerService::IsExemptionBundle(const std::string& checkBundleName)
         WS_HILOGE("check exemption bundle error, bundleName is empty");
         return false;
     }
+    std::lock_guard<ffrt::mutex> lock(exemptionBundlesMutex_);
     auto iter = std::find_if(exemptionBundles_.begin(), exemptionBundles_.end(),
     [&](const std::string &bundleName) {
         return checkBundleName == bundleName;
@@ -1617,7 +1623,7 @@ bool WorkSchedulerService::IsExemptionBundle(const std::string& checkBundleName)
 
 bool WorkSchedulerService::LoadSa(std::shared_ptr<WorkStatus> workStatus, const std::string& action)
 {
-    if (!ready_) {
+    if (!ready_.load()) {
         WS_HILOGE("service is not ready.");
         return false;
     }
@@ -1706,7 +1712,7 @@ void WorkSchedulerService::DumpGetWorks(const std::string &uidStr, const std::st
 
 void WorkSchedulerService::HandleDeepIdleMsg(int32_t saId)
 {
-    if (!ready_) {
+    if (!ready_.load()) {
         WS_HILOGE("service is not ready.");
         return;
     }
@@ -1723,6 +1729,7 @@ bool WorkSchedulerService::IsPreinstalledBundle(const std::string& checkBundleNa
         WS_HILOGE("check preinstalled bundle error, bundleName is empty");
         return false;
     }
+    std::lock_guard<ffrt::mutex> lock(preinstalledBundlesMutex_);
     return preinstalledBundles_.find(checkBundleName) != preinstalledBundles_.end();
 }
 
