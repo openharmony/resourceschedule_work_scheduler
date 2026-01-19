@@ -150,7 +150,7 @@ WorkStatus::~WorkStatus() {}
 
 int32_t WorkStatus::OnConditionChanged(WorkCondition::Type &type, shared_ptr<Condition> value)
 {
-    conditionStatus_.clear();
+    SetConditionStatus();
     if (workInfo_->GetConditionMap()->count(type) > 0 &&
         type != WorkCondition::Type::TIMER &&
         type != WorkCondition::Type::GROUP) {
@@ -267,25 +267,25 @@ bool WorkStatus::IsUriKeySwitchOn()
 
 bool WorkStatus::IsReady()
 {
-    conditionStatus_.clear();
+    SetConditionStatus();
     if (!IsSameUser()) {
-        conditionStatus_ += DELIMITER + "notSameUser";
+        SetConditionStatus(DELIMITER + "notSameUser");
         return false;
     }
     if (IsRunning()) {
         HasTimeout();
-        conditionStatus_ += DELIMITER + "running";
+        SetConditionStatus(DELIMITER + "running");
         return false;
     }
     if (!IsConditionReady()) {
         return false;
     }
     if (!IsUriKeySwitchOn()) {
-        conditionStatus_ += DELIMITER + "uriKeyOFF";
+        SetConditionStatus(DELIMITER + "uriKeyOFF");
         return false;
     }
     if (DelayedSingleton<WorkSchedulerService>::GetInstance()->CheckEffiResApplyInfo(uid_)) {
-        conditionStatus_ += DELIMITER + "effiResWhitelist";
+        SetConditionStatus(DELIMITER + "effiResWhitelist");
         return true;
     }
     if (!g_groupDebugMode && ((!groupChanged_ && !SetMinInterval()) || minInterval_ == -1)) {
@@ -293,19 +293,20 @@ bool WorkStatus::IsReady()
             "minInterval:%{public}" PRId64 ", workId:%{public}s", bundleName_.c_str(), minInterval_, workId_.c_str());
         return false;
     }
+    std::lock_guard<ffrt::mutex> lock(s_uid_last_time_mutex);
     if (s_uid_last_time_map.find(uid_) == s_uid_last_time_map.end()) {
         // first run task
         if (CheckEarliestStartTime()) {
             WS_HILOGE("The initial startup time does not meet the EarliestStartTime requirement.");
             return false;
         }
-        conditionStatus_ += DELIMITER + "firstTrigger";
+        SetConditionStatus(DELIMITER + "firstTrigger");
         return true;
     }
     double del = difftime(getOppositeTime(), s_uid_last_time_map[uid_]);
     if (del < minInterval_) {
-        conditionStatus_ += DELIMITER + COND_TYPE_STRING_MAP[WorkCondition::Type::GROUP] + "&" + NOT_OK + "(" +
-            to_string(static_cast<long>(del)) + ":" + to_string(minInterval_) + ")";
+        SetConditionStatus(DELIMITER + COND_TYPE_STRING_MAP[WorkCondition::Type::GROUP] + "&" + NOT_OK + "(" +
+            to_string(static_cast<long>(del)) + ":" + to_string(minInterval_) + ")");
         needRetrigger_ = true;
         timeRetrigger_ = int(minInterval_ - del + ONE_SECOND);
         return false;
@@ -318,7 +319,7 @@ bool WorkStatus::IsReady()
 
 bool WorkStatus::IsSAReady()
 {
-    conditionStatus_.clear();
+    SetConditionStatus();
     if (!IsStandbyExemption()) {
         return false;
     }
@@ -332,17 +333,17 @@ bool WorkStatus::IsSAReady()
 bool WorkStatus::IsConditionReady()
 {
     auto workConditionMap = workInfo_->GetConditionMap();
-    std::lock_guard<ffrt::mutex> lock(s_uid_last_time_mutex);
+    std::lock_guard<ffrt::mutex> lock(conditionMapMutex_);
     bool isReady = true;
     for (auto it : *workConditionMap) {
         if (conditionMap_.count(it.first) <= 0) {
-            conditionStatus_ += DELIMITER + COND_TYPE_STRING_MAP[it.first] + "&" + NOT_OK;
+            SetConditionStatus(DELIMITER + COND_TYPE_STRING_MAP[it.first] + "&" + NOT_OK);
             isReady = false;
             break;
         }
         if (!IsBatteryAndNetworkReady(it.first) || !IsStorageReady(it.first) ||
             !IsChargerReady(it.first) || !IsNapReady(it.first)) {
-            conditionStatus_ += DELIMITER + COND_TYPE_STRING_MAP[it.first] + "&" + NOT_OK;
+            SetConditionStatus(DELIMITER + COND_TYPE_STRING_MAP[it.first] + "&" + NOT_OK);
             isReady = false;
             break;
         }
@@ -350,7 +351,7 @@ bool WorkStatus::IsConditionReady()
             isReady = false;
             break;
         }
-        conditionStatus_ += DELIMITER + COND_TYPE_STRING_MAP[it.first] + "&" + OK;
+        SetConditionStatus(DELIMITER + COND_TYPE_STRING_MAP[it.first] + "&" + OK);
     }
     return isReady;
 }
@@ -458,8 +459,8 @@ bool WorkStatus::IsTimerReady(WorkCondition::Type type)
     double oppositedel = difftime(getOppositeTime(), lastTime);
     double del = currentdel > oppositedel ? currentdel : oppositedel;
     if (del < intervalTime) {
-        conditionStatus_ += DELIMITER + COND_TYPE_STRING_MAP[type] + "&" + NOT_OK + "(" +
-            to_string(static_cast<long>(del)) + ":" + to_string(intervalTime) + ")";
+        SetConditionStatus(DELIMITER + COND_TYPE_STRING_MAP[type] + "&" + NOT_OK + "(" +
+            to_string(static_cast<long>(del)) + ":" + to_string(intervalTime) + ")");
         return false;
     }
     return true;
@@ -765,21 +766,21 @@ void WorkStatus::ToString(WorkCondition::Type type)
     auto dataManager = DelayedSingleton<DataManager>::GetInstance();
     if (dataManager->GetDeviceSleep()) {
         if (dataManager->IsInDeviceStandyWhitelist(bundleName_)) {
-            conditionStatus_ += DELIMITER + COND_TYPE_STRING_MAP[WorkCondition::Type::STANDBY] + "&" + OK;
+            SetConditionStatus(DELIMITER + COND_TYPE_STRING_MAP[WorkCondition::Type::STANDBY] + "&" + OK);
         } else {
-            conditionStatus_ += DELIMITER + COND_TYPE_STRING_MAP[WorkCondition::Type::STANDBY] + "&" + NOT_OK;
+            SetConditionStatus(DELIMITER + COND_TYPE_STRING_MAP[WorkCondition::Type::STANDBY] + "&" + NOT_OK);
         }
     }
-    if (type != WorkCondition::Type::GROUP && conditionStatus_.empty()) {
+    if (type != WorkCondition::Type::GROUP && conditionStatus_.load()->empty()) {
         WS_HILOGE("%{public}s, condition is empty", COND_TYPE_STRING_MAP[type].c_str());
         return;
     }
     if (workInfo_->IsSA()) {
         WS_HILOGI("%{public}s,%{public}s%{public}s", COND_TYPE_STRING_MAP[type].c_str(),
-            workId_.c_str(), conditionStatus_.c_str());
+            workId_.c_str(), conditionStatus_.load()->c_str());
     } else {
         WS_HILOGI("%{public}s,%{public}s_%{public}s%{public}s", COND_TYPE_STRING_MAP[type].c_str(),
-            bundleName_.c_str(), workId_.c_str(), conditionStatus_.c_str());
+            bundleName_.c_str(), workId_.c_str(), conditionStatus_.load()->c_str());
     }
 }
 
@@ -877,6 +878,21 @@ bool WorkStatus::IsNeedDiscreteScheduled()
         return false;
     }
     return true;
+}
+
+void WorkStatus::SetConditionStatus()
+{
+    std::string* newConditionStatus = new std::string("");
+    std::string* oldConditionStatus = conditionStatus_.exchange(newConditionStatus);
+    delete oldConditionStatus;
+}
+
+void WorkStatus::SetConditionStatus(std::string condition)
+{
+    std::string conditionStatus = *conditionStatus_.load() + condition;
+    std::string* newConditionStatus = new std::string(conditionStatus);
+    std::string* oldConditionStatus = conditionStatus_.exchange(newConditionStatus);
+    delete oldConditionStatus;
 }
 } // namespace WorkScheduler
 } // namespace OHOS
