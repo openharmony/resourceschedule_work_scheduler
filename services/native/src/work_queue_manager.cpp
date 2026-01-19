@@ -155,7 +155,10 @@ void WorkQueueManager::ClearTimeOutWorkStatus()
         shared_ptr<WorkQueue> workQueue = it.second;
         auto workList = workQueue->GetWorkList();
         for (auto work : workList) {
-            if (!work->IsTimeout()) {
+            if (work->IsRepeating() && !work->IsTimeout()) {
+                continue;
+            }
+            if (!work->IsRepeating() && !work->HasTimeout()) {
                 continue;
             }
             if (allWorkIds.count(work->workId_) != 0) {
