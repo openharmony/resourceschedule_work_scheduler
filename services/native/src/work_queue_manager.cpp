@@ -311,6 +311,7 @@ int32_t WorkQueueManager::GetTimeRetrigger()
 
 void WorkQueueManager::SetMinIntervalByDump(int64_t interval)
 {
+    std::lock_guard<ffrt::mutex> lock(mutex_);
     for (auto it : queueMap_) {
         it.second->SetMinIntervalByDump(interval);
     }

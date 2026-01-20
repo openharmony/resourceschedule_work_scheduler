@@ -293,6 +293,7 @@ bool WorkStatus::IsReady()
             "minInterval:%{public}" PRId64 ", workId:%{public}s", bundleName_.c_str(), minInterval_, workId_.c_str());
         return false;
     }
+    std::lock_guard<ffrt::mutex> lock(s_uid_last_time_mutex);
     if (s_uid_last_time_map.find(uid_) == s_uid_last_time_map.end()) {
         // first run task
         if (CheckEarliestStartTime()) {
@@ -332,7 +333,7 @@ bool WorkStatus::IsSAReady()
 bool WorkStatus::IsConditionReady()
 {
     auto workConditionMap = workInfo_->GetConditionMap();
-    std::lock_guard<ffrt::mutex> lock(s_uid_last_time_mutex);
+    std::lock_guard<ffrt::mutex> lock(conditionMapMutex_);
     bool isReady = true;
     for (auto it : *workConditionMap) {
         if (conditionMap_.count(it.first) <= 0) {
