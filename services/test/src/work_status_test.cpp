@@ -1032,11 +1032,11 @@ HWTEST_F(WorkStatusTest, IsSAReady_0014, TestSize.Level1)
  */
 HWTEST_F(WorkStatusTest, ToString_001, TestSize.Level1)
 {
-    workStatus_->conditionStatus_.clear();
+    workStatus_->SetConditionStatus();
     std::shared_ptr<DataManager> dataManager = DelayedSingleton<DataManager>::GetInstance();
     dataManager->SetDeviceSleep(false);
     workStatus_->ToString(WorkCondition::Type::TIMER);
-    EXPECT_TRUE(workStatus_->conditionStatus_.empty());
+    EXPECT_TRUE(workStatus_->conditionStatus_.load()->empty());
 }
 
 /**
@@ -1047,14 +1047,14 @@ HWTEST_F(WorkStatusTest, ToString_001, TestSize.Level1)
  */
 HWTEST_F(WorkStatusTest, ToString_002, TestSize.Level1)
 {
-    workStatus_->conditionStatus_.clear();
+    workStatus_->SetConditionStatus();
     std::shared_ptr<DataManager> dataManager = DelayedSingleton<DataManager>::GetInstance();
     dataManager->SetDeviceSleep(false);
-    workStatus_->conditionStatus_ = "TIMER&ready";
+    workStatus_->SetConditionStatus("TIMER&ready");
     workStatus_->workInfo_->saId_ = 1000;
     workStatus_->workInfo_->residentSa_ = true;
     workStatus_->ToString(WorkCondition::Type::TIMER);
-    EXPECT_FALSE(workStatus_->conditionStatus_.empty());
+    EXPECT_FALSE(workStatus_->conditionStatus_.load()->empty());
 }
 
 /**
@@ -1065,12 +1065,12 @@ HWTEST_F(WorkStatusTest, ToString_002, TestSize.Level1)
  */
 HWTEST_F(WorkStatusTest, ToString_003, TestSize.Level1)
 {
-    workStatus_->conditionStatus_.clear();
+    workStatus_->SetConditionStatus();
     std::shared_ptr<DataManager> dataManager = DelayedSingleton<DataManager>::GetInstance();
     dataManager->SetDeviceSleep(false);
-    workStatus_->conditionStatus_ = "TIMER&ready";
+    workStatus_->SetConditionStatus("TIMER&ready");
     workStatus_->ToString(WorkCondition::Type::TIMER);
-    EXPECT_FALSE(workStatus_->conditionStatus_.empty());
+    EXPECT_FALSE(workStatus_->conditionStatus_.load()->empty());
 }
 
 /**
