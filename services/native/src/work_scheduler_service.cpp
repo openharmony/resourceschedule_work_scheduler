@@ -377,7 +377,6 @@ void WorkSchedulerService::LoadMinRepeatTimeFromFile(const char *path)
         return;
     }
     minCheckTime_ = workQueueManager_->GetTimeCycle();
-    std::lock_guard<ffrt::mutex> lock(specialMutex_);
     for (const auto &it : specialRoot) {
         if (!it.contains("bundleName") || !it["bundleName"].is_string() ||
             !it.contains("time") || !it["time"].is_number_unsigned()) {
@@ -1257,7 +1256,6 @@ std::string WorkSchedulerService::DumpEffiResApplyUid()
 
 std::string WorkSchedulerService::DumpExemptionBundles()
 {
-    std::lock_guard<ffrt::mutex> lock(mutex_);
     if (exemptionBundles_.empty()) {
         return "[]";
     }
@@ -1610,7 +1608,6 @@ bool WorkSchedulerService::IsExemptionBundle(const std::string& checkBundleName)
         WS_HILOGE("check exemption bundle error, bundleName is empty");
         return false;
     }
-    std::lock_guard<ffrt::mutex> lock(mutex_);
     auto iter = std::find_if(exemptionBundles_.begin(), exemptionBundles_.end(),
     [&](const std::string &bundleName) {
         return checkBundleName == bundleName;
@@ -1726,7 +1723,6 @@ bool WorkSchedulerService::IsPreinstalledBundle(const std::string& checkBundleNa
         WS_HILOGE("check preinstalled bundle error, bundleName is empty");
         return false;
     }
-    std::lock_guard<ffrt::mutex> lock(mutex_);
     return preinstalledBundles_.find(checkBundleName) != preinstalledBundles_.end();
 }
 
