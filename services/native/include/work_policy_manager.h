@@ -347,7 +347,7 @@ private:
 
     uint32_t watchdogId_;
     int32_t dumpSetMemory_;
-    std::atomic<int32_t> watchdogTime_;
+    std::atomic<int32_t> watchdogTime_ {WATCHDOG_TIME};
     int32_t dumpSetCpu_;
     int32_t dumpSetMaxRunningCount_;
 
