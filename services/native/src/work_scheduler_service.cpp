@@ -213,8 +213,8 @@ void WorkSchedulerService::InitPersistedWork()
 void WorkSchedulerService::InitPreinstalledWork()
 {
     WS_HILOGD("init preinstalled work");
-    list<shared_ptr<WorkInfo>> preinstalledWorks = ReadPreinstalledWorks();
     std::lock_guard<ffrt::mutex> lock(mutex_);
+    list<shared_ptr<WorkInfo>> preinstalledWorks = ReadPreinstalledWorks();
     for (auto work : preinstalledWorks) {
         WS_HILOGI("preinstalled workinfo id %{public}s, isSa:%{public}d", work->GetBriefInfo().c_str(), work->IsSA());
         time_t baseTime;
