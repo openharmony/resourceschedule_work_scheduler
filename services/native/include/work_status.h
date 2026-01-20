@@ -225,7 +225,7 @@ private:
     ffrt::mutex conditionMapMutex_;
     static ffrt::mutex s_uid_last_time_mutex;
     static std::map<int32_t, time_t> s_uid_last_time_map;
-    std::string conditionStatus_;
+    std::atomic<std::string*> conditionStatus_ {new std::string("")};
     std::atomic<bool> timeout_ {false};
     void MarkTimeout();
     bool IsSameUser();
@@ -239,6 +239,8 @@ private:
     bool IsConditionReady();
     bool IsStandbyExemption();
     bool CheckEarliestStartTime();
+    void SetConditionStatus();
+    void SetConditionStatus(std::string condition);
 };
 } // namespace WorkScheduler
 } // namespace OHOS
