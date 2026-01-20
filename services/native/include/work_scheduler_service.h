@@ -383,7 +383,7 @@ private:
 #endif
     std::shared_ptr<WorkQueueManager> workQueueManager_;
     std::shared_ptr<WorkPolicyManager> workPolicyManager_;
-    ffrt::recursive_mutex mutex_;
+    ffrt::mutex mutex_;
     ffrt::mutex observerMutex_;
     std::map<std::string, std::shared_ptr<WorkInfo>> persistedMap_;
     std::atomic<bool> ready_ {false};

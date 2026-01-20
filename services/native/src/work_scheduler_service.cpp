@@ -201,7 +201,7 @@ WEAK_FUNC bool WorkSchedulerService::IsBaseAbilityReady()
 void WorkSchedulerService::InitPersistedWork()
 {
     WS_HILOGD("init persisted work");
-    std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
+    std::lock_guard<ffrt::mutex> lock(mutex_);
     list<shared_ptr<WorkInfo>> persistedWorks = ReadPersistedWorks();
     for (auto it : persistedWorks) {
         WS_HILOGI("get persisted work, id: %{public}d, isSa:%{public}d", it->GetWorkId(), it->IsSA());
@@ -214,7 +214,7 @@ void WorkSchedulerService::InitPreinstalledWork()
 {
     WS_HILOGD("init preinstalled work");
     list<shared_ptr<WorkInfo>> preinstalledWorks = ReadPreinstalledWorks();
-    std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
+    std::lock_guard<ffrt::mutex> lock(mutex_);
     for (auto work : preinstalledWorks) {
         WS_HILOGI("preinstalled workinfo id %{public}s, isSa:%{public}d", work->GetBriefInfo().c_str(), work->IsSA());
         time_t baseTime;
@@ -308,7 +308,6 @@ void WorkSchedulerService::LoadWorksFromFile(const char *path, list<shared_ptr<W
                 continue;
             }
             workinfo->RefreshUid(uid);
-            std::lock_guard<ffrt::mutex> lock(preinstalledBundlesMutex_);
             preinstalledBundles_.insert(workinfo->GetBundleName());
         }
         workinfo->SetPreinstalled(true);
@@ -336,7 +335,6 @@ void WorkSchedulerService::LoadExemptionBundlesFromFile(const char *path)
         return;
     }
 
-    std::lock_guard<ffrt::mutex> lock(exemptionBundlesMutex_);
     for (const auto &exemptionBundleName : exemptionBundlesRoot) {
         if (exemptionBundleName.empty() || !exemptionBundleName.is_string()) {
             WS_HILOGE("Item type error");
@@ -743,7 +741,7 @@ int32_t WorkSchedulerService::StartWorkInner(const WorkInfo& workInfo, int32_t u
     if (ret == ERR_OK) {
         workQueueManager_->AddWork(workStatus);
         if (workInfo_.IsPersisted()) {
-            std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
+            std::lock_guard<ffrt::mutex> lock(mutex_);
             workStatus->workInfo_->RefreshUid(uid);
             persistedMap_.emplace(workStatus->workId_, workStatus->workInfo_);
             RefreshPersistedWorks();
@@ -856,7 +854,7 @@ int32_t WorkSchedulerService::StopAndCancelWork(const WorkInfo& workInfo)
     }
     StopWorkInner(workStatus, uid, true, false);
     if (workStatus->persisted_) {
-        std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
+        std::lock_guard<ffrt::mutex> lock(mutex_);
         persistedMap_.erase(workStatus->workId_);
         RefreshPersistedWorks();
     }
@@ -904,7 +902,7 @@ bool WorkSchedulerService::StopAndClearWorksByUid(int32_t uid)
     bool ret = workQueueManager_->StopAndClearWorks(allWorks)
         && workPolicyManager_->StopAndClearWorks(uid);
     if (ret) {
-        std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
+        std::lock_guard<ffrt::mutex> lock(mutex_);
         for (auto workId : workIdList) {
             if (persistedMap_.count(workId) != 0) {
                 persistedMap_.erase(workId);
@@ -1307,7 +1305,6 @@ void WorkSchedulerService::DumpParamSet(std::string &key, std::string &value, st
 void WorkSchedulerService::RefreshPersistedWorks()
 {
     nlohmann::json root;
-    std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
     for (auto &it : persistedMap_) {
         if (it.second == nullptr) {
             WS_HILOGE("workInfo is nullptr");
