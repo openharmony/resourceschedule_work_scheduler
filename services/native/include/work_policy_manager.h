@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -347,7 +347,7 @@ private:
 
     uint32_t watchdogId_;
     int32_t dumpSetMemory_;
-    int32_t watchdogTime_;
+    std::atomic<int32_t> watchdogTime_ {WATCHDOG_TIME};
     int32_t dumpSetCpu_;
     int32_t dumpSetMaxRunningCount_;
 

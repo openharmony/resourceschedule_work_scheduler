@@ -46,7 +46,7 @@ WorkPolicyManager::WorkPolicyManager(const std::shared_ptr<WorkSchedulerService>
     conditionReadyQueue_ = std::make_shared<WorkQueue>();
     watchdogId_ = INIT_WATCHDOG_ID;
     dumpSetMemory_ = INIT_DUMP_SET_MEMORY;
-    watchdogTime_ = WATCHDOG_TIME;
+    watchdogTime_.store(WATCHDOG_TIME);
     dumpSetCpu_ = INIT_DUMP_SET_CPU;
     dumpSetMaxRunningCount_ = INVALID_VALUE;
 }
@@ -565,10 +565,10 @@ void WorkPolicyManager::AddWatchdogForWork(std::shared_ptr<WorkStatus> workStatu
 {
     uint32_t watchId = NewWatchdogId();
     WS_HILOGI("AddWatchdog, watchId:%{public}u, bundleName:%{public}s, workId:%{public}s, watchdogTime:%{public}d",
-        watchId, workStatus->bundleName_.c_str(), workStatus->workId_.c_str(), watchdogTime_);
-    watchdog_->AddWatchdog(watchId, watchdogTime_);
+        watchId, workStatus->bundleName_.c_str(), workStatus->workId_.c_str(), watchdogTime_.load());
+    watchdog_->AddWatchdog(watchId, watchdogTime_.load());
     workStatus->workStartTime_ = WorkSchedUtils::GetCurrentTimeMs();
-    workStatus->workWatchDogTime_ = static_cast<uint64_t>(watchdogTime_);
+    workStatus->workWatchDogTime_ = static_cast<uint64_t>(watchdogTime_.load());
     std::lock_guard<ffrt::mutex> lock(watchdogIdMapMutex_);
     watchdogIdMap_.emplace(watchId, workStatus);
 }
@@ -745,18 +745,18 @@ void WorkPolicyManager::SetMaxRunningCountByDump(int32_t count)
 void WorkPolicyManager::SetWatchdogTimeByDump(int32_t time)
 {
     WS_HILOGD("Set watchdog time by dump to %{public}d", time);
-    watchdogTime_ = time == 0 ? WATCHDOG_TIME : time;
-    g_lastWatchdogTime = watchdogTime_;
+    watchdogTime_.store(time == 0 ? WATCHDOG_TIME : time);
+    g_lastWatchdogTime = watchdogTime_.load();
 }
 
 void WorkPolicyManager::SetWatchdogTime(int32_t time)
 {
-    watchdogTime_ = time;
+    watchdogTime_.store(time);
 }
 
 int32_t WorkPolicyManager::WorkPolicyManager::GetWatchdogTime()
 {
-    return watchdogTime_;
+    return watchdogTime_.load();
 }
 
 void WorkPolicyManager::DumpCheckIdeWorkToRun(const std::string &bundleName, const std::string &abilityName)
@@ -810,10 +810,10 @@ void WorkPolicyManager::TriggerIdeWork()
     bool ret = workConnManager_->StartWork(topWork);
     if (ret) {
         WS_HILOGI("TriggerIdeWork ok");
-        int time = watchdogTime_;
-        watchdogTime_ = g_lastWatchdogTime;
+        int time = watchdogTime_.load();
+        watchdogTime_.store(g_lastWatchdogTime);
         AddWatchdogForWork(topWork);
-        watchdogTime_ = time;
+        watchdogTime_.store(time);
     } else {
         WS_HILOGE("TriggerIdeWork error");
         ideDebugList.clear();

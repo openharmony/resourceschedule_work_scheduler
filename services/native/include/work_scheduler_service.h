@@ -386,10 +386,10 @@ private:
     ffrt::mutex mutex_;
     ffrt::mutex observerMutex_;
     std::map<std::string, std::shared_ptr<WorkInfo>> persistedMap_;
-    bool ready_ {false};
+    std::atomic<bool> ready_ {false};
     std::shared_ptr<WorkEventHandler> handler_;
     std::shared_ptr<AppExecFwk::EventRunner> eventRunner_;
-    bool checkBundle_ {true};
+    std::atomic<bool> checkBundle_ {true};
     std::set<std::string> exemptionBundles_;
     std::set<std::string> preinstalledBundles_;
 #ifdef DEVICE_USAGE_STATISTICS_ENABLE
