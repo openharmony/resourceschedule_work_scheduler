@@ -154,9 +154,8 @@ void ScreenListener::StartTimer()
         }
         WS_HILOGI("SA %{public}d start timer with time %{public}d", entry.first, entry.second.time_);
         auto timerInfo = std::make_shared<TimerInfo>();
-        uint8_t type = static_cast<uint8_t>(timerInfo->TIMER_TYPE_EXACT) |
-            static_cast<uint8_t>(timerInfo->TIMER_TYPE_REALTIME);
-        timerInfo->SetType(static_cast<int>(type));
+        int32_t type = timerInfo->TIMER_TYPE_EXACT | timerInfo->TIMER_TYPE_REALTIME;
+        timerInfo->SetType(type);
         timerInfo->SetRepeat(false);
         timerInfo->SetInterval(entry.second.time_);
         timerInfo->SetCallbackInfo([saId = entry.first, weak = weak_from_this()]() {
