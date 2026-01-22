@@ -244,7 +244,7 @@ bool Common::GetRepeatInfo(
         if (repeatCount <= 0) {
             workInfo.RequestRepeatCycle(repeatCycleTime);
         } else {
-            WS_HILOGI("RepeatCount has set, ignore isRepeat.");
+            WS_HILOGI("repeatCount has set, ignore isRepeat.");
             workInfo.RequestRepeatCycle(repeatCycleTime, repeatCount);
         }
         return true;
