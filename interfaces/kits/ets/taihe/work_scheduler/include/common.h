@@ -28,7 +28,7 @@ public:
     static std::string FindErrMsg(const int32_t errCode);
     static bool GetExtrasInfo(
         ::ohos::resourceschedule::workScheduler::WorkInfo const &aniWork, OHOS::WorkScheduler::WorkInfo &workInfo);
-    static bool GetNetWorkInfo(
+    static bool GetNetworkInfo(
         ::ohos::resourceschedule::workScheduler::WorkInfo const &aniWork, OHOS::WorkScheduler::WorkInfo &workInfo);
     static bool GetChargeInfo(
         ::ohos::resourceschedule::workScheduler::WorkInfo const &aniWork, OHOS::WorkScheduler::WorkInfo &workInfo);
