@@ -115,7 +115,7 @@ bool Common::GetExtrasInfo(
     return true;
 }
 
-bool Common::GetNetWorkInfo(
+bool Common::GetNetworkInfo(
     ::ohos::resourceschedule::workScheduler::WorkInfo const &aniWork, OHOS::WorkScheduler::WorkInfo &workInfo)
 {
     if (!aniWork.networkType.has_value()) {
@@ -156,6 +156,7 @@ bool Common::GetChargeInfo(
             workInfo.RequestChargerType(true, WorkCondition::Charger::CHARGING_PLUGGED_ANY);
             WS_HILOGE("ChargeType info is invalid, just ignore set.");
             set_business_error(E_CHARGER_TYPE_ERR, FindErrMsg(E_CHARGER_TYPE_ERR));
+            return false;
         }
     }
     return true;
@@ -230,21 +231,22 @@ bool Common::GetRepeatInfo(
 
     auto repeatCycleTime = aniWork.repeatCycleTime.value();
     auto repeatCount = aniWork.repeatCount.value();
-    if (aniWork.isRepeat.value()) {
-        if (repeatCount > 0) {
-            WS_HILOGI("RepeatCount has been set , ignore isRepeat.");
-            workInfo.RequestRepeatCycle(repeatCycleTime, repeatCount);
-        } else {
-            workInfo.RequestRepeatCycle(repeatCycleTime);
-        }
-        return true;
-    } else {
+    bool isRepeat = aniWork.isRepeat.has_value() ? aniWork.isRepeat.value() : false;
+    if (!isRepeat) {
         if (repeatCount < 0) {
-            WS_HILOGE("RepeatCount is invalid, ignore.");
+            WS_HILOGE("repeatCount is invalid.");
             set_business_error(E_REPEAT_COUNT_ERR, FindErrMsg(E_REPEAT_COUNT_ERR));
             return false;
         }
         workInfo.RequestRepeatCycle(repeatCycleTime, repeatCount);
+        return true;
+    } else {
+        if (repeatCount <= 0) {
+            workInfo.RequestRepeatCycle(repeatCycleTime);
+        } else {
+            WS_HILOGI("repeatCount has set, ignore isRepeat.");
+            workInfo.RequestRepeatCycle(repeatCycleTime, repeatCount);
+        }
         return true;
     }
 }
@@ -273,7 +275,7 @@ bool Common::GetWorkInfo(
     }
     // Get condition info.
     bool hasConditions = false;
-    if (GetNetWorkInfo(aniWork, workInfo)) {
+    if (GetNetworkInfo(aniWork, workInfo)) {
         hasConditions = true;
     }
     if (GetChargeInfo(aniWork, workInfo)) {
