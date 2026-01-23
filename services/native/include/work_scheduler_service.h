@@ -359,7 +359,7 @@ private:
     void InitWorkInner();
     void AddWorkInner(WorkInfo& workInfo);
     std::list<std::shared_ptr<WorkInfo>> ReadPreinstalledWorks();
-    void LoadWorksFromFile(const char *path, std::list<std::shared_ptr<WorkInfo>> &workInfos);
+    void LoadWorksFromFile(const char *path, std::list<std::shared_ptr<WorkInfo>>& workInfos);
     void LoadExemptionBundlesFromFile(const char *path);
     void InitPersistedWork();
     bool CheckProcessName();
