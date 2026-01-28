@@ -1,4 +1,4 @@
-# Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+# Copyright (c) 2022-2026 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -18,7 +18,10 @@ config("worksched_private_config") {
 }
 
 config("worksched_public_config") {
-  include_dirs = [ "include" ]
+  include_dirs = [
+    "include",
+    "${worksched_taihe_path}/work_scheduler_extension/include",
+  ]
 }
 
 ohos_shared_library("workschedextension") {
@@ -37,7 +40,10 @@ ohos_shared_library("workschedextension") {
     "-Os",
   ]
   sources = [
+    "${worksched_service_path}/zidl/src/work_scheduler_stub_ani.cpp",
     "${worksched_service_path}/zidl/src/work_scheduler_stub_imp.cpp",
+    "${worksched_taihe_path}/work_scheduler_extension/src/ani_work_scheduler_extension.cpp",
+    "${worksched_taihe_path}/work_scheduler_extension/src/ani_work_scheduler_extension_context.cpp",
     "src/js_work_scheduler_extension.cpp",
     "src/js_work_scheduler_extension_context.cpp",
     "src/work_scheduler_extension.cpp",
@@ -51,6 +57,7 @@ ohos_shared_library("workschedextension") {
 
   deps = [
     "${worksched_frameworks_path}:workschedclient",
+    "${worksched_taihe_path}/work_scheduler_extension:workschedulerextension_ani",
     "${worksched_utils_path}:workschedutils",
     "${worksched_zidl_path}:workschedservice_zidl_stub",
   ]
@@ -61,6 +68,7 @@ ohos_shared_library("workschedextension") {
     "ability_runtime:ability_manager",
     "ability_runtime:abilitykit_native",
     "ability_runtime:app_context",
+    "ability_runtime:ani_common",
     "ability_runtime:extensionkit_native",
     "ability_runtime:napi_common",
     "ability_runtime:runtime",
@@ -72,6 +80,8 @@ ohos_shared_library("workschedextension") {
     "ipc:ipc_napi",
     "ipc:ipc_single",
     "napi:ace_napi",
+    "runtime_core:ani",
+    "runtime_core:ani_helpers",
   ]
 
   relative_install_dir = "extensionability"

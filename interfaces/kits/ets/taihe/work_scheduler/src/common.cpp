@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -32,6 +32,7 @@ const int32_t BATTERY_LEVEL_MIN = 0;
 const int32_t BATTERY_LEVEL_MAX = 100;
 const int32_t TRUE_PARAM = 1;
 const int32_t UNSET_INT_PARAM = -1;
+const std::string UNSET_STRING_PARAM = "";
 // need to be same as WantParams
 enum {
     VALUE_TYPE_NULL = -1,
@@ -69,6 +70,36 @@ std::string Common::FindErrMsg(const int32_t errCode)
         return errMessage;
     }
     return "Inner error.";
+}
+
+bool Common::GetBaseWorkInfo(
+    ::ohos::resourceschedule::workScheduler::WorkInfo const &aniWork, OHOS::WorkScheduler::WorkInfo &workInfo)
+{
+    int32_t workId = aniWork.workId;
+    if (workId == UNSET_INT_PARAM || workId < 0) {
+        WS_HILOGE("Work id is invalid, failed.");
+        set_business_error(Common::FindErrCode(E_WORKID_ERR), Common::FindErrMsg(E_WORKID_ERR));
+        return false;
+    }
+    workInfo.SetWorkId(workId);
+ 
+    std::string bundleName = std::string(aniWork.bundleName);
+    std::string abilityName = std::string(aniWork.abilityName);
+    if (bundleName == UNSET_STRING_PARAM || abilityName == UNSET_STRING_PARAM) {
+        WS_HILOGE("BundleName or abilityName is invalid, failed.");
+        set_business_error(Common::FindErrCode(E_BUNDLE_OR_ABILITY_NAME_ERR),
+            Common::FindErrMsg(E_BUNDLE_OR_ABILITY_NAME_ERR));
+        return false;
+    }
+    workInfo.SetElement(std::string(aniWork.bundleName), std::string(aniWork.abilityName));
+    workInfo.RequestPersisted(aniWork.isPersisted.has_value() ? aniWork.isPersisted.value() : false);
+ 
+    int32_t earliestStartTime = 0;
+    if (aniWork.earliestStartTime.has_value() && (aniWork.earliestStartTime.value() > 0)) {
+        earliestStartTime = aniWork.earliestStartTime.value();
+    }
+    workInfo.SetEarliestStartTime(earliestStartTime);
+    return true;
 }
 
 bool Common::GetExtrasInfo(
@@ -266,9 +297,9 @@ bool Common::GetDeepIdleInfo(
 bool Common::GetWorkInfo(
     ::ohos::resourceschedule::workScheduler::WorkInfo const &aniWork, OHOS::WorkScheduler::WorkInfo &workInfo)
 {
-    workInfo.SetWorkId(aniWork.workId);
-    workInfo.SetElement(std::string(aniWork.bundleName), std::string(aniWork.abilityName));
-    workInfo.RequestPersisted(aniWork.isPersisted.has_value() ? aniWork.isPersisted.value() : false);
+    if (!GetBaseWorkInfo(aniWork, workInfo)) {
+        return false;
+    }
     // Get extra parameters.
     if (!GetExtrasInfo(aniWork, workInfo)) {
         return false;
@@ -396,6 +427,7 @@ void Common::ParseWorkInfo(std::shared_ptr<OHOS::WorkScheduler::WorkInfo> workIn
     aniWork.repeatCount = optional<int32_t>(std::in_place, workInfo->GetCycleCount());
     aniWork.isDeepIdle = optional<bool>(std::in_place, false);
     aniWork.idleWaitTime = optional<int32_t>(std::in_place, UNSET_INT_PARAM);
+    aniWork.earliestStartTime = optional<int32_t>(std::in_place, workInfo->GetEarliestStartTime());
     ParseExtrasInfo(workInfo, aniWork);
 }
 }  // namespace WorkScheduler

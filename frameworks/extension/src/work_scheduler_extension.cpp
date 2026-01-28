@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,7 +14,7 @@
  */
 
 #include "work_scheduler_extension.h"
-
+#include "ani_work_scheduler_extension.h"
 #include "js_work_scheduler_extension.h"
 
 namespace OHOS {
@@ -27,6 +27,8 @@ WorkSchedulerExtension* WorkSchedulerExtension::Create(const std::unique_ptr<Abi
     switch (runtime->GetLanguage()) {
         case AbilityRuntime::Runtime::Language::JS:
             return JsWorkSchedulerExtension::Create(runtime);
+        case AbilityRuntime::Runtime::Language::ETS:
+            return AniWorkSchedulerExtension::Create(runtime);
         default:
             return (new (std::nothrow) WorkSchedulerExtension());
     }
