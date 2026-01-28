@@ -131,7 +131,7 @@ void AniWorkSchedulerExtension::BindContext(ani_env*env, std::shared_ptr<AAFwk::
     arkts::ani_signature::Type className =
         arkts::ani_signature::Builder::BuildClass(WORKSCHEDULERABILITY_CLS);
     if ((env->FindClass(className.Descriptor().c_str(), &cls)) != ANI_OK) {
-        WS_HILOGE("FindClass error: accessibility extension");
+        WS_HILOGE("FindClass failed.");
         return;
     }
     auto status = env->Class_FindField(cls, "context", &contextField);
