@@ -229,7 +229,7 @@ void AniWorkSchedulerExtension::OnWorkStart(WorkInfo& workInfo)
     int32_t batteryLevel = workInfo.GetBatteryLevel();
     WorkCondition::BatteryStatus batteryStatus = workInfo.GetBatteryStatus();
     WorkCondition::Storage storageLevel = workInfo.GetStorageLevel();
-    int32_t timeInterval = workInfo.GetTimeInterval();
+    int32_t timeInterval = static_cast<int32_t>(workInfo.GetTimeInterval());
     bool isRepeat = workInfo.IsRepeat();
     int32_t cycleCount = workInfo.GetCycleCount();
     WorkCondition::DeepIdle deepIdleValue = workInfo.GetDeepIdle();
@@ -278,7 +278,7 @@ void AniWorkSchedulerExtension::OnWorkStop(WorkInfo& workInfo)
     int32_t batteryLevel = workInfo.GetBatteryLevel();
     WorkCondition::BatteryStatus batteryStatus = workInfo.GetBatteryStatus();
     WorkCondition::Storage storageLevel = workInfo.GetStorageLevel();
-    int32_t timeInterval = workInfo.GetTimeInterval();
+    int32_t timeInterval = static_cast<int32_t>(workInfo.GetTimeInterval());
     bool isRepeat = workInfo.IsRepeat();
     int32_t cycleCount = workInfo.GetCycleCount();
     WorkCondition::DeepIdle deepIdleValue = workInfo.GetDeepIdle();
