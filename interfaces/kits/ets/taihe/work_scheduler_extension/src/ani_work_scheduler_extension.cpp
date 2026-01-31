@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 #include "ani_work_scheduler_extension.h"
 #include <string>
 #include "runtime.h"
@@ -24,7 +24,7 @@
 #include "work_sched_hilog.h"
 #include <ani_signature_builder.h>
 #include "ani_utils.h"
- 
+
 namespace OHOS {
 namespace WorkScheduler {
 using namespace arkts::ani_signature;
@@ -34,16 +34,16 @@ constexpr const char* WORKSCHEDULER_WORKINFO_CLS =
     "@ohos.resourceschedule.workScheduler.workScheduler.WorkInfoInner";
 constexpr const char* CLASSNAME_BOOLEAN = "std.core.Boolean";
 constexpr const char* CLASSNAME_INT = "std.core.Int";
- 
+
 AniWorkSchedulerExtension* AniWorkSchedulerExtension::Create(const std::unique_ptr<AbilityRuntime::Runtime>& runtime)
 {
     WS_HILOGI("AniWorkSchedulerExtension begin Create");
     return new (std::nothrow) AniWorkSchedulerExtension(static_cast<AbilityRuntime::ETSRuntime&>(*runtime));
 }
- 
+
 AniWorkSchedulerExtension::AniWorkSchedulerExtension(AbilityRuntime::ETSRuntime &etsRuntime)
     : etsRuntime_(etsRuntime) {}
- 
+
 AniWorkSchedulerExtension::~AniWorkSchedulerExtension()
 {
     WS_HILOGD("Ani WorkScheduler extension destructor.");
@@ -52,7 +52,7 @@ AniWorkSchedulerExtension::~AniWorkSchedulerExtension()
         context->Unbind();
     }
 }
- 
+
 void AniWorkSchedulerExtension::Init(const std::shared_ptr<AppExecFwk::AbilityLocalRecord>& record,
     const std::shared_ptr<AppExecFwk::OHOSApplication>& application,
     std::shared_ptr<AppExecFwk::AbilityHandler>& handler, const sptr<IRemoteObject>& token)
@@ -78,7 +78,7 @@ void AniWorkSchedulerExtension::Init(const std::shared_ptr<AppExecFwk::AbilityLo
     }
     BindContext(env_, record->GetWant(), application);
 }
- 
+
 bool AniWorkSchedulerExtension::GetSrcPathAndModuleName(std::string &srcPath, std::string &moduleName)
 {
     if (!Extension::abilityInfo_) {
@@ -108,7 +108,7 @@ bool AniWorkSchedulerExtension::GetSrcPathAndModuleName(std::string &srcPath, st
     moduleName.append("::").append(abilityInfo_->name);
     return true;
 }
- 
+
 void AniWorkSchedulerExtension::BindContext(ani_env*env, std::shared_ptr<AAFwk::Want> want,
     const std::shared_ptr<AbilityRuntime::OHOSApplication> &application)
 {
@@ -131,7 +131,7 @@ void AniWorkSchedulerExtension::BindContext(ani_env*env, std::shared_ptr<AAFwk::
     arkts::ani_signature::Type className =
         arkts::ani_signature::Builder::BuildClass(WORKSCHEDULERABILITY_CLS);
     if ((env->FindClass(className.Descriptor().c_str(), &cls)) != ANI_OK) {
-        WS_HILOGE("FindClass failed.");
+        WS_HILOGE("FindClass err: accessibility extension");
         return;
     }
     auto status = env->Class_FindField(cls, "context", &contextField);
@@ -149,19 +149,19 @@ void AniWorkSchedulerExtension::BindContext(ani_env*env, std::shared_ptr<AAFwk::
         return;
     }
 }
- 
+
 void AniWorkSchedulerExtension::OnStart(const AAFwk::Want& want)
 {
     WS_HILOGD("begin");
     Extension::OnStart(want);
 }
- 
+
 void AniWorkSchedulerExtension::OnStop()
 {
     Extension::OnStop();
     WS_HILOGD("end.");
 }
- 
+
 sptr<IRemoteObject> AniWorkSchedulerExtension::OnConnect(const AAFwk::Want& want)
 {
     Extension::OnConnect(want);
@@ -175,13 +175,13 @@ sptr<IRemoteObject> AniWorkSchedulerExtension::OnConnect(const AAFwk::Want& want
     WS_HILOGD("end.");
     return remoteObject->AsObject();
 }
- 
+
 void AniWorkSchedulerExtension::OnDisconnect(const AAFwk::Want& want)
 {
     WS_HILOGD("begin.");
     Extension::OnDisconnect(want);
 }
- 
+
 bool AniWorkSchedulerExtension::CallObjectMethod(const char* name, const char* signature, ...)
 {
     ani_status status = ANI_OK;
@@ -202,7 +202,7 @@ bool AniWorkSchedulerExtension::CallObjectMethod(const char* name, const char* s
     if (method == nullptr) {
         return false;
     }
- 
+
     va_list args;
     va_start(args, signature);
     if ((status = env->Object_CallMethod_Void_V(etsObj_->aniObj, method, args)) != ANI_OK) {
@@ -212,7 +212,7 @@ bool AniWorkSchedulerExtension::CallObjectMethod(const char* name, const char* s
     va_end(args);
     return true;
 }
- 
+
 void AniWorkSchedulerExtension::OnWorkStart(WorkInfo& workInfo)
 {
     if (handler_ == nullptr) {
@@ -261,7 +261,7 @@ void AniWorkSchedulerExtension::OnWorkStart(WorkInfo& workInfo)
     handler_->PostTask(task);
     WS_HILOGD("OnWorkStart end.");
 }
- 
+
 void AniWorkSchedulerExtension::OnWorkStop(WorkInfo& workInfo)
 {
     if (handler_ == nullptr) {
@@ -310,7 +310,7 @@ void AniWorkSchedulerExtension::OnWorkStop(WorkInfo& workInfo)
     handler_->PostTask(task);
     WS_HILOGD("OnWorkStop end.");
 }
- 
+
 ani_object AniWorkSchedulerExtension::WrapWorkInfo(ani_env* env)
 {
     WS_HILOGD("WrapWorkInfo call");
@@ -327,7 +327,7 @@ ani_object AniWorkSchedulerExtension::WrapWorkInfo(ani_env* env)
     }
     return workInfoObject;
 }
- 
+
 bool AniWorkSchedulerExtension::CreateClassObjByClassName(
     ani_env *env, const char *className, ani_class &cls, ani_object &outAniObj)
 {
@@ -351,7 +351,7 @@ bool AniWorkSchedulerExtension::CreateClassObjByClassName(
     }
     return true;
 }
- 
+
 void AniWorkSchedulerExtension::SetCommonInfo(ani_env* env, ani_object& workInfoObject, int32_t workId,
     const std::string& bundleName, const std::string& abilityName)
 {
@@ -365,14 +365,14 @@ void AniWorkSchedulerExtension::SetCommonInfo(ani_env* env, ani_object& workInfo
         WS_HILOGE("Set abilityName failed");
     }
 }
- 
+
 void AniWorkSchedulerExtension::SetPersistedInfo(ani_env* env, ani_object& workInfoObject, bool isPersisted)
 {
     if (!SetPropertyOptionalByBoolean(env, workInfoObject, "isPersisted", isPersisted)) {
         WS_HILOGE("Set isPersisted failed");
     }
 }
- 
+
 void AniWorkSchedulerExtension::SetNetWorkInfo(
     ani_env* env, ani_object& workInfoObject, WorkCondition::Network networkType)
 {
@@ -383,7 +383,7 @@ void AniWorkSchedulerExtension::SetNetWorkInfo(
         }
     }
 }
- 
+
 void AniWorkSchedulerExtension::SetChargerTypeInfo(
     ani_env* env, ani_object& workInfoObject, WorkCondition::Charger charger)
 {
@@ -396,7 +396,7 @@ void AniWorkSchedulerExtension::SetChargerTypeInfo(
         }
     }
 }
- 
+
 void AniWorkSchedulerExtension::SetBatteryInfo(ani_env* env, ani_object& workInfoObject, int32_t batteryLevel,
     WorkCondition::BatteryStatus batteryStatus)
 {
@@ -407,7 +407,7 @@ void AniWorkSchedulerExtension::SetBatteryInfo(ani_env* env, ani_object& workInf
         SetPropertyOptionalByEnum(env, workInfoObject, "batteryStatus", batteryStatus);
     }
 }
- 
+
 void AniWorkSchedulerExtension::SetStorageInfo(
     ani_env* env, ani_object& workInfoObject, WorkCondition::Storage storageLevel)
 {
@@ -415,7 +415,7 @@ void AniWorkSchedulerExtension::SetStorageInfo(
         SetPropertyOptionalByEnum(env, workInfoObject, "storageRequest", storageLevel);
     }
 }
- 
+
 void AniWorkSchedulerExtension::SetRepeatInfo(ani_env* env, ani_object& workInfoObject, bool isRepeat,
     int32_t timeInterval, int32_t cycleCount)
 {
@@ -427,7 +427,7 @@ void AniWorkSchedulerExtension::SetRepeatInfo(ani_env* env, ani_object& workInfo
         SetPropertyOptionalByInt(env, workInfoObject, "repeatCount", cycleCount);
     }
 }
- 
+
 void AniWorkSchedulerExtension::SetDeepIdleInfo(
     ani_env* env, ani_object& workInfoObject, WorkCondition::DeepIdle deepIdleValue)
 {
@@ -437,7 +437,7 @@ void AniWorkSchedulerExtension::SetDeepIdleInfo(
     SetPropertyOptionalByBoolean(env, workInfoObject, "isDeepIdle",
         deepIdleValue == WorkCondition::DeepIdle::DEEP_IDLE_IN);
 }
- 
+
 void AniWorkSchedulerExtension::SetExtrasInfo(
     ani_env* env, ani_object& workInfoObject, bool getExtrasRet, const std::string& extrasStr)
 {
@@ -445,7 +445,7 @@ void AniWorkSchedulerExtension::SetExtrasInfo(
         SetPropertyOptionalByString(env, workInfoObject, "parameters", extrasStr);
     }
 }
- 
+
 bool AniWorkSchedulerExtension::GetExtrasJsonStr(const WorkInfo& workInfo, std::string& extrasStr)
 {
     std::shared_ptr<AAFwk::WantParams> extras = workInfo.GetExtras();
@@ -468,7 +468,7 @@ bool AniWorkSchedulerExtension::GetExtrasJsonStr(const WorkInfo& workInfo, std::
     extrasStr = extrasJson.dump(JSON_INDENT_WIDTH);
     return true;
 }
- 
+
 bool AniWorkSchedulerExtension::SetPropertyOptionalByInt(
     ani_env *env, ani_object &object, const char *name, int32_t value)
 {
@@ -483,7 +483,7 @@ bool AniWorkSchedulerExtension::SetPropertyOptionalByInt(
     }
     return true;
 }
- 
+
 bool AniWorkSchedulerExtension::SetPropertyOptionalByString(
     ani_env *env, ani_object &object, const char *name, const std::string &value)
 {
@@ -504,7 +504,7 @@ bool AniWorkSchedulerExtension::SetPropertyOptionalByString(
     }
     return SetPropertyByRef(env, object, name, static_cast<ani_ref>(stringObj));
 }
- 
+
 ani_status AniWorkSchedulerExtension::GetAniStringByString(
     ani_env* env, const std::string str, ani_string& aniStr)
 {
@@ -519,7 +519,7 @@ ani_status AniWorkSchedulerExtension::GetAniStringByString(
     }
     return status;
 }
- 
+
 bool AniWorkSchedulerExtension::SetPropertyOptionalByEnum(
     ani_env *env, ani_object &object, const char *name, int32_t value)
 {
@@ -535,7 +535,7 @@ bool AniWorkSchedulerExtension::SetPropertyOptionalByEnum(
     }
     return SetPropertyByRef(env, object, name, IntObj);
 }
- 
+
 ani_object AniWorkSchedulerExtension::CreateInt(ani_env *env, int32_t value)
 {
     ani_class cls;
@@ -556,7 +556,7 @@ ani_object AniWorkSchedulerExtension::CreateInt(ani_env *env, int32_t value)
     }
     return outObj;
 }
- 
+
 bool AniWorkSchedulerExtension::SetPropertyOptionalByBoolean(
     ani_env *env, ani_object &object, const char *name, bool value)
 {
@@ -572,7 +572,7 @@ bool AniWorkSchedulerExtension::SetPropertyOptionalByBoolean(
     }
     return SetPropertyByRef(env, object, name, boolObj);
 }
- 
+
 ani_object AniWorkSchedulerExtension::CreateBoolean(ani_env *env, bool value)
 {
     ani_class cls;
@@ -594,7 +594,7 @@ ani_object AniWorkSchedulerExtension::CreateBoolean(ani_env *env, bool value)
     }
     return obj;
 }
- 
+
 bool AniWorkSchedulerExtension::SetPropertyByRef(ani_env *env, ani_object &object, const char *name, ani_ref value)
 {
     WS_HILOGI("enter SetPropertyByRef");
