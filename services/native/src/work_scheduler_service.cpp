@@ -1353,23 +1353,24 @@ int32_t WorkSchedulerService::CreateNodeDir(std::string dir)
 
 int32_t WorkSchedulerService::CreateNodeFile()
 {
-    if (access(PERSISTED_FILE_PATH, 0) != 0) {
-        FILE *file = fopen(PERSISTED_FILE_PATH, "w+");
-        if (file == nullptr) {
-            WS_HILOGE("Fail to open file: %{private}s, errno: %{public}s", PERSISTED_FILE_PATH, strerror(errno));
-            WorkSchedUtil::HiSysEventException(EventErrorCode::SERVICE_INIT, "fail to open file");
-            return errno;
+    FILE *file = fopen(PERSISTED_FILE_PATH, "w+");
+    if (file == nullptr) {
+        if (errno == EEXIST) {
+            WS_HILOGD("The file already exists.");
+            return ERR_OK;
         }
-        WS_HILOGI("Open file success.");
-        int closeResult = fclose(file);
-        if (closeResult < 0) {
-            WS_HILOGE("Fail to close file: %{private}s, errno: %{public}s", PERSISTED_FILE_PATH, strerror(errno));
-            WorkSchedUtil::HiSysEventException(EventErrorCode::SERVICE_INIT, "fail to close file");
-            return errno;
-        }
-    } else {
-        WS_HILOGD("The file already exists.");
+        WS_HILOGE("Fail to open file: %{private}s, errno: %{public}s", PERSISTED_FILE_PATH, strerror(errno));
+        WorkSchedUtil::HiSysEventException(EventErrorCode::SERVICE_INIT, "fail to open file");
+        return errno;
     }
+    WS_HILOGI("Open file success.");
+    int closeResult = fclose(file);
+    if (closeResult < 0) {
+        WS_HILOGE("Fail to close file: %{private}s, errno: %{public}s", PERSISTED_FILE_PATH, strerror(errno));
+        WorkSchedUtil::HiSysEventException(EventErrorCode::SERVICE_INIT, "fail to close file");
+        return errno;
+    }
+    WS_HILOGI("Close file success.");
     return ERR_OK;
 }
 
