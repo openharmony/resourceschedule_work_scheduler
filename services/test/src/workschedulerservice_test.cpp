@@ -1424,5 +1424,17 @@ HWTEST_F(WorkSchedulerServiceTest, NeedCreateTimer_003, TestSize.Level1)
         EXPECT_EQ(result, false);
     }
 }
+
+/**
+ * @tc.name: CreateNodeFile_001
+ * @tc.desc: Test WorkSchedulerService CreateNodeFile.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(WorkSchedulerServiceTest, CreateNodeFile_001, TestSize.Level1)
+{
+    int32_t ret = workSchedulerService_->CreateNodeFile();
+    EXPECT_EQ(ret, ERR_OK);
+}
 }
 }
