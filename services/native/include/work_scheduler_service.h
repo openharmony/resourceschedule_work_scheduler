@@ -179,7 +179,7 @@ public:
      *
      * @return True if success,else false.
      */
-    int32_t CreateNodeFile();
+    bool CreateNodeFile();
     /**
      * @brief Update work before real start.
      *

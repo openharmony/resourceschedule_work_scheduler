@@ -1357,7 +1357,8 @@ bool WorkSchedulerService::CreateNodeFile()
     FILE *file = fopen(filePath.c_str(), "w+");
     if (file == nullptr) {
         if (errno == EEXIST) {
-            WS_HILOGD("File already exists: %{private}.", filePath.c_str());
+            WS_HILOGD("File already exists: %{private}s", filePath.c_str());
+            return true;
         }
         WS_HILOGE("Fail to open file: %{private}s, errno: %{public}s", filePath.c_str(), strerror(errno));
         WorkSchedUtil::HiSysEventException(EventErrorCode::SERVICE_INIT, "fail to open file");
@@ -1370,7 +1371,7 @@ bool WorkSchedulerService::CreateNodeFile()
         WorkSchedUtil::HiSysEventException(EventErrorCode::SERVICE_INIT, "fail to close file");
         return false;
     }
-    WS_HILOGI("Resources created success.");
+    WS_HILOGI("Resources created successfully.");
     return true;
 }
 
