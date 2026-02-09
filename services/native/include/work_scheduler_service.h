@@ -175,16 +175,9 @@ public:
      */
     bool StopAndClearWorksByUid(int32_t uid);
     /**
-     * @brief Create node dir.
-     *
-     * @param dir The dir.
-     * @return ERR_OK.
-     */
-    int32_t CreateNodeDir(std::string dir);
-    /**
      * @brief Create node file.
      *
-     * @return ERR_OK.
+     * @return True if success,else false.
      */
     int32_t CreateNodeFile();
     /**

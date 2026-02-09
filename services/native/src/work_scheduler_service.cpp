@@ -111,6 +111,7 @@ const int32_t TIME_OUT = 4;
 const uint32_t SYS_APP_MIN_REPEAT_TIME = 5 * 60 * 1000;
 const char* PERSISTED_FILE_PATH = "/data/service/el1/public/WorkScheduler/persisted_work";
 const char* PERSISTED_PATH = "/data/service/el1/public/WorkScheduler";
+const char* PERSISTED_FILE_NAME = "/persisted_work";
 const char* PREINSTALLED_FILE_PATH = "etc/backgroundtask/config.json";
 #ifdef DEVICE_USAGE_STATISTICS_ENABLE
 static int g_hasGroupObserver = -1;
@@ -1316,8 +1317,10 @@ void WorkSchedulerService::RefreshPersistedWorks()
         }
     }
     string result = root.dump(4);
-    CreateNodeDir(PERSISTED_PATH);
-    CreateNodeFile();
+    if (!CreateNodeFile()) {
+        WS_HILOGE("Create node resources failed");
+        return;
+    }
     ofstream fout;
     std::string realPath;
     if (!WorkSchedUtils::ConvertFullPath(PERSISTED_FILE_PATH, realPath)) {
@@ -1333,45 +1336,42 @@ void WorkSchedulerService::RefreshPersistedWorks()
     WS_HILOGD("Refresh persisted works success");
 }
 
-int32_t WorkSchedulerService::CreateNodeDir(std::string dir)
+bool WorkSchedulerService::CreateNodeFile()
 {
-    WS_HILOGD("Enter");
-    if (access(dir.c_str(), 0) != ERR_OK) {
-        int32_t flag = mkdir(dir.c_str(), S_IRWXU|S_IRWXG|S_IROTH|S_IXOTH);
-        if (flag == ERR_OK) {
-            WS_HILOGD("Create directory successfully.");
-        } else {
-            WS_HILOGE("Fail to create directory, flag: %{public}d", flag);
-            WorkSchedUtil::HiSysEventException(EventErrorCode::SERVICE_INIT, "fail to create directory");
-            return flag;
-        }
-    } else {
-        WS_HILOGD("This directory already exists.");
+    // 1. 创建目录失败且文件不存在
+    if (mkdir(PERSISTED_PATH, S_IRWXU|S_IRWXG|S_IROTH|S_IXOTH) != 0 && errno != EEXIST) {
+        WS_HILOGE("Create directory failed: %{private}s, errno: %{public}s", PERSISTED_PATH, strerror(errno));
+        WorkSchedUtil::HiSysEventException(EventErrorCode::SERVICE_INIT, "fail to create directory");
+        return false;
     }
-    return ERR_OK;
-}
 
-int32_t WorkSchedulerService::CreateNodeFile()
-{
-    FILE *file = fopen(PERSISTED_FILE_PATH, "w+");
+    std::string realPath;
+    if (!WorkSchedUtils::ConvertFullPath(PERSISTED_PATH, realPath)) {
+        WS_HILOGE("Get real dir path failed");
+        WorkSchedUtil::HiSysEventException(EventErrorCode::SERVICE_INIT, "get real dir path failed");
+        return false;
+    }
+
+    std::string filePath = realPath + PERSISTED_FILE_NAME;
+    // 2. 目录存在创建文件
+    FILE *file = fopen(filePath.c_str(), "w+");
     if (file == nullptr) {
         if (errno == EEXIST) {
-            WS_HILOGD("The file already exists.");
-            return ERR_OK;
+            WS_HILOGD("File already exists: %{private}.", filePath.c_str());
         }
-        WS_HILOGE("Fail to open file: %{private}s, errno: %{public}s", PERSISTED_FILE_PATH, strerror(errno));
+        WS_HILOGE("Fail to open file: %{private}s, errno: %{public}s", filePath.c_str(), strerror(errno));
         WorkSchedUtil::HiSysEventException(EventErrorCode::SERVICE_INIT, "fail to open file");
-        return errno;
+        return false;
     }
-    WS_HILOGI("Open file success.");
-    int closeResult = fclose(file);
-    if (closeResult < 0) {
-        WS_HILOGE("Fail to close file: %{private}s, errno: %{public}s", PERSISTED_FILE_PATH, strerror(errno));
+
+    // 3. 确保文件关闭成功
+    if (fclose(file) != 0) {
+        WS_HILOGE("Fail to close file: %{private}s, errno: %{public}s", filePath.c_str(), strerror(errno));
         WorkSchedUtil::HiSysEventException(EventErrorCode::SERVICE_INIT, "fail to close file");
-        return errno;
+        return false;
     }
-    WS_HILOGI("Close file success.");
-    return ERR_OK;
+    WS_HILOGI("Resources created success.");
+    return true;
 }
 
 void WorkSchedulerService::UpdateEffiResApplyInfo(int32_t uid, bool isAdd)
