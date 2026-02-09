@@ -1433,8 +1433,8 @@ HWTEST_F(WorkSchedulerServiceTest, NeedCreateTimer_003, TestSize.Level1)
  */
 HWTEST_F(WorkSchedulerServiceTest, CreateNodeFile_001, TestSize.Level1)
 {
-    int32_t ret = workSchedulerService_->CreateNodeFile();
-    EXPECT_EQ(ret, ERR_OK);
+    bool ret = workSchedulerService_->CreateNodeFile();
+    EXPECT_TRUE(ret);
 }
 }
 }
