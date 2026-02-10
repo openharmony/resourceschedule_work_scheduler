@@ -202,7 +202,7 @@ WEAK_FUNC bool WorkSchedulerService::IsBaseAbilityReady()
 void WorkSchedulerService::InitPersistedWork()
 {
     WS_HILOGD("init persisted work");
-    std::lock_guard<ffrt::mutex> lock(mutex_);
+    std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
     list<shared_ptr<WorkInfo>> persistedWorks = ReadPersistedWorks();
     for (auto it : persistedWorks) {
         WS_HILOGI("get persisted work, id: %{public}d, isSa:%{public}d", it->GetWorkId(), it->IsSA());
@@ -214,7 +214,7 @@ void WorkSchedulerService::InitPersistedWork()
 void WorkSchedulerService::InitPreinstalledWork()
 {
     WS_HILOGD("init preinstalled work");
-    std::lock_guard<ffrt::mutex> lock(mutex_);
+    std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
     list<shared_ptr<WorkInfo>> preinstalledWorks = ReadPreinstalledWorks();
     for (auto work : preinstalledWorks) {
         WS_HILOGI("preinstalled workinfo id %{public}s, isSa:%{public}d", work->GetBriefInfo().c_str(), work->IsSA());
@@ -741,7 +741,7 @@ int32_t WorkSchedulerService::StartWorkInner(const WorkInfo& workInfo, int32_t u
     if (ret == ERR_OK) {
         workQueueManager_->AddWork(workStatus);
         if (workInfo_.IsPersisted()) {
-            std::lock_guard<ffrt::mutex> lock(mutex_);
+            std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
             workStatus->workInfo_->RefreshUid(uid);
             persistedMap_.emplace(workStatus->workId_, workStatus->workInfo_);
             RefreshPersistedWorks();
@@ -854,7 +854,7 @@ int32_t WorkSchedulerService::StopAndCancelWork(const WorkInfo& workInfo)
     }
     StopWorkInner(workStatus, uid, true, false);
     if (workStatus->persisted_) {
-        std::lock_guard<ffrt::mutex> lock(mutex_);
+        std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
         persistedMap_.erase(workStatus->workId_);
         RefreshPersistedWorks();
     }
@@ -902,7 +902,7 @@ bool WorkSchedulerService::StopAndClearWorksByUid(int32_t uid)
     bool ret = workQueueManager_->StopAndClearWorks(allWorks)
         && workPolicyManager_->StopAndClearWorks(uid);
     if (ret) {
-        std::lock_guard<ffrt::mutex> lock(mutex_);
+        std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
         for (auto workId : workIdList) {
             if (persistedMap_.count(workId) != 0) {
                 persistedMap_.erase(workId);
@@ -1001,11 +1001,11 @@ void WorkSchedulerService::UpdateWorkBeforeRealStart(std::shared_ptr<WorkStatus>
     if (work == nullptr) {
         return;
     }
-    std::lock_guard<ffrt::mutex> lock(mutex_);
     work->UpdateTimerIfNeed();
     if (work->NeedRemove()) {
         workQueueManager_->RemoveWork(work);
         if (work->persisted_ && !work->IsRepeating()) {
+            std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
             persistedMap_.erase(work->workId_);
             RefreshPersistedWorks();
         }
@@ -1304,6 +1304,7 @@ void WorkSchedulerService::DumpParamSet(std::string &key, std::string &value, st
 void WorkSchedulerService::RefreshPersistedWorks()
 {
     nlohmann::json root;
+    std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
     for (auto &it : persistedMap_) {
         if (it.second == nullptr) {
             WS_HILOGE("workInfo is nullptr");
