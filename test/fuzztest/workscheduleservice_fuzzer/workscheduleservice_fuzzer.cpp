@@ -15,80 +15,56 @@
 
 #include "workscheduleservice_fuzzer.h"
 
-#define private public
-#include "system_ability_definition.h"
-#include "iservice_registry.h"
-#include "work_sched_service_stub.h"
-#include "ffrt.h"
+#include "iwork_sched_service.h"
+#include "work_scheduler_service.h"
+#include "work_sched_common.h"
+#include "work_condition.h"
+
+void OHOS::RefBase::DecStrongRef(void const* obj) {}
 
 namespace OHOS {
 namespace WorkScheduler {
-    constexpr int32_t MIN_LEN = 4;
-    constexpr int32_t MAX_CODE_TEST = 15; // current max code is 7
-    static bool isInited = false;
-    ffrt::mutex mutexLock;
-    sptr<IRemoteObject> remoteObject;
+    const std::u16string WORK_SCHEDULER_STUB_TOKEN = u"ohos.workscheduler.iworkschedservice";
+    static std::shared_ptr<WorkSchedulerService> workSchedulerService_;
 
-    bool DoInit()
+    bool WorkSchedulerService::GetUidByBundleName(const std::string &bundleName, int32_t &uid)
     {
-        std::lock_guard<ffrt::mutex> lock(mutexLock);
-        if (remoteObject != nullptr) {
-            return true;
-        }
-        sptr<ISystemAbilityManager> SystemAbilityManager =
-            SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-        if (SystemAbilityManager == nullptr) {
-            return false;
-        }
-        remoteObject = SystemAbilityManager->GetSystemAbility(WORK_SCHEDULE_SERVICE_ID);
-        if (remoteObject == nullptr) {
-            return false;
-        }
         return true;
     }
 
-    int32_t OnRemoteRequest(uint32_t code, MessageParcel& data)
+    bool DoSomethingInterestingWithMyAPI(const uint8_t* data, size_t size)
     {
+        MessageParcel dataMessageParcel;
+        dataMessageParcel.WriteInterfaceToken(WORK_SCHEDULER_STUB_TOKEN);
+        dataMessageParcel.WriteBuffer(data, size);
+        dataMessageParcel.RewindRead(0);
         MessageParcel reply;
         MessageOption option;
-        int32_t ret = remoteObject->SendRequest(code, data, reply, option);
-        return ret;
+        workSchedulerService_ = DelayedSingleton<WorkSchedulerService>::GetInstance();
+        uint32_t code = static_cast<int32_t>(IWorkSchedServiceIpcCode::COMMAND_STOP_WORK_FOR_S_A);
+        int32_t saId = 100;
+        if (!dataMessageParcel.WriteInt32(saId)) {
+            return false;
+        }
+        workSchedulerService_->OnStart();
+        workSchedulerService_->InitBgTaskSubscriber();
+        if (!workSchedulerService_->ready_) {
+            workSchedulerService_->ready_ = true;
+        }
+        if (workSchedulerService_->checkBundle_) {
+            workSchedulerService_->checkBundle_ = false;
+        }
+        workSchedulerService_->OnRemoteRequest(code, dataMessageParcel, reply, option);
+        workSchedulerService_->OnStop();
+        return true;
     }
-
-    void IpcFuzzTest(const uint8_t* data, size_t size)
-    {
-        if (size <= MIN_LEN) {
-            return;
-        }
-
-        MessageParcel dataMessageParcel;
-        if (!dataMessageParcel.WriteInterfaceToken(WorkSchedServiceStub::GetDescriptor())) {
-            return;
-        }
-
-        uint32_t code = *(reinterpret_cast<const uint32_t*>(data));
-        if (code > MAX_CODE_TEST) {
-            return;
-        }
-        size -= sizeof(uint32_t);
-
-        dataMessageParcel.WriteBuffer(data + sizeof(uint32_t), size);
-        dataMessageParcel.RewindRead(0);
-
-        if (!isInited) {
-            isInited = DoInit();
-        }
-        if (isInited) {
-            OnRemoteRequest(code, dataMessageParcel);
-        }
-    }
-} // namespace WorkScheduler
-} // namespace OHOS
+} // WorkScheduler
+} // OHOS
 
 /* Fuzzer entry point */
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 {
     /* Run your code on data */
-    OHOS::WorkScheduler::IpcFuzzTest(data, size);
+    OHOS::WorkScheduler::DoSomethingInterestingWithMyAPI(data, size);
     return 0;
 }
