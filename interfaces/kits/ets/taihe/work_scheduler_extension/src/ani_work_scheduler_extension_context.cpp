@@ -140,7 +140,7 @@ ani_object CreateObject(ani_env *env, ani_class cls, ...)
     ani_object nullobj {};
  
     ani_method ctor;
-    if (ANI_OK != env->Class_FindMethod(cls, "<ctor>", nullptr, &ctor)) {
+    if (ANI_OK != env->Class_FindMethod(cls, "<ctor>", ":", &ctor)) {
         WS_HILOGE("[ANI] Not found <ctor> for class");
         return nullobj;
     }
