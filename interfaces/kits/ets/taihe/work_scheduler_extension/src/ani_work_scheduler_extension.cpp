@@ -141,13 +141,16 @@ void AniWorkSchedulerExtension::BindContext(ani_env*env, std::shared_ptr<AAFwk::
     }
     ani_ref contextRef = nullptr;
     if (env->GlobalReference_Create(contextObj, &contextRef) != ANI_OK) {
+        env->GlobalReference_Delete(contextRef);
         WS_HILOGE("GlobalReference_Create contextObj failed");
         return;
     }
     if (env->Object_SetField_Ref(etsObj_->aniObj, contextField, contextRef) != ANI_OK) {
+        env->GlobalReference_Delete(contextRef);
         WS_HILOGE("Object_SetField_Ref contextObj failed");
         return;
     }
+    env->GlobalReference_Delete(contextRef);
 }
 
 void AniWorkSchedulerExtension::OnStart(const AAFwk::Want& want)
@@ -340,7 +343,7 @@ bool AniWorkSchedulerExtension::CreateClassObjByClassName(
         return false;
     }
     ani_method ctor;
-    if (env->Class_FindMethod(cls, "<ctor>", nullptr, &ctor) != ANI_OK) {
+    if (env->Class_FindMethod(cls, "<ctor>", ":", &ctor) != ANI_OK) {
         WS_HILOGE("FindMethod fail");
         return false;
     }
