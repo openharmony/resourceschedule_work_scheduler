@@ -34,6 +34,7 @@ inline constexpr int32_t INIT_DUMP_SET_CPU = 0;
 inline constexpr int32_t INVALID_VALUE = -1;
 inline constexpr int32_t DUMP_SET_MAX_COUNT_LIMIT = 100;
 inline static int32_t g_lastWatchdogTime = WATCHDOG_TIME;
+inline constexpr int32_t INIT_DUMP_SET_THERMAL_LEVEL = -1;
 
 // services\native\src\work_status.cpp
 inline const std::string OK = "1";

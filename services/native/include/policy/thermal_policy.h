@@ -32,6 +32,8 @@ public:
      */
     int32_t GetPolicyMaxRunning(WorkSchedSystemPolicy& systemPolicy) override;
 private:
+    int32_t GetThermalLevel();
+    int32_t GetCurThermalLevelMaxRunning(int32_t thermalLevel);
     std::shared_ptr<WorkPolicyManager> workPolicyManager_;
 };
 } // namespace WorkScheduler

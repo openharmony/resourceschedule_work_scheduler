@@ -1132,7 +1132,8 @@ void WorkSchedulerService::DumpUsage(std::string &result)
         .append("    -min_interval (number): set min interval time, set 0 means close test mode.\n")
         .append("    -cpu (number): set the usage cpu.\n")
         .append("    -count (number): set the max running task count.\n")
-        .append("    -s (saId) (uId): load or report sa.\n");
+        .append("    -s (saId) (uId): load or report sa.\n")
+        .append("    -thermalLevel (number): set the thermal level.\n");
 }
 
 void WorkSchedulerService::DumpAllInfo(std::string &result)
@@ -1296,6 +1297,8 @@ void WorkSchedulerService::DumpParamSet(std::string &key, std::string &value, st
     } else if (key == "-count") {
         workPolicyManager_->SetMaxRunningCountByDump(std::stoi(value));
         result.append("Set max running task count success.");
+    } else if (key == "-thermalLevel") {
+        result.append("Set thermal level success.");
     } else {
         result.append("Error params.");
     }
