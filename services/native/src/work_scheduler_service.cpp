@@ -1298,6 +1298,7 @@ void WorkSchedulerService::DumpParamSet(std::string &key, std::string &value, st
         workPolicyManager_->SetMaxRunningCountByDump(std::stoi(value));
         result.append("Set max running task count success.");
     } else if (key == "-thermalLevel") {
+        workPolicyManager_->SetThermalLevelByDump(std::stoi(value));
         result.append("Set thermal level success.");
     } else {
         result.append("Error params.");
