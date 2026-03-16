@@ -54,7 +54,7 @@ int32_t ThermalPolicy::GetThermalLevel()
 int32_t ThermalPolicy::GetCurThermalLevelMaxRunning(int32_t thermalLevel)
 {
     int32_t res;
-#ifndef PC_PLATFORM
+#ifdef PC_PLATFORM
     if (thermalLevel >= static_cast<int32_t>(ThermalLevel::WARNING)) {
         res = COUNT_THERMAL_CRUCIAL;
     } else if (thermalLevel < static_cast<int32_t>(ThermalLevel::WARNING) &&
