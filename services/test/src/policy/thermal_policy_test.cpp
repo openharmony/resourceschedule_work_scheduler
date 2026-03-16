@@ -130,6 +130,7 @@ HWTEST_F(ThermalPolicyTest, GetPolicyMaxRunning_004, TestSize.Level1)
 #else
     EXPECT_EQ(ret, COUNT_THERMAL_CRUCIAL);
 #endif
+}
 
 /**
  * @tc.name: GetPolicyMaxRunning_005
@@ -140,13 +141,14 @@ HWTEST_F(ThermalPolicyTest, GetPolicyMaxRunning_004, TestSize.Level1)
 HWTEST_F(ThermalPolicyTest, GetPolicyMaxRunning_005, TestSize.Level1)
 {
     WorkSchedSystemPolicy systemPolicy;
-    MockProcess(PowerMgr::ThermalLevel::HOT);
+    MockProcess(PowerMgr::ThermalLevel::OVERHEATED);
     int32_t ret = thermalPolicy_->GetPolicyMaxRunning(systemPolicy);
 #ifdef PC_PLATFORM
     EXPECT_EQ(ret, COUNT_THERMAL_LOW);
 #else
     EXPECT_EQ(ret, COUNT_THERMAL_CRUCIAL);
 #endif
+}
 
 /**
  * @tc.name: GetPolicyMaxRunning_006

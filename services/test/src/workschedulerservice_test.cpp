@@ -662,7 +662,7 @@ HWTEST_F(WorkSchedulerServiceTest, Dump_009, TestSize.Level1)
     WS_HILOGI("====== WorkSchedulerServiceTest.Dump_009 begin ====== ");
     std::vector<std::string> argsInStr;
     std::string result;
-    argsInStr.push_back("-thermalTevel");
+    argsInStr.push_back("-thermalLevel");
     argsInStr.push_back("1");
     workSchedulerService_->DumpProcessForUserMode(argsInStr, result);
     EXPECT_EQ(result.empty(), true);
