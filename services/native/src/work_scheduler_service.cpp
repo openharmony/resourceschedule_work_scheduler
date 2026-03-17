@@ -1308,14 +1308,18 @@ void WorkSchedulerService::DumpParamSet(std::string &key, std::string &value, st
     }
 }
 
-void WorkSchedulerService::DumpParamRestore()
+void WorkSchedulerService::DumpParamRestore(std::string &result)
 {
     workPolicyManager_->SetMemoryByDump(INIT_DUMP_SET_MEMORY);
     workPolicyManager_->SetWatchdogTimeByDump(0);
-    workQueueManager_->SetTimeCycle(minCheckTime_);
+#ifdef PC_PLATFORM
+    workQueueManager_->SetTimeCycle(SYS_APP_MIN_REPEAT_TIME);
+#else
+    workQueueManager_->SetTimeCycle(TIME_CYCLE);
+#endif
     workQueueManager_->SetMinIntervalByDump(0);
     workPolicyManager_->SetCpuUsageByDump(INIT_DUMP_SET_CPU);
-    workPolicyManager_->SetMaxRunningCountByDump();
+    workPolicyManager_->SetMaxRunningCountByDump(-1);
     workPolicyManager_->SetThermalLevelByDump(INIT_DUMP_SET_THERMAL_LEVEL);
     result.append("Restore params success.");
 }
