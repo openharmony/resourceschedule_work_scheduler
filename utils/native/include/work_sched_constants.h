@@ -36,6 +36,9 @@ inline constexpr int32_t DUMP_SET_MAX_COUNT_LIMIT = 100;
 inline static int32_t g_lastWatchdogTime = WATCHDOG_TIME;
 inline constexpr int32_t INIT_DUMP_SET_THERMAL_LEVEL = -1;
 
+// services\native\src\work_queue_manager.cpp
+inline constexpr uint32_t TIME_CYCLE = 10 * 60 * 1000; // 10min
+
 // services\native\src\work_status.cpp
 inline const std::string OK = "1";
 inline const std::string NOT_OK = "0";
