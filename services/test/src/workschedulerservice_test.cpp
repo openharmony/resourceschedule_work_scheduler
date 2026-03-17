@@ -664,8 +664,14 @@ HWTEST_F(WorkSchedulerServiceTest, Dump_009, TestSize.Level1)
     std::string result;
     argsInStr.push_back("-thermalLevel");
     argsInStr.push_back("1");
-    workSchedulerService_->DumpProcessForUserMode(argsInStr, result);
-    EXPECT_EQ(result.empty(), true);
+    workSchedulerService_->DumpProcessForEngMode(argsInStr, result);
+    EXPECT_EQ(result.empty(), false);
+
+    argsInStr.clear();
+    result.clear();
+    argsInStr.push_back("-r");
+    workSchedulerService_->DumpProcessForEngMode(argsInStr, result);
+    EXPECT_EQ(result.empty(), false);
     WS_HILOGI("====== WorkSchedulerServiceTest.Dump_009 end ====== ");
 }
 

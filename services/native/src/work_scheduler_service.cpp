@@ -1036,6 +1036,8 @@ void WorkSchedulerService::DumpProcessForEngMode(std::vector<std::string> &argsI
                 DumpUsage(result);
             } else if (argsInStr[DUMP_OPTION] == "-a") {
                 DumpAllInfo(result);
+            } else if (argsInStr[DUMP_OPTION] == "-r") {
+                DumpParamRestore(result);
             } else {
                 result.append("Error params.");
             }
@@ -1121,6 +1123,7 @@ void WorkSchedulerService::DumpUsage(std::string &result)
     result.append("usage: workscheduler dump [<options>]\n")
         .append("    -h: show the help.\n")
         .append("    -a: show all info.\n")
+        .append("    -r: restore dump command settings.\n")
         .append("    -d event info: show the event info.\n")
         .append("    -d (eventType) (TypeValue): publish the event.\n")
         .append("    -t (bundleName) (abilityName): trigger the bundleName all works.\n")
@@ -1303,6 +1306,18 @@ void WorkSchedulerService::DumpParamSet(std::string &key, std::string &value, st
     } else {
         result.append("Error params.");
     }
+}
+
+void WorkSchedulerService::DumpParamRestore()
+{
+    workPolicyManager_->SetMemoryByDump(INIT_DUMP_SET_MEMORY);
+    workPolicyManager_->SetWatchdogTimeByDump(0);
+    workQueueManager_->SetTimeCycle(minCheckTime_);
+    workQueueManager_->SetMinIntervalByDump(0);
+    workPolicyManager_->SetCpuUsageByDump(INIT_DUMP_SET_CPU);
+    workPolicyManager_->SetMaxRunningCountByDump();
+    workPolicyManager_->SetThermalLevelByDump(INIT_DUMP_SET_THERMAL_LEVEL);
+    result.append("Restore params success.");
 }
 
 void WorkSchedulerService::RefreshPersistedWorks()
