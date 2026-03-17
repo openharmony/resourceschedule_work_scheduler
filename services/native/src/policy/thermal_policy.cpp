@@ -31,6 +31,18 @@ const int32_t COUNT_THERMAL_NORMAL = 3;
 ThermalPolicy::ThermalPolicy(shared_ptr<WorkPolicyManager> workPolicyManager)
 {
     workPolicyManager_ = workPolicyManager;
+#ifdef PC_PLATFORM
+    thermalLevelMap_ = {
+        { static_cast<int32_t>(ThermalLevel::WARM), 3 },
+        { static_cast<int32_t>(ThermalLevel::HOT), 2 },
+        { static_cast<int32_t>(ThermalLevel::OVERHEATED), 1 }
+    };
+#else
+    thermalLevelMap_ = {
+        { static_cast<int32_t>(ThermalLevel::COOL), 3 },
+        { static_cast<int32_t>(ThermalLevel::NORMAL), 1 }
+    };
+#endif
 }
 
 ThermalPolicy::~ThermalPolicy()
@@ -53,29 +65,13 @@ int32_t ThermalPolicy::GetThermalLevel()
 
 int32_t ThermalPolicy::GetCurThermalLevelMaxRunning(int32_t thermalLevel)
 {
-    int32_t res;
-#ifdef PC_PLATFORM
-    if (thermalLevel >= static_cast<int32_t>(ThermalLevel::WARNING)) {
-        res = COUNT_THERMAL_CRUCIAL;
-    } else if (thermalLevel < static_cast<int32_t>(ThermalLevel::WARNING) &&
-        thermalLevel >= static_cast<int32_t>(ThermalLevel::OVERHEATED)) {
-        res = COUNT_THERMAL_LOW;
-    } else if (thermalLevel < static_cast<int32_t>(ThermalLevel::OVERHEATED) &&
-        thermalLevel >= static_cast<int32_t>(ThermalLevel::HOT)) {
-        res = COUNT_THERMAL_MIDDLE;
-    } else {
-        res = COUNT_THERMAL_NORMAL;
+    int32_t res = 0;
+    for (const auto& pair : thermalLevelMap_) {
+        if (thermalLevel <= pair.first) {
+            res = pair.second;
+            break;
+        }
     }
-#else
-    if (thermalLevel >= static_cast<int32_t>(ThermalLevel::WARM)) {
-        res = COUNT_THERMAL_CRUCIAL;
-    } else if (thermalLevel < static_cast<int32_t>(ThermalLevel::WARM) &&
-        thermalLevel >= static_cast<int32_t>(ThermalLevel::NORMAL)) {
-        res = COUNT_THERMAL_LOW;
-    } else {
-        res = COUNT_THERMAL_NORMAL;
-    }
-#endif
     return res;
 }
 

@@ -35,6 +35,7 @@ private:
     int32_t GetThermalLevel();
     int32_t GetCurThermalLevelMaxRunning(int32_t thermalLevel);
     std::shared_ptr<WorkPolicyManager> workPolicyManager_;
+    std::map<int32_t, int32_t> thermalLevelMap_ {};
 };
 } // namespace WorkScheduler
 } // namespace OHOS
