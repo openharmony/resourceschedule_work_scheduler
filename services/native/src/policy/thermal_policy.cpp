@@ -33,14 +33,14 @@ ThermalPolicy::ThermalPolicy(shared_ptr<WorkPolicyManager> workPolicyManager)
     workPolicyManager_ = workPolicyManager;
 #ifdef PC_PLATFORM
     thermalLevelMap_ = {
-        { static_cast<int32_t>(ThermalLevel::WARM), 3 },
-        { static_cast<int32_t>(ThermalLevel::HOT), 2 },
-        { static_cast<int32_t>(ThermalLevel::OVERHEATED), 1 }
+        { static_cast<int32_t>(ThermalLevel::WARM), COUNT_THERMAL_NORMAL },
+        { static_cast<int32_t>(ThermalLevel::HOT), COUNT_THERMAL_MIDDLE },
+        { static_cast<int32_t>(ThermalLevel::OVERHEATED), COUNT_THERMAL_LOW }
     };
 #else
     thermalLevelMap_ = {
-        { static_cast<int32_t>(ThermalLevel::COOL), 3 },
-        { static_cast<int32_t>(ThermalLevel::NORMAL), 1 }
+        { static_cast<int32_t>(ThermalLevel::COOL), COUNT_THERMAL_NORMAL },
+        { static_cast<int32_t>(ThermalLevel::NORMAL), COUNT_THERMAL_LOW }
     };
 #endif
 }
@@ -65,7 +65,7 @@ int32_t ThermalPolicy::GetThermalLevel()
 
 int32_t ThermalPolicy::GetCurThermalLevelMaxRunning(int32_t thermalLevel)
 {
-    int32_t res = 0;
+    int32_t res = COUNT_THERMAL_CRUCIAL;
     for (const auto& pair : thermalLevelMap_) {
         if (thermalLevel <= pair.first) {
             res = pair.second;
