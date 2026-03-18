@@ -666,13 +666,24 @@ HWTEST_F(WorkSchedulerServiceTest, Dump_009, TestSize.Level1)
     argsInStr.push_back("1");
     workSchedulerService_->DumpProcessForEngMode(argsInStr, result);
     EXPECT_EQ(result.empty(), false);
+    WS_HILOGI("====== WorkSchedulerServiceTest.Dump_009 end ====== ");
+}
 
-    argsInStr.clear();
-    result.clear();
+/**
+ * @tc.name: Dump_010
+ * @tc.desc: Test WorkSchedulerService Dump.
+ * @tc.type: FUNC
+ * @tc.require: IAJSVG
+ */
+HWTEST_F(WorkSchedulerServiceTest, Dump_010, TestSize.Level1)
+{
+    WS_HILOGI("====== WorkSchedulerServiceTest.Dump_010 begin ====== ");
+    std::vector<std::string> argsInStr;
+    std::string result;
     argsInStr.push_back("-r");
     workSchedulerService_->DumpProcessForEngMode(argsInStr, result);
     EXPECT_EQ(result.empty(), false);
-    WS_HILOGI("====== WorkSchedulerServiceTest.Dump_009 end ====== ");
+    WS_HILOGI("====== WorkSchedulerServiceTest.Dump_010 end ====== ");
 }
 
 HWTEST_F(WorkSchedulerServiceTest, WorkStandbyStateChangeCallbackTest_001, TestSize.Level1)
