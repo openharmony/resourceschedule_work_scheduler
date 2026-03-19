@@ -651,6 +651,29 @@ HWTEST_F(WorkSchedulerServiceTest, Dump_008, TestSize.Level1)
     WS_HILOGI("====== WorkSchedulerServiceTest.Dump_008 end ====== ");
 }
 
+/**
+ * @tc.name: Dump_009
+ * @tc.desc: Test WorkSchedulerService Dump.
+ * @tc.type: FUNC
+ * @tc.require: IAJSVG
+ */
+HWTEST_F(WorkSchedulerServiceTest, Dump_009, TestSize.Level1)
+{
+    WS_HILOGI("====== WorkSchedulerServiceTest.Dump_009 begin ====== ");
+    std::vector<std::string> argsInStr;
+    std::string result;
+    argsInStr.push_back("-r");
+    workSchedulerService_->DumpProcessForEngMode(argsInStr, result);
+
+    argsInStr.clear();
+    result.clear();
+    argsInStr.push_back("-thermalLevel");
+    argsInStr.push_back("1");
+    workSchedulerService_->DumpProcessForEngMode(argsInStr, result);
+    EXPECT_EQ(result.empty(), false);
+    WS_HILOGI("====== WorkSchedulerServiceTest.Dump_009 end ====== ");
+}
+
 HWTEST_F(WorkSchedulerServiceTest, WorkStandbyStateChangeCallbackTest_001, TestSize.Level1)
 {
     WS_HILOGI("====== WorkSchedulerServiceTest.WorkStandbyStateChangeCallbackTest_001 begin ====== ");

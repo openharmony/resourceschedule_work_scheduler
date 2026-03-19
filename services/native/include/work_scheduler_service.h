@@ -367,6 +367,7 @@ private:
     bool CheckCallingToken();
     void DumpTriggerWork(const std::string& uIdStr, const std::string& workIdStr, std::string& result);
     void ReportUserDataSizeEvent();
+    void DumpParamRestore(std::string& result);
 
 private:
     std::set<int32_t> whitelist_;
