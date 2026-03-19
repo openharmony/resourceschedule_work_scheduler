@@ -518,6 +518,11 @@ void Common::GetConditionInfo(napi_env env, std::shared_ptr<WorkInfo> &workInfo,
         napi_create_int32(env, static_cast<int32_t>(workInfo->GetStorageLevel()), &napiStorageRequest);
         napi_set_named_property(env, napiWork, "storageRequest", napiStorageRequest);
     }
+
+    // Set isDeepIdle info.
+    napi_value napiIsDeepIdleRequest = nullptr;
+    napi_get_boolean(env, workInfo->GetDeepIdle(), &napiIsDeepIdleRequest);
+    napi_set_named_property(env, napiWork, "isDeepIdle", napiIsDeepIdleRequest);
 }
 
 napi_value Common::GetCallbackErrorValue(napi_env env, int32_t errCode, const std::string errMsg)
