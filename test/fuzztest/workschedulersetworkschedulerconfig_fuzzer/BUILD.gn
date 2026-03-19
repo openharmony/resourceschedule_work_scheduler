@@ -103,6 +103,9 @@ ohos_fuzztest("WorkSchedulerSetWorkSchedulerConfigFuzzTest") {
     defines += [ "COMMUNICATION_NETMANAGER_BASE_ENABLE" ]
     external_deps += [ "netmanager_base:net_conn_manager_if" ]
   }
+  if (target_platform == "pc") {
+    defines += [ "PC_PLATFORM" ]
+  }
 }
 
 ###############################################################################

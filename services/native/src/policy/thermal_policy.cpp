@@ -25,30 +25,61 @@ namespace OHOS {
 namespace WorkScheduler {
 const int32_t COUNT_THERMAL_CRUCIAL = 0;
 const int32_t COUNT_THERMAL_LOW = 1;
+const int32_t COUNT_THERMAL_MIDDLE = 2;
 const int32_t COUNT_THERMAL_NORMAL = 3;
 
 ThermalPolicy::ThermalPolicy(shared_ptr<WorkPolicyManager> workPolicyManager)
 {
     workPolicyManager_ = workPolicyManager;
+#ifdef PC_PLATFORM
+    thermalLevelMap_ = {
+        { static_cast<int32_t>(ThermalLevel::WARM), COUNT_THERMAL_NORMAL },
+        { static_cast<int32_t>(ThermalLevel::HOT), COUNT_THERMAL_MIDDLE },
+        { static_cast<int32_t>(ThermalLevel::OVERHEATED), COUNT_THERMAL_LOW }
+    };
+#else
+    thermalLevelMap_ = {
+        { static_cast<int32_t>(ThermalLevel::COOL), COUNT_THERMAL_NORMAL },
+        { static_cast<int32_t>(ThermalLevel::NORMAL), COUNT_THERMAL_LOW }
+    };
+#endif
 }
 
 ThermalPolicy::~ThermalPolicy()
 {
 }
 
-int32_t ThermalPolicy::GetPolicyMaxRunning(WorkSchedSystemPolicy& systemPolicy)
+int32_t ThermalPolicy::GetThermalLevel()
 {
+    if (workPolicyManager_ != nullptr) {
+        int32_t dumpThermalLevel = workPolicyManager_->GetDumpSetThermalLevel();
+        if (dumpThermalLevel >= 0) {
+            WS_HILOGI("dump set thermalLevel: %{public}d", dumpThermalLevel);
+            return dumpThermalLevel;
+        }
+    }
     auto& thermalMgrClient = ThermalMgrClient::GetInstance();
     ThermalLevel thermalLevel = thermalMgrClient.GetThermalLevel();
-    int32_t res;
-    if (thermalLevel >= ThermalLevel::WARM) {
-        res = COUNT_THERMAL_CRUCIAL;
-    } else if (thermalLevel < ThermalLevel::WARM && thermalLevel >= ThermalLevel::NORMAL) {
-        res = COUNT_THERMAL_LOW;
-    } else {
-        res = COUNT_THERMAL_NORMAL;
+    return static_cast<int32_t>(thermalLevel);
+}
+
+int32_t ThermalPolicy::GetCurThermalLevelMaxRunning(int32_t thermalLevel)
+{
+    int32_t res = COUNT_THERMAL_CRUCIAL;
+    for (const auto& pair : thermalLevelMap_) {
+        if (thermalLevel <= pair.first) {
+            res = pair.second;
+            break;
+        }
     }
-    systemPolicy.thermalLevel = static_cast<int32_t>(thermalLevel);
+    return res;
+}
+
+int32_t ThermalPolicy::GetPolicyMaxRunning(WorkSchedSystemPolicy& systemPolicy)
+{
+    int32_t thermalLevel = GetThermalLevel();
+    int32_t res = GetCurThermalLevelMaxRunning(thermalLevel);
+    systemPolicy.thermalLevel = thermalLevel;
     systemPolicy.SetPolicyName("THERMAL_POLICY", res);
     WS_HILOGD("ThermalLevel:%{public}d, PolicyRes:%{public}d", thermalLevel, res);
     return res;
