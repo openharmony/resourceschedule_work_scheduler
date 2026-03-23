@@ -1035,6 +1035,8 @@ void WorkSchedulerService::DumpProcessForEngMode(std::vector<std::string> &argsI
                 DumpUsage(result);
             } else if (argsInStr[DUMP_OPTION] == "-a") {
                 DumpAllInfo(result);
+            } else if (argsInStr[DUMP_OPTION] == "-r") {
+                DumpParamRestore(result);
             } else {
                 result.append("Error params.");
             }
@@ -1120,6 +1122,7 @@ void WorkSchedulerService::DumpUsage(std::string &result)
     result.append("usage: workscheduler dump [<options>]\n")
         .append("    -h: show the help.\n")
         .append("    -a: show all info.\n")
+        .append("    -r: restore dump command settings.\n")
         .append("    -d event info: show the event info.\n")
         .append("    -d (eventType) (TypeValue): publish the event.\n")
         .append("    -t (bundleName) (abilityName): trigger the bundleName all works.\n")
@@ -1131,7 +1134,8 @@ void WorkSchedulerService::DumpUsage(std::string &result)
         .append("    -min_interval (number): set min interval time, set 0 means close test mode.\n")
         .append("    -cpu (number): set the usage cpu.\n")
         .append("    -count (number): set the max running task count.\n")
-        .append("    -s (saId) (uId): load or report sa.\n");
+        .append("    -s (saId) (uId): load or report sa.\n")
+        .append("    -thermalLevel (number): set the thermal level.\n");
 }
 
 void WorkSchedulerService::DumpAllInfo(std::string &result)
@@ -1274,30 +1278,49 @@ void WorkSchedulerService::DumpParamSet(std::string &key, std::string &value, st
         return;
     }
     if (key == "-memory") {
-        workPolicyManager_->SetMemoryByDump(std::stoi(value));
+        workPolicyManager_->SetMemoryByDump(std::atoi(value.c_str()));
         result.append("Set memory success.");
     } else if (key == "-watchdog_time") {
-        workPolicyManager_->SetWatchdogTimeByDump(std::stoi(value));
+        workPolicyManager_->SetWatchdogTimeByDump(std::atoi(value.c_str()));
         result.append("Set watchdog time success.");
     } else if (key == "-repeat_time_min") {
-        workQueueManager_->SetTimeCycle(std::stoi(value));
+        workQueueManager_->SetTimeCycle(std::atoi(value.c_str()));
         result.append("Set repeat time min value success.");
     } else if (key == "-min_interval") {
-        workQueueManager_->SetMinIntervalByDump(std::stoi(value));
+        workQueueManager_->SetMinIntervalByDump(std::atoi(value.c_str()));
         result.append("Set min interval value success.");
     } else if (key == "-cpu") {
-        workPolicyManager_->SetCpuUsageByDump(std::stoi(value));
+        workPolicyManager_->SetCpuUsageByDump(std::atoi(value.c_str()));
         result.append("Set cpu success.");
     } else if (key == "-nap") {
 #ifdef DEVICE_STANDBY_ENABLE
-        standbyStateObserver_->OnDeviceIdleMode(std::stoi(value), 0);
+        standbyStateObserver_->OnDeviceIdleMode(std::atoi(value.c_str()), 0);
 #endif
     } else if (key == "-count") {
-        workPolicyManager_->SetMaxRunningCountByDump(std::stoi(value));
+        workPolicyManager_->SetMaxRunningCountByDump(std::atoi(value.c_str()));
         result.append("Set max running task count success.");
+    } else if (key == "-thermalLevel") {
+        workPolicyManager_->SetThermalLevelByDump(std::atoi(value.c_str()));
+        result.append("Set thermal level success.");
     } else {
         result.append("Error params.");
     }
+}
+
+void WorkSchedulerService::DumpParamRestore(std::string &result)
+{
+    workPolicyManager_->SetMemoryByDump(INIT_DUMP_SET_MEMORY);
+    workPolicyManager_->SetWatchdogTimeByDump(0);
+#ifdef PC_PLATFORM
+    workQueueManager_->SetTimeCycle(SYS_APP_MIN_REPEAT_TIME);
+#else
+    workQueueManager_->SetTimeCycle(TIME_CYCLE);
+#endif
+    workQueueManager_->SetMinIntervalByDump(0);
+    workPolicyManager_->SetCpuUsageByDump(INIT_DUMP_SET_CPU);
+    workPolicyManager_->SetMaxRunningCountByDump(-1);
+    workPolicyManager_->SetThermalLevelByDump(INIT_DUMP_SET_THERMAL_LEVEL);
+    result.append("Restore params success.");
 }
 
 void WorkSchedulerService::RefreshPersistedWorks()
