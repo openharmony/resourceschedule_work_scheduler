@@ -520,9 +520,11 @@ void Common::GetConditionInfo(napi_env env, std::shared_ptr<WorkInfo> &workInfo,
     }
 
     // Set isDeepIdle info.
-    napi_value napiIsDeepIdleRequest = nullptr;
-    napi_get_boolean(env, workInfo->GetDeepIdle() == WorkCondition::DeepIdle::DEEP_IDLE_IN, &napiIsDeepIdleRequest);
-    napi_set_named_property(env, napiWork, "isDeepIdle", napiIsDeepIdleRequest);
+    if (workInfo->GetDeepIdle() != WorkCondition::DeepIdle::DEEP_IDLE_UNKNOWN) {
+        napi_value napiIsDeepIdleRequest = nullptr;
+        napi_get_boolean(env, workInfo->GetDeepIdle() == WorkCondition::DeepIdle::DEEP_IDLE_IN, &napiIsDeepIdleRequest);
+        napi_set_named_property(env, napiWork, "isDeepIdle", napiIsDeepIdleRequest);
+    }   
 }
 
 napi_value Common::GetCallbackErrorValue(napi_env env, int32_t errCode, const std::string errMsg)
