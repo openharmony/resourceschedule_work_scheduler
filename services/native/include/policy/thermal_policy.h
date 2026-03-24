@@ -32,7 +32,11 @@ public:
      */
     int32_t GetPolicyMaxRunning(WorkSchedSystemPolicy& systemPolicy) override;
 private:
+    int32_t GetThermalLevel();
+    int32_t GetCurThermalLevelMaxRunning(int32_t thermalLevel);
     std::shared_ptr<WorkPolicyManager> workPolicyManager_;
+    /* ordered output during map traversal */
+    std::map<int32_t, int32_t> thermalLevelMap_ {};
 };
 } // namespace WorkScheduler
 } // namespace OHOS

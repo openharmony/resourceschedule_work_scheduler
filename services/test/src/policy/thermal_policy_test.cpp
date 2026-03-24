@@ -39,6 +39,10 @@ ThermalLevel ThermalMgrClient::GetThermalLevel()
 }
 }
 namespace WorkScheduler {
+const int32_t COUNT_THERMAL_CRUCIAL = 0;
+const int32_t COUNT_THERMAL_LOW = 1;
+const int32_t COUNT_THERMAL_MIDDLE = 2;
+const int32_t COUNT_THERMAL_NORMAL = 3;
 class ThermalPolicyTest : public testing::Test {
 public:
     static void SetUpTestCase();
@@ -71,7 +75,11 @@ HWTEST_F(ThermalPolicyTest, GetPolicyMaxRunning_001, TestSize.Level1)
     WorkSchedSystemPolicy systemPolicy;
     MockProcess(PowerMgr::ThermalLevel::WARM);
     int32_t ret = thermalPolicy_->GetPolicyMaxRunning(systemPolicy);
-    EXPECT_EQ(ret, 0);
+#ifdef PC_PLATFORM
+    EXPECT_EQ(ret, COUNT_THERMAL_NORMAL);
+#else
+    EXPECT_EQ(ret, COUNT_THERMAL_CRUCIAL);
+#endif
 }
 
 /**
@@ -85,7 +93,11 @@ HWTEST_F(ThermalPolicyTest, GetPolicyMaxRunning_002, TestSize.Level1)
     WorkSchedSystemPolicy systemPolicy;
     MockProcess(PowerMgr::ThermalLevel::NORMAL);
     int32_t ret = thermalPolicy_->GetPolicyMaxRunning(systemPolicy);
-    EXPECT_EQ(ret, 1);
+#ifdef PC_PLATFORM
+    EXPECT_EQ(ret, COUNT_THERMAL_NORMAL);
+#else
+    EXPECT_EQ(ret, COUNT_THERMAL_LOW);
+#endif
 }
 
 /**
@@ -99,7 +111,86 @@ HWTEST_F(ThermalPolicyTest, GetPolicyMaxRunning_003, TestSize.Level1)
     WorkSchedSystemPolicy systemPolicy;
     MockProcess(PowerMgr::ThermalLevel::COOL);
     int32_t ret = thermalPolicy_->GetPolicyMaxRunning(systemPolicy);
-    EXPECT_EQ(ret, 3);
+    EXPECT_EQ(ret, COUNT_THERMAL_NORMAL);
+}
+
+/**
+ * @tc.name: GetPolicyMaxRunning_004
+ * @tc.desc: Test ThermalPolicy GetPolicyMaxRunning.
+ * @tc.type: FUNC
+ * @tc.require: I974IQ
+ */
+HWTEST_F(ThermalPolicyTest, GetPolicyMaxRunning_004, TestSize.Level1)
+{
+    WorkSchedSystemPolicy systemPolicy;
+    MockProcess(PowerMgr::ThermalLevel::HOT);
+    int32_t ret = thermalPolicy_->GetPolicyMaxRunning(systemPolicy);
+#ifdef PC_PLATFORM
+    EXPECT_EQ(ret, COUNT_THERMAL_MIDDLE);
+#else
+    EXPECT_EQ(ret, COUNT_THERMAL_CRUCIAL);
+#endif
+}
+
+/**
+ * @tc.name: GetPolicyMaxRunning_005
+ * @tc.desc: Test ThermalPolicy GetPolicyMaxRunning.
+ * @tc.type: FUNC
+ * @tc.require: I974IQ
+ */
+HWTEST_F(ThermalPolicyTest, GetPolicyMaxRunning_005, TestSize.Level1)
+{
+    WorkSchedSystemPolicy systemPolicy;
+    MockProcess(PowerMgr::ThermalLevel::OVERHEATED);
+    int32_t ret = thermalPolicy_->GetPolicyMaxRunning(systemPolicy);
+#ifdef PC_PLATFORM
+    EXPECT_EQ(ret, COUNT_THERMAL_LOW);
+#else
+    EXPECT_EQ(ret, COUNT_THERMAL_CRUCIAL);
+#endif
+}
+
+/**
+ * @tc.name: GetPolicyMaxRunning_006
+ * @tc.desc: Test ThermalPolicy GetPolicyMaxRunning.
+ * @tc.type: FUNC
+ * @tc.require: I974IQ
+ */
+HWTEST_F(ThermalPolicyTest, GetPolicyMaxRunning_006, TestSize.Level1)
+{
+    WorkSchedSystemPolicy systemPolicy;
+    MockProcess(PowerMgr::ThermalLevel::WARNING);
+    int32_t ret = thermalPolicy_->GetPolicyMaxRunning(systemPolicy);
+    EXPECT_EQ(ret, COUNT_THERMAL_CRUCIAL);
+}
+
+/**
+ * @tc.name: GetPolicyMaxRunning_007
+ * @tc.desc: Test ThermalPolicy GetPolicyMaxRunning.
+ * @tc.type: FUNC
+ * @tc.require: I974IQ
+ */
+HWTEST_F(ThermalPolicyTest, GetPolicyMaxRunning_007, TestSize.Level1)
+{
+    WorkSchedSystemPolicy systemPolicy;
+    workPolicyManager_->SetThermalLevelByDump(0);
+    int32_t ret = thermalPolicy_->GetPolicyMaxRunning(systemPolicy);
+    EXPECT_EQ(ret, COUNT_THERMAL_NORMAL);
+}
+
+/**
+ * @tc.name: GetPolicyMaxRunning_008
+ * @tc.desc: Test ThermalPolicy GetPolicyMaxRunning.
+ * @tc.type: FUNC
+ * @tc.require: I974IQ
+ */
+HWTEST_F(ThermalPolicyTest, GetPolicyMaxRunning_008, TestSize.Level1)
+{
+    WorkSchedSystemPolicy systemPolicy;
+    MockProcess(PowerMgr::ThermalLevel::COOL);
+    workPolicyManager_->SetThermalLevelByDump(-1);
+    int32_t ret = thermalPolicy_->GetPolicyMaxRunning(systemPolicy);
+    EXPECT_EQ(ret, COUNT_THERMAL_NORMAL);
 }
 }
 }

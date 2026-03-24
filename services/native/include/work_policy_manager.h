@@ -299,6 +299,18 @@ public:
     std::list<std::shared_ptr<WorkStatus>> GetDeepIdleWorks();
     bool FindWork(int32_t uid);
     bool FindWork(const int32_t userId, const std::string &bundleName);
+    /**
+     * @brief Set thermal level by dump.
+     *
+     * @param thermalLevel The thermalLevel.
+     */
+    void SetThermalLevelByDump(int32_t thermalLevel);
+    /**
+     * @brief Get dump set thermalLevel.
+     *
+     * @return Dump set thermalLevel.
+     */
+    int32_t GetDumpSetThermalLevel();
 private:
     int32_t GetMaxRunningCount(WorkSchedSystemPolicy& systemPolicy);
     int32_t GetRunningCount();
@@ -350,6 +362,7 @@ private:
     std::atomic<int32_t> watchdogTime_ {WATCHDOG_TIME};
     int32_t dumpSetCpu_;
     int32_t dumpSetMaxRunningCount_;
+    int32_t dumpSetThermalLevel_;
 
     ffrt::recursive_mutex ideDebugListMutex_;
     std::list<std::shared_ptr<WorkStatus>> ideDebugList;
