@@ -49,6 +49,7 @@ WorkPolicyManager::WorkPolicyManager(const std::shared_ptr<WorkSchedulerService>
     watchdogTime_.store(WATCHDOG_TIME);
     dumpSetCpu_ = INIT_DUMP_SET_CPU;
     dumpSetMaxRunningCount_ = INVALID_VALUE;
+    dumpSetThermalLevel_ = INIT_DUMP_SET_THERMAL_LEVEL;
 }
 
 bool WorkPolicyManager::Init(const std::shared_ptr<AppExecFwk::EventRunner>& runner)
@@ -740,6 +741,16 @@ int32_t WorkPolicyManager::GetDumpSetMaxRunningCount()
 void WorkPolicyManager::SetMaxRunningCountByDump(int32_t count)
 {
     dumpSetMaxRunningCount_ = count;
+}
+
+int32_t WorkPolicyManager::GetDumpSetThermalLevel()
+{
+    return dumpSetThermalLevel_;
+}
+
+void WorkPolicyManager::SetThermalLevelByDump(int32_t thermalLevel)
+{
+    dumpSetThermalLevel_ = thermalLevel;
 }
 
 void WorkPolicyManager::SetWatchdogTimeByDump(int32_t time)
