@@ -115,7 +115,9 @@ std::string WorkPolicyManager::GetConditionString(const shared_ptr<WorkStatus> w
     if (workStatus->workInfo_->GetConditionMap()->count(WorkCondition::Type::DEEP_IDLE) > 0) {
         conditions.append("DEEP_IDLE-");
     }
-    conditions.pop_back();
+    if (!conditions.empty()) {
+        conditions.pop_back();
+    }
     return conditions;
 }
 
