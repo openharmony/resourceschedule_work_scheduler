@@ -1,3 +1,6 @@
+CODEAGENT.md
+This file provides guidance to CodeAgent when working with code in this reposity.
+
 # AGENTS.md - Work Scheduler 代码库指南
 
 ## 项目概述
