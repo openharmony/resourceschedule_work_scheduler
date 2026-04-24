@@ -172,7 +172,7 @@
 | MemoryPolicy | memory_policy.h | 内存压力限制运行数 |
 | ThermalPolicy | thermal_policy.h | 过热状态限制运行数 |
 | CpuPolicy | cpu_policy.h | CPU 占用过高限制 |
-| AppDataClearListener | app_data_clear_listener.h | 应用数据清除时清理任务 |
+| AppDataClearListener | app_data_clear_listener.h | 监听应用更新、应用退出、用户切换等场景清理任务 |
 
 **IPolicyFilter 接口：**
 - `GetPolicyMaxRunning(WorkSchedSystemPolicy)`：获取策略允许的最大运行数
