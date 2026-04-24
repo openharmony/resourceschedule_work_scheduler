@@ -2,7 +2,7 @@
 
 ## 项目概述
 
-Work Scheduler 是 OpenHarmony/HarmonyOS 系统组件，用于调度延迟任务。当应用需要执行非实时性任务（如设备空闲时的数据学习）时，可使用 Work Scheduler。当应用设置的条件满足时，系统会根据当前状态（内存、功耗、发热等）统一决定调度时间。
+Work Scheduler 是 OpenHarmony/HarmonyOS 系统组件，用于调度延迟任务。当应用需要执行非实时性任务（如有网络时不定期主动获取邮件等）时，可使用 Work Scheduler。当应用设置的条件满足时，系统会根据当前状态（内存、功耗、设备温度、定时状态等）统一决定调度时间。
 
 - **子系统**: resourceschedule
 - **部件**: work_scheduler
