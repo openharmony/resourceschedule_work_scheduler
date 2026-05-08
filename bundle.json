@@ -51,7 +51,8 @@
           "hitrace",
           "power_manager",
           "resource_schedule_service",
-          "runtime_core"
+          "runtime_core",
+          "ets_frontend"
         ]
       },
       "build": {
