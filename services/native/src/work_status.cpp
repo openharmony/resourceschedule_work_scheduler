@@ -517,7 +517,7 @@ bool WorkStatus::IsMailApp()
     }
     std::vector<int32_t> pkgTypes;
     if (reply.contains("thirdKindIds") && reply.at("thirdKindIds").is_array()) {
-        pkgType = reply["thirdKindIds"].get<std::vector<int32_t>>();
+        pkgTypes = reply["thirdKindIds"].get<std::vector<int32_t>>();
     } else {
         WS_HILOGD("no thirdKindIds");
     }
@@ -526,7 +526,7 @@ bool WorkStatus::IsMailApp()
     for (size_t i = 0; i < pkgTypes.size(); ++i) {
         pkgTypesStr += std::to_string(pkgTypes[i]);
         if (i < pkgTypes.size() - 1) {
-            pkgTypesStr += ",";
+            pkgTypesStr += ", ";
         }
     }
     pkgTypesStr += "]";
