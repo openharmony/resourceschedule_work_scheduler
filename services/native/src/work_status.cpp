@@ -515,14 +515,29 @@ bool WorkStatus::IsMailApp()
         WS_HILOGE("getapp type err:%{public}d", ret);
         return false;
     }
-    int32_t pkgType = -1;
-    if (reply.contains("thirdKindId") && reply.at("thirdKindId").is_number_integer()) {
-        pkgType = reply["thirdKindId"].get<int32_t>();
+    std::vector<int32_t> pkgTypes;
+    if (reply.contains("thirdKindIds") && reply.at("thirdKindIds").is_array()) {
+        pkgType = reply["thirdKindIds"].get<std::vector<int32_t>>();
     } else {
-        WS_HILOGD("no thirdKindId");
+        WS_HILOGD("no thirdKindIds");
     }
-    WS_HILOGD("IsMailApp type bundleName_:%{public}s, pkgType:%{public}d", bundleName_.c_str(), pkgType);
-    return pkgType == GroupConst::APP_TYPE_EMAIL;
+
+    std::string pkgTypesStr = "[";
+    for (size_t i = 0; i < pkgTypes.size(); ++i) {
+        pkgTypesStr += std::to_string(pkgTypes[i]);
+        if (i < pkgTypes.size() - 1) {
+            pkgTypesStr += ",";
+        }
+    }
+    pkgTypesStr += "]";
+    WS_HILOGD("IsMailApp type bundleName_:%{public}s, pkgTypes:%{public}s", bundleName_.c_str(), pkgTypesStr.c_str());
+
+    for (const auto& type : pkgTypes) {
+        if (type == GroupConst::APP_TYPE_EMAIL) {
+            return true;
+        }
+    }
+    return false;
 }
 #endif
 
