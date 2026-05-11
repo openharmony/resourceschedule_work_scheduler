@@ -830,6 +830,7 @@ void WorkPolicyManager::TriggerIdeWork()
         watchdogTime_.store(time);
     } else {
         WS_HILOGE("TriggerIdeWork error");
+        topWork->MarkStatus(WorkStatus::Status::WAIT_CONDITION);
         ideDebugList.clear();
         return;
     }
