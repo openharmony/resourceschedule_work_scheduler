@@ -76,23 +76,23 @@ napi_value CreatAndQueueAsyncWork(napi_env env, AsyncCallbackIsLastWorkTimeOut* 
 
     NAPI_CALL(env, napi_create_async_work(env, nullptr, resourceName,
         [](napi_env env, void *data) {
-            AsyncCallbackIsLastWorkTimeOut *asyncCallbackInfo = static_cast<AsyncCallbackIsLastWorkTimeOut *>(data);
-            asyncCallbackInfo->errorCode =
-                WorkSchedulerSrvClient::GetInstance().IsLastWorkTimeout(asyncCallbackInfo->workId,
-                asyncCallbackInfo->result);
-            asyncCallbackInfo->errorMsg = Common::FindErrMsg(env, asyncCallbackInfo->errorCode);
+            AsyncCallbackIsLastWorkTimeOut *callbackInfo = static_cast<AsyncCallbackIsLastWorkTimeOut *>(data);
+            callbackInfo->errorCode =
+                WorkSchedulerSrvClient::GetInstance().IsLastWorkTimeout(callbackInfo->workId,
+                callbackInfo->result);
+            callbackInfo->errorMsg = Common::FindErrMsg(env, callbackInfo->errorCode);
         },
         [](napi_env env, napi_status status, void *data) {
-            AsyncCallbackIsLastWorkTimeOut *asyncCallbackInfo = static_cast<AsyncCallbackIsLastWorkTimeOut *>(data);
-            std::unique_ptr<AsyncCallbackIsLastWorkTimeOut> callbackPtr {asyncCallbackInfo};
-            if (asyncCallbackInfo != nullptr) {
+            AsyncCallbackIsLastWorkTimeOut *callbackInfo = static_cast<AsyncCallbackIsLastWorkTimeOut *>(data);
+            std::unique_ptr<AsyncCallbackIsLastWorkTimeOut> callbackPtr {callbackInfo};
+            if (callbackInfo != nullptr) {
                 napi_value result = nullptr;
-                if (asyncCallbackInfo->errorCode != ERR_OK) {
+                if (callbackInfo->errorCode != ERR_OK) {
                     result = Common::NapiGetNull(env);
                 } else {
-                    napi_get_boolean(env, asyncCallbackInfo->result, &result);
+                    napi_get_boolean(env, callbackInfo->result, &result);
                 }
-                Common::ReturnCallbackPromise(env, *asyncCallbackInfo, result);
+                Common::ReturnCallbackPromise(env, *callbackInfo, result);
             }
         },
         static_cast<AsyncCallbackIsLastWorkTimeOut *>(asyncCallbackInfo),
