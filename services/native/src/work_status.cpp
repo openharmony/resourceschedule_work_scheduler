@@ -849,7 +849,7 @@ bool WorkStatus::IsSpecial()
             WS_HILOGE("parameters type not supported.");
             continue;
         }
-        if (pair.first == "executeImmediate") {
+        if (pair.first == EXECUTE_IMMEDIATE) {
             return AAFwk::WantParams::GetStringByType(pair.second, typeId) == "false";
         }
     }
