@@ -37,6 +37,14 @@ export class WorkInfoInner implements workScheduler.WorkInfo {
 }
 """)
 
+@!sts_inject("""
+const WORK_SCHEDULER_CONDITION: string = 'WORK_SCHEDULER_CONDITION';
+""")
+
+@!sts_inject("""
+const EXECUTE_IMMEDIATE: string = 'executeImmediate';
+""")
+
 enum NetworkType : i32 {
   NETWORK_TYPE_ANY = 0,
   NETWORK_TYPE_MOBILE,

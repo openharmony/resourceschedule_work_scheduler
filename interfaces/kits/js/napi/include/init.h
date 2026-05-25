@@ -35,6 +35,7 @@ napi_value InitBatteryStatus(napi_env env, napi_value exports);
 napi_value EnumBatteryStatusConstructor(napi_env env, napi_callback_info info);
 napi_value InitStorageRequest(napi_env env, napi_value exports);
 napi_value EnumStorageRequestConstructor(napi_env env, napi_callback_info info);
+napi_value InitConstProperties(napi_env env, napi_value exports);
 
 #ifdef __cplusplus
 }
