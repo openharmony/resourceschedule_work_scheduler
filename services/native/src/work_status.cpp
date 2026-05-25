@@ -516,19 +516,18 @@ bool WorkStatus::IsMailApp()
         return false;
     }
     std::vector<int32_t> pkgTypes;
+    std::string pkgTypesStr = "[";
     if (reply.contains("thirdKindIds") && reply.at("thirdKindIds").is_array()) {
-        pkgTypes = reply["thirdKindIds"].get<std::vector<int32_t>>();
+        for (const auto &kindId : reply["thirdKindIds"]) {
+            if (kindId.is_number_integer()) {
+                pkgTypes.emplace_back(kindId.get<int32_t>());
+                pkgTypesStr += std::to_string(kindId.get<int32_t>());
+            }
+        }
     } else {
         WS_HILOGD("no thirdKindIds");
     }
 
-    std::string pkgTypesStr = "[";
-    for (size_t i = 0; i < pkgTypes.size(); ++i) {
-        pkgTypesStr += std::to_string(pkgTypes[i]);
-        if (i < pkgTypes.size() - 1) {
-            pkgTypesStr += ", ";
-        }
-    }
     pkgTypesStr += "]";
     WS_HILOGD("IsMailApp type bundleName_:%{public}s, pkgTypes:%{public}s", bundleName_.c_str(), pkgTypesStr.c_str());
 
