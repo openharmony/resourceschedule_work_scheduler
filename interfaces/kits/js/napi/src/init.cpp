@@ -74,7 +74,7 @@ napi_value InitConstProperties(napi_env env, napi_value exports)
         DECLARE_NAPI_PROPERTY("WORK_SCHEDULER_CONDITION", workSchedulerCondition),
         DECLARE_NAPI_PROPERTY("EXECUTE_IMMEDIATE", executeImmediate),
     };
-    napi_define_properties(env, exports, sizeof(properties) / sizeof(*properties), properties);
+    NAPI_CALL(env, napi_define_properties(env, exports, sizeof(properties) / sizeof(*properties), properties));
     return exports;
 }
 
