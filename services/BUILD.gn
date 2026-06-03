@@ -71,6 +71,7 @@ ohos_shared_library("workschedservice") {
     "native/src/work_scheduler_service.cpp",
     "native/src/work_standby_state_change_callback.cpp",
     "native/src/work_status.cpp",
+    
   ]
 
   configs = [ ":worksched_private_config" ]
