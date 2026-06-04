@@ -214,7 +214,6 @@ void WorkSchedulerService::InitPersistedWork()
 void WorkSchedulerService::InitPreinstalledWork()
 {
     WS_HILOGD("init preinstalled work");
-    std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
     list<shared_ptr<WorkInfo>> preinstalledWorks = ReadPreinstalledWorks();
     for (auto work : preinstalledWorks) {
         WS_HILOGI("preinstalled workinfo id %{public}s, isSa:%{public}d", work->GetBriefInfo().c_str(), work->IsSA());
@@ -224,6 +223,7 @@ void WorkSchedulerService::InitPreinstalledWork()
         AddWorkInner(*work);
         if (work->IsPersisted()) {
             string workId = "u" + to_string(work->GetUid()) + "_" + to_string(work->GetWorkId());
+            std::lock_guard<ffrt::recursive_mutex> lock(mutex_);
             persistedMap_.emplace(workId, work);
         }
     }
