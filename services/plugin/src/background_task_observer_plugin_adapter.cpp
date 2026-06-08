@@ -22,9 +22,10 @@ namespace OHOS {
 namespace WorkScheduler {
 IMPLEMENT_SINGLE_INSTANCE(BackgroundTaskObserverPluginAdapter)
 using namespace OHOS::ResourceSchedule;
+using namespace OHOS::BackgroundTaskMgr;
 
-std::shared_ptr<BackgroundTaskMgr::ResourceCallbackInfo>
-    BackgroundTaskObserverPluginAdapter::UnmarshallingResourceCallbackInfo(const nlohmann::json& payload)
+std::shared_ptr<ResourceCallbackInfo> BackgroundTaskObserverPluginAdapter::UnmarshallingResourceCallbackInfo(
+    const nlohmann::json& payload)
 {
     int32_t uid = 0;
     int32_t pid = 0;
