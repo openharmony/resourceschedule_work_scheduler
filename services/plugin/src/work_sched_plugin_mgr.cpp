@@ -56,9 +56,6 @@ void WorkSchedPluginMgr::DispatchResource(const std::shared_ptr<ResourceSchedule
         return;
     }
 
-    WS_HILOGD("WorkSchedPluginMgr dispatch resource, type: %{public}u, value: %{public}ld",
-        resData->resType, resData->value);
-
     if (resData->resType == ResType::RES_TYPE_EFFICIENCY_RESOURCES_STATE_CHANGED) {
         BackgroundTaskObserverPluginAdapter::GetInstance().OnEfficiencyResourcesStateChanged(
             resData->value, resData->payload);
