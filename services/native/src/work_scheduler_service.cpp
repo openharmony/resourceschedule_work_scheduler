@@ -65,6 +65,7 @@
 #include "scheduler_bg_task_subscriber.h"
 #include "background_task_mgr_helper.h"
 #include "resource_type.h"
+#include "work_sched_plugin_mgr.h"
 #endif
 #include "work_datashare_helper.h"
 #include "work_scheduler_connection.h"
@@ -451,13 +452,6 @@ void WorkSchedulerService::OnStop()
     DevStandbyMgr::StandbyServiceClient::GetInstance().UnsubscribeStandbyCallback(standbyStateObserver_);
     standbyStateObserver_ = nullptr;
 #endif
-#ifdef RESOURCESCHEDULE_BGTASKMGR_ENABLE
-    ErrCode ret = BackgroundTaskMgr::BackgroundTaskMgrHelper::UnsubscribeBackgroundTask(*subscriber_);
-    if (ret != ERR_OK) {
-        WS_HILOGE("unscribe bgtask failed.");
-        WorkSchedUtil::HiSysEventException(EventErrorCode::SERVICE_STOP, "unsubscribe background task failed");
-    }
-#endif
     eventRunner_.reset();
     handler_.reset();
     ready_.store(false);
@@ -484,27 +478,20 @@ bool WorkSchedulerService::Init(const std::shared_ptr<AppExecFwk::EventRunner>& 
     }
     checkBundle_.store(true);
     ready_.store(true);
-    WS_HILOGI("start init background task subscriber!");
-    if (!InitBgTaskSubscriber()) {
-        WS_HILOGE("subscribe background task failed!");
+    WS_HILOGI("start init workSched plugin!");
+    if (!InitWorkSchedPluginMgr()) {
+        WS_HILOGE("init workSched plugin failed!");
         return false;
     }
     WS_HILOGI("init success.");
     return true;
 }
 
-bool WorkSchedulerService::InitBgTaskSubscriber()
+bool WorkSchedulerService::InitWorkSchedPluginMgr()
 {
 #ifdef RESOURCESCHEDULE_BGTASKMGR_ENABLE
-    subscriber_ = make_shared<SchedulerBgTaskSubscriber>();
-    ErrCode ret = BackgroundTaskMgr::BackgroundTaskMgrHelper::SubscribeBackgroundTask(*subscriber_);
-    if (ret != ERR_OK) {
-        WS_HILOGE("SubscribeBackgroundTask failed.");
-        WorkSchedUtil::HiSysEventException(EventErrorCode::SERVICE_INIT, "subscribe background task failed");
-        return false;
-    }
     this->QueryResAppliedUid();
-    WS_HILOGD("subscribe background TASK success!");
+    WS_HILOGD("WorkSchedPluginMgr init success!");
 #endif
     return true;
 }

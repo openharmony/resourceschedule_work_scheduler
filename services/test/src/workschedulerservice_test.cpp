@@ -953,14 +953,14 @@ HWTEST_F(WorkSchedulerServiceTest, LoadSa_001, TestSize.Level1)
 }
 
 /**
- * @tc.name: InitBgTaskSubscriber_001
- * @tc.desc: Test WorkSchedulerService InitBgTaskSubscriber.
+ * @tc.name: InitWorkSchedPluginMgr_001
+ * @tc.desc: Test WorkSchedulerService InitWorkSchedPluginMgr.
  * @tc.type: FUNC
  * @tc.require: IAJSVG
  */
-HWTEST_F(WorkSchedulerServiceTest, InitBgTaskSubscriber_001, TestSize.Level1)
+HWTEST_F(WorkSchedulerServiceTest, InitWorkSchedPluginMgr_001, TestSize.Level1)
 {
-    bool ret = workSchedulerService_->InitBgTaskSubscriber();
+    bool ret = workSchedulerService_->InitWorkSchedPluginMgr();
     EXPECT_TRUE(ret);
 }
 
