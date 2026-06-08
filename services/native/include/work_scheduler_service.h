@@ -244,12 +244,12 @@ public:
     void UpdateEffiResApplyInfo(int32_t uid, bool isAdd);
 
     /**
-     * @brief init background task subscriber, subscribe self to bgtask service
+     * @brief init workSched plugin
      *
-     * @return true seccess to init subscriber
-     * @return false fail to init subscriber
+     * @return true seccess to init workSched plugin
+     * @return false fail to init workSched plugin
      */
-    bool InitBgTaskSubscriber();
+    bool InitWorkSchedPluginMgr();
 
     /**
      * @brief check uid has work_scheduler resources or not

@@ -20,6 +20,7 @@ config("worksched_private_config") {
   include_dirs = [
     "${worksched_service_path}/zidl/include",
     "${worksched_service_path}/native/include",
+    "${worksched_service_path}/plugin/include",
   ]
 }
 
@@ -64,9 +65,9 @@ ohos_unittest("WorkScheduleServiceTest") {
     "src/work_scheduler_connection_test.cpp",
     "src/work_standby_state_change_callback_test.cpp",
     "src/work_status_test.cpp",
+    "src/work_sched_plugin_mgr_test.cpp",
     "src/workschedulerservice_test.cpp",
     "src/zidl/work_scheduler_proxy_test.cpp",
-    
   ]
 
   deps = [
@@ -94,6 +95,7 @@ ohos_unittest("WorkScheduleServiceTest") {
     "hilog:libhilog",
     "hisysevent:libhisysevent",
     "ipc:ipc_single",
+    "resource_schedule_service:resschedsvc",
     "resource_schedule_service:ressched_common_utils",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
