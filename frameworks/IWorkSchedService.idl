@@ -14,6 +14,7 @@
  */
 
 sequenceable work_info..OHOS.WorkScheduler.WorkInfo;
+sequenceable background_loader_task_info..OHOS.WorkScheduler.BackgroundLoaderTaskInfo;
 interface OHOS.WorkScheduler.IWorkSchedService {
     void StartWork([in] WorkInfo workInfo);
     void StartWorkForInner([in] WorkInfo workInfo);
@@ -30,4 +31,8 @@ interface OHOS.WorkScheduler.IWorkSchedService {
     void ResumePausedWorks([in] int uid);
     void SetWorkSchedulerConfig([in] String configData, [in] int sourceType);
     void StopWorkForSA([in] int saId);
+    void RegisterTask([in] BackgroundLoaderTaskInfo taskInfo);
+    void UnregisterTask([in] BackgroundLoaderTaskInfo taskInfo);
+    void FinishTask([in] BackgroundLoaderTaskInfo taskInfo);
+    void GetTaskInfo([in] int taskId, [out] BackgroundLoaderTaskInfo taskInfo);
 }

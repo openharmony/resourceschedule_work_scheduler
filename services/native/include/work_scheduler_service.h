@@ -34,6 +34,8 @@
 #include "work_event_handler.h"
 #include "singleton.h"
 #include "work_standby_state_change_callback.h"
+#include "background_loader_mgr.h"
+#include "background_loader_task_info.h"
 #include "ffrt.h"
 
 namespace OHOS {
@@ -321,6 +323,10 @@ public:
      */
     int32_t StopWorkForSA(int32_t saId) override;
     bool StopWorkInner(std::shared_ptr<WorkStatus> workStatus, int32_t uid, const bool needCancel, bool isTimeOut);
+    int32_t RegisterTask(const BackgroundLoaderTaskInfo& taskInfo) override;
+    int32_t UnregisterTask(const BackgroundLoaderTaskInfo& taskInfo) override;
+    int32_t FinishTask(const BackgroundLoaderTaskInfo& taskInfo) override;
+    int32_t GetTaskInfo(int32_t taskId, BackgroundLoaderTaskInfo& taskInfo) override;
     bool NeedCreateTimer(int32_t saId, int32_t uid, int32_t time);
     bool HasDeepIdleTime();
     std::map<int32_t, std::pair<int32_t, int32_t>> GetDeepIdleTimeMap();
@@ -330,6 +336,8 @@ private:
     bool WorkPolicyManagerInit(const std::shared_ptr<AppExecFwk::EventRunner>& runner);
     void OnAddSystemAbility(int32_t systemAbilityId, const std::string& deviceId) override;
     void OnRemoveSystemAbility(int32_t systemAbilityId, const std::string& deviceId) override;
+    bool VerifyAbilityName(const std::string& bundleName, const std::string& abilityName, int32_t appIndex);
+    bool VerifyTaskInfo(const TaskInfo& taskInfo);
 #ifdef DEVICE_USAGE_STATISTICS_ENABLE
     void GroupObserverInit();
 #endif
@@ -368,6 +376,7 @@ private:
     void DumpTriggerWork(const std::string& uIdStr, const std::string& workIdStr, std::string& result);
     void ReportUserDataSizeEvent();
     void DumpParamRestore(std::string& result);
+    bool CheckPermission(const std::string &permission);
 
 private:
     std::set<int32_t> whitelist_;
@@ -377,6 +386,7 @@ private:
 #endif
     std::shared_ptr<WorkQueueManager> workQueueManager_;
     std::shared_ptr<WorkPolicyManager> workPolicyManager_;
+    std::shared_ptr<BackgroundLoaderMgr> backgroundLoaderMgr_;
     ffrt::recursive_mutex mutex_;
     ffrt::mutex observerMutex_;
     std::map<std::string, std::shared_ptr<WorkInfo>> persistedMap_;

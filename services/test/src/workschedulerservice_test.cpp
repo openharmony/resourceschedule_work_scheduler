@@ -48,6 +48,7 @@
 #include "work_sched_errors.h"
 #include "work_sched_hilog.h"
 #include "work_policy_manager.h"
+#include "background_loader_task_info.h"
 
 #ifdef DEVICE_STANDBY_ENABLE
 namespace OHOS {
@@ -135,6 +136,10 @@ class MyWorkSchedulerService : public WorkSchedServiceStub {
     int32_t StopWorkForSA(int32_t saId) { return 0; }
     int32_t StartWorkForInner(const WorkInfo& workInfo) { return 0; }
     int32_t StopWorkForInner(const WorkInfo& workInfo, bool needCancel) { return 0; }
+    int32_t RegisterTask(const BackgroundLoaderTaskInfo& taskInfo)  { return 0; }
+    int32_t UnregisterTask(const BackgroundLoaderTaskInfo& taskInfo)  { return 0; }
+    int32_t FinishTask(const BackgroundLoaderTaskInfo& taskInfo) { return 0; }
+    int32_t GetTaskInfo(int32_t taskId, BackgroundLoaderTaskInfo& taskInfo)  { return 0; }
 };
 /**
  * @tc.name: onStart_001
