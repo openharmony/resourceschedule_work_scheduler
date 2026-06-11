@@ -40,13 +40,13 @@ BackgroundLoaderMgr& BackgroundLoaderMgr::GetInstance()
     return *instance;
 }
 
-void BackgroundLoaderMgr::init()
+void BackgroundLoaderMgr::Init()
 {
     WS_HILOGI("BackgroundLoaderMgr init");
     isReady_.store(true);
 }
 
-std::string BackgroundLoaderMgr::GenerateTaskKey(const std::string& bundlelName, int32_t appIndex, int32_t taskId)
+std::string BackgroundLoaderMgr::GenerateTaskKey(const std::string& bundleName, int32_t appIndex, int32_t taskId)
 {
     return bundleName + "_" + std::to_string(taskId) + "_" + std::to_string(appIndex);
 }
@@ -119,11 +119,11 @@ ErrCode BackgroundLoaderMgr::GetTaskInfo(int32_t taskId, const std::string& bund
     }
 
     std::lock_guard<std::mutex> lock(taskLock_);
-    std::string key = GenerateTaskKey(bundleName, taskInfo.appIndex, taskId_);
+    std::string key = GenerateTaskKey(bundleName, appIndex, taskId);
     auto it = taskMap_.find(key);
     if (it != taskMap_.end()) {
         TaskInfo info = it->second;
-        BackgroundLoaderTaskInfo newInfo(info.taskId_, info.abilityName);
+        BackgroundLoaderTaskInfo newInfo(info.taskId_, info.abilityName_);
         taskInfo = newInfo;
         return ERR_OK;
     }

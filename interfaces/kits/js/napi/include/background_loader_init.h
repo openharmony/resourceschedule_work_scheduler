@@ -43,7 +43,7 @@ enum StopCode : uint32_t {
     PERCEIVABLE_ERROR = 2,
     TIMEROUT_ERROR = 3,
     EXECUTE_ERROR = 4
-}
+};
 
 /*
  * Module define
