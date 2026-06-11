@@ -38,11 +38,11 @@ namespace OHOS {
 namespace WorkScheduler {
 
 enum StopCode : uint32_t {
-  SUCCESS = 0,
-  SYSTEM_ERROR = 1,
-  PERCEIVABLE_ERROR = 2,
-  TIMEROUT_ERROR = 3,
-  EXECUTE_ERROR = 4
+    SUCCESS = 0,
+    SYSTEM_ERROR = 1,
+    PERCEIVABLE_ERROR = 2,
+    TIMEROUT_ERROR = 3,
+    EXECUTE_ERROR = 4
 }
 
 /*

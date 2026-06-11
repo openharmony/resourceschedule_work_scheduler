@@ -1939,11 +1939,12 @@ int32_t WorkSchedulerService::RegisterTask(const BackgroundLoaderTaskInfo& taskI
     if (!VerifyAbilityName(bundleName, taskInfo.GetAbilityName(), appIndex)) {
         return E_CHECK_WORKINFO_FAILED;
     }
-    TaskInfo info =
-        {.taskId_ = taskInfo.GetTaskId(),
+    TaskInfo info = {
+        .taskId_ = taskInfo.GetTaskId();
         .bundleName_ = bundleName,
         .appIndex_ = appIndex,
-        .abilityName_ = taskInfo.GetAbilityName()};
+        .abilityName_ = taskInfo.GetAbilityName()
+    };
     return BackgroundLoaderMgr::GetInstance().RegisterTask(info);
 }
 
@@ -1967,11 +1968,12 @@ int32_t WorkSchedulerService::UnregisterTask(const BackgroundLoaderTaskInfo& tas
     if (!VerifyAbilityName(bundleName, taskInfo.GetAbilityName(), appIndex)) {
         return E_CHECK_WORKINFO_FAILED;
     }
-    TaskInfo info =
-        {.taskId_ = taskInfo.GetTaskId();
+    TaskInfo info = {
+        .taskId_ = taskInfo.GetTaskId();
         .bundleName_ = bundleName,
         .appIndex_ = appIndex,
-        .abilityName_ = taskInfo.GetAbilityName()};
+        .abilityName_ = taskInfo.GetAbilityName()
+    };
     return BackgroundLoaderMgr::GetInstance().UnregisterTask(info);
 }
     
@@ -1995,11 +1997,12 @@ int32_t WorkSchedulerService::FinishTask(const BackgroundLoaderTaskInfo& taskInf
     if (!VerifyAbilityName(bundleName, taskInfo.GetAbilityName(), appIndex)) {
         return E_CHECK_WORKINFO_FAILED;
     }
-    TaskInfo info =
-        {.taskId_ = taskInfo.GetTaskId();
+    TaskInfo info = {
+        .taskId_ = taskInfo.GetTaskId();
         .bundleName_ = bundleName,
         .appIndex_ = appIndex,
-        .abilityName_ = taskInfo.GetAbilityName()};
+        .abilityName_ = taskInfo.GetAbilityName()
+    };
     return BackgroundLoaderMgr::GetInstance().FinishTask(info);
 }
 
