@@ -21,7 +21,7 @@
 
 #include "background_loader_task.h"
 
-namespace{
+namespace {
 constexpr uint32_t TASK_INFO_INDEX = 0;
 constexpr uint32_t REGISTER_TASK_PARAMS = 1;
 constexpr uint32_t UNREGISTER_TASK_PARAMS = 1;
@@ -169,7 +169,7 @@ void DeleteGetTaskInfoAsyncContext(GetTaskInfoAsyncContext* context)
 
 void GetTaskInfoExecute(napi_env env, void* data)
 {
-    auto* context = static_cast<GetTaskInfoAsyncContext*> (data);
+    auto* context = static_cast<GetTaskInfoAsyncContext*>(data);
     if (context == nullptr) {
         return;
     }
@@ -211,13 +211,13 @@ void HandlePromiseMode(napi_env env, GetTaskInfoAsyncContext* context, napi_valu
         napi_create_object(env, &error);
         napi_set_named_property(env, error, "code", eCode);
         napi_set_named_property(env, error, "message", eMsg);
-        napi_reject_deferred(env,context->deferred, error);
+        napi_reject_deferred(env, context->deferred, error);
     }
 }
 
 void GetTaskInfoComplete(napi_env env, napi_status status, void* data)
 {
-    auto* context = static_cast<GetTaskInfoAsyncContext*> (data);
+    auto* context = static_cast<GetTaskInfoAsyncContext*>(data);
     if (context == nullptr) {
         return;
     }

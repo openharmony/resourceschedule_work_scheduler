@@ -37,6 +37,14 @@ napi_value EnumBackgroundLoaderStopCodeConstructor(napi_env env, napi_callback_i
 namespace OHOS {
 namespace WorkScheduler {
 
+enum StopCode : uint32_t {
+  SUCCESS = 0,
+  SYSTEM_ERROR = 1,
+  PERCEIVABLE_ERROR = 2,
+  TIMEROUT_ERROR = 3,
+  EXECUTE_ERROR = 4
+}
+
 /*
  * Module define
  */

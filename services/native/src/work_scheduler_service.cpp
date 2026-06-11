@@ -1939,7 +1939,7 @@ int32_t WorkSchedulerService::RegisterTask(const BackgroundLoaderTaskInfo& taskI
     if (!VerifyAbilityName(bundleName, taskInfo.GetAbilityName(), appIndex)) {
         return E_CHECK_WORKINFO_FAILED;
     }
-    TaskInfo info = 
+    TaskInfo info =
         {.taskId_ = taskInfo.GetTaskId(),
         .bundleName_ = bundleName,
         .appIndex_ = appIndex,
@@ -1947,7 +1947,7 @@ int32_t WorkSchedulerService::RegisterTask(const BackgroundLoaderTaskInfo& taskI
     return BackgroundLoaderMgr::GetInstance().RegisterTask(info);
 }
 
-int32_t WorkSchedulerService::UnregisterTask(const BackgroundLoaderTaskInfo& taskInfo) 
+int32_t WorkSchedulerService::UnregisterTask(const BackgroundLoaderTaskInfo& taskInfo)
 {
     if (!ready_.load()) {
         WS_HILOGE("service is not ready.");
@@ -1967,7 +1967,7 @@ int32_t WorkSchedulerService::UnregisterTask(const BackgroundLoaderTaskInfo& tas
     if (!VerifyAbilityName(bundleName, taskInfo.GetAbilityName(), appIndex)) {
         return E_CHECK_WORKINFO_FAILED;
     }
-    TaskInfo info = 
+    TaskInfo info =
         {.taskId_ = taskInfo.GetTaskId();
         .bundleName_ = bundleName,
         .appIndex_ = appIndex,
@@ -1995,7 +1995,7 @@ int32_t WorkSchedulerService::FinishTask(const BackgroundLoaderTaskInfo& taskInf
     if (!VerifyAbilityName(bundleName, taskInfo.GetAbilityName(), appIndex)) {
         return E_CHECK_WORKINFO_FAILED;
     }
-    TaskInfo info = 
+    TaskInfo info =
         {.taskId_ = taskInfo.GetTaskId();
         .bundleName_ = bundleName,
         .appIndex_ = appIndex,
