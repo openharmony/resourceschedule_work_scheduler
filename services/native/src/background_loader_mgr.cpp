@@ -33,7 +33,7 @@ namespace {
 constexpr std::string_view TIMEOUT_MESSAGE = "timeOut";
 constexpr std::string_view TIMEOUT_TASK_NAME = "BackgroundLoaderTimeout";
 }
-using namespace OHOS::ResrouceSchedule;
+using namespace OHOS::ResourceSchedule;
 BackgroundLoaderMgr& BackgroundLoaderMgr::GetInstance()
 {
     static auto instance = new BackgroundLoaderMgr();
@@ -54,13 +54,13 @@ std::string BackgroundLoaderMgr::GenerateTaskKey(const std::string& bundlelName,
 ErrCode BackgroundLoaderMgr::RegisterTask(const TaskInfo& taskInfo)
 {
     WS_HILOGI("taskId: %{public}d, bundleName: %{public}s, abilityName: %{public}s, appIndex: %{public}d",
-        taskInfo.taskId, taskInfo.bundleName.c_str(), taskInfo.abilityName_.c_str(), taskInfo.appIndex);
+        taskInfo.taskId_, taskInfo.bundleName_.c_str(), taskInfo.abilityName_.c_str(), taskInfo.appIndex_);
     if (!isReady_.load()) {
         WS_HILOGE("BackgroundLoaderMgr service is not ready");
         return E_SERVICE_NOT_READY;
     }
 
-    std::lock_guard<std::mutex> lock(taskLock);
+    std::lock_guard<std::mutex> lock(taskLock_);
     std::string key = GenerateTaskKey(taskInfo.bundleName_, taskInfo.appIndex_, taskInfo.taskId_);
     taskMap_[key] = taskInfo;
 
@@ -70,13 +70,13 @@ ErrCode BackgroundLoaderMgr::RegisterTask(const TaskInfo& taskInfo)
 ErrCode BackgroundLoaderMgr::UnregisterTask(const TaskInfo& taskInfo)
 {
     WS_HILOGI("taskId: %{public}d, bundleName: %{public}s, abilityName: %{public}s, appIndex: %{public}d",
-        taskInfo.taskId, taskInfo.bundleName.c_str(), taskInfo.abilityName_.c_str(), taskInfo.appIndex);
+        taskInfo.taskId_, taskInfo.bundleName_.c_str(), taskInfo.abilityName_.c_str(), taskInfo.appIndex_);
     if (!isReady_.load()) {
         WS_HILOGE("BackgroundLoaderMgr service is not ready");
         return E_SERVICE_NOT_READY;
     }
 
-    std::lock_guard<std::mutex> lock(taskLock);
+    std::lock_guard<std::mutex> lock(taskLock_);
     std::string key = GenerateTaskKey(taskInfo.bundleName_, taskInfo.appIndex_, taskInfo.taskId_);
     auto it = taskMap_.find(key);
     if (it == taskMap_.end()) {
@@ -91,13 +91,13 @@ ErrCode BackgroundLoaderMgr::UnregisterTask(const TaskInfo& taskInfo)
 ErrCode BackgroundLoaderMgr::FinishTask(const TaskInfo& taskInfo)
 {
     WS_HILOGI("taskId: %{public}d, bundleName: %{public}s, abilityName: %{public}s, appIndex: %{public}d",
-        taskInfo.taskId, taskInfo.bundleName.c_str(), taskInfo.abilityName_.c_str(), taskInfo.appIndex);
+        taskInfo.taskId_, taskInfo.bundleName_.c_str(), taskInfo.abilityName_.c_str(), taskInfo.appIndex_);
     if (!isReady_.load()) {
         WS_HILOGE("BackgroundLoaderMgr service is not ready");
         return E_SERVICE_NOT_READY;
     }
 
-    std::lock_guard<std::mutex> lock(taskLock);
+    std::lock_guard<std::mutex> lock(taskLock_);
     std::string key = GenerateTaskKey(taskInfo.bundleName_, taskInfo.appIndex_, taskInfo.taskId_);
     auto it = taskMap_.find(key);
     if (it == taskMap_.end()) {
@@ -111,19 +111,20 @@ ErrCode BackgroundLoaderMgr::FinishTask(const TaskInfo& taskInfo)
 ErrCode BackgroundLoaderMgr::GetTaskInfo(int32_t taskId, const std::string& bundleName, int32_t appIndex,
     BackgroundLoaderTaskInfo& taskInfo)
 {
-    WS_HILOGI("taskId: %{public}d, bundleName: %{public}s, abilityName: %{public}s, appIndex: %{public}d",
-        taskInfo.taskId, taskInfo.bundleName.c_str(), taskInfo.abilityName_.c_str(), taskInfo.appIndex);
+    WS_HILOGI("taskId: %{public}d, bundleName: %{public}s, appIndex: %{public}d",
+        taskId, bundleName.c_str(), appIndex);
     if (!isReady_.load()) {
         WS_HILOGE("BackgroundLoaderMgr service is not ready");
         return E_SERVICE_NOT_READY;
     }
 
-    std::lock_guard<std::mutex> lock(taskLock);
+    std::lock_guard<std::mutex> lock(taskLock_);
     std::string key = GenerateTaskKey(bundleName, taskInfo.appIndex, taskId_);
     auto it = taskMap_.find(key);
     if (it != taskMap_.end()) {
-        TaskInfo info = it->secound;
-        BackgroundLoaderTaskInfo newInfo(info.taskId_, inf.abilityName);
+        TaskInfo info = it->second;
+        BackgroundLoaderTaskInfo newInfo(info.taskId_, info.abilityName);
+        taskInfo = newInfo;
         return ERR_OK;
     }
 

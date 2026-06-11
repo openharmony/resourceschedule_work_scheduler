@@ -326,7 +326,7 @@ ErrCode WorkSchedulerSrvClient::GetTaskInfo(int32_t taskId, BackgroundLoaderTask
     if (code != ERR_OK) {
         return code;
     }
-    return iWorkSchedService_->RegisterTask(taskId, taskInfo);
+    return iWorkSchedService_->GetTaskInfo(taskId, taskInfo);
 }
 
 
