@@ -42,7 +42,6 @@ public:
      */
     const std::string& GetAbilityName() const;
 
-
     /**
      * @brief Marshalling.
      *
@@ -62,5 +61,5 @@ private:
     std::string abilityName_ = "";
 };
 } // namespace WorkScheduler
-} // namespace OHOS 
+} // namespace OHOS
 #endif // FOUNDATION_RESOURCESCHEDULE_WORKSCHEDULER_BACKGROUND_LOADER_TASK_INFO_H

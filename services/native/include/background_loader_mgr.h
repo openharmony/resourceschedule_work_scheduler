@@ -63,7 +63,6 @@ private:
     std::mutex taskLock_;
     std::unordered_map<std::string, TaskInfo> taskMap_;
     std::mutex abilityMapLock_;
-    
 }
 
 }  // namespace WorkScheduler

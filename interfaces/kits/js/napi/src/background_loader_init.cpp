@@ -63,11 +63,11 @@ napi_value InitBackgroundLoaderStopCode(napi_env env, napi_value exports)
     napi_value timeoutError;
     napi_value executeError;
 
-    NAPI_CALL(env, napi_create_uint32(env, 0, &success));
-    NAPI_CALL(env, napi_create_uint32(env, 1, &systemError));
-    NAPI_CALL(env, napi_create_uint32(env, 2, &perceptibleError));
-    NAPI_CALL(env, napi_create_uint32(env, 3, &timeoutError));
-    NAPI_CALL(env, napi_create_uint32(env, 4, &executeError));
+    NAPI_CALL(env, napi_create_uint32(env, static_cast<uint32_t>(StopCode::SUCCESS), &success));
+    NAPI_CALL(env, napi_create_uint32(env, static_cast<uint32_t>(StopCode::SYSTEM_ERROR), &systemError));
+    NAPI_CALL(env, napi_create_uint32(env, static_cast<uint32_t>(StopCode::PERCEIVABLE_ERROR), &perceptibleError));
+    NAPI_CALL(env, napi_create_uint32(env, static_cast<uint32_t>(StopCode::TIMEROUT_ERROR), &timeoutError));
+    NAPI_CALL(env, napi_create_uint32(env, static_cast<uint32_t>(StopCode::EXECUTE_ERROR), &executeError));
 
     napi_property_descriptor desc[] = {
         DECLARE_NAPI_STATIC_PROPERTY("SUCCESS", success),
