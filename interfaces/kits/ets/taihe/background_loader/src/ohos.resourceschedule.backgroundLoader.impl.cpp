@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
- #include "ohos.resourceschedule.backgroundLoader.impl.h"
+#include "ohos.resourceschedule.backgroundLoader.impl.h"
 #include "workscheduler_srv_client.h"
 #include "background_loader_task_info.h"
 #include "work_sched_hilog.h"
