@@ -285,7 +285,7 @@ ErrCode WorkSchedulerSrvClient::StopWorkForSA(int32_t saId)
     return iWorkSchedService_->StopWorkForSA(saId);
 }
 
-ErrCode WorkSchedulerSrvClient::RegisterTask(BackgroundLoaderTaskInfo& taskInfo);
+ErrCode WorkSchedulerSrvClient::RegisterTask(BackgroundLoaderTaskInfo& taskInfo)
 {
     WS_HILOGD("Register background_loader task");
     std::lock_guard<std::mutex> lock(mutex_);
@@ -296,7 +296,7 @@ ErrCode WorkSchedulerSrvClient::RegisterTask(BackgroundLoaderTaskInfo& taskInfo)
     return iWorkSchedService_->RegisterTask(taskInfo);
 }
 
-ErrCode WorkSchedulerSrvClient::UnregisterTask(BackgroundLoaderTaskInfo& taskInfo);
+ErrCode WorkSchedulerSrvClient::UnregisterTask(BackgroundLoaderTaskInfo& taskInfo)
 {
     WS_HILOGD("Unregister background_loader task");
     std::lock_guard<std::mutex> lock(mutex_);
@@ -307,7 +307,7 @@ ErrCode WorkSchedulerSrvClient::UnregisterTask(BackgroundLoaderTaskInfo& taskInf
     return iWorkSchedService_->UnregisterTask(taskInfo);
 }
 
-ErrCode WorkSchedulerSrvClient::FinishTask(BackgroundLoaderTaskInfo& taskInfo);
+ErrCode WorkSchedulerSrvClient::FinishTask(BackgroundLoaderTaskInfo& taskInfo)
 {
     WS_HILOGD("Register background_loader task");
     std::lock_guard<std::mutex> lock(mutex_);
@@ -318,7 +318,7 @@ ErrCode WorkSchedulerSrvClient::FinishTask(BackgroundLoaderTaskInfo& taskInfo);
     return iWorkSchedService_->FinishTask(taskInfo);
 }
 
-ErrCode WorkSchedulerSrvClient::GetTaskInfo(int32_t taskId, BackgroundLoaderTaskInfo& taskInfo);
+ErrCode WorkSchedulerSrvClient::GetTaskInfo(int32_t taskId, BackgroundLoaderTaskInfo& taskInfo)
 {
     WS_HILOGD("Get background_loader task info");
     std::lock_guard<std::mutex> lock(mutex_);

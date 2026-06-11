@@ -81,7 +81,7 @@
 #include "work_sched_constants.h"
 #include "work_sched_hisysevent_report.h"
 #include "background_loader_mgr.h"
-#include "want"
+#include "want.h"
 
 extern "C" void ReportDataInProcess(uint32_t resType, int64_t value, const nlohmann::json& payload);
 
@@ -1860,9 +1860,9 @@ bool WorkSchedulerService::NeedCreateTimer(int32_t saId, int32_t uid, int32_t ti
 
 bool WorkSchedulerService::CheckPermission(const std::string &permission)
 {
-    Security::AccessToken::AccessToken callerToken = IPCSkeleton::GetCallingTokenID();
-    int32_t ret = Security::AccessToken::AccessTokenKit::VerifyAcceddToken(callerToken, permission);
-    if (ret != Security::AccessToken::Permissionstate::PERMISSION_GRANTED) {
+    Security::AccessToken::AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
+    int32_t ret = Security::AccessToken::AccessTokenKit::VerifyAccessToken(callerToken, permission);
+    if (ret != Security::AccessToken::PermissionState::PERMISSION_GRANTED) {
         WS_HILOGE("CheckPermission failed");
         return false;
     }
@@ -1901,9 +1901,9 @@ bool WorkSchedulerService::VerifyAbilityName(const std::string& bundleName,
     want.SetAction(Want::ACTION_HOME);
     want.AddEntity(Want::ENTITY_HOME);
     ElementName elementName;
-    elementName.setBundleName(bundleName);
+    elementName.SetBundleName(bundleName);
     want.SetElement(elementName);
-    int32_t userId = WorkSchedUtiles::GetUserIdByUid(IPCSkeleton::GetCallingUid());
+    int32_t userId = WorkSchedUtils::GetUserIdByUid(IPCSkeleton::GetCallingUid());
     if (!bundleMgr->QueryAbilityInfos(want, 0, userId, abilityInfos)) {
         WS_HILOGE("QueryAbilityInfos failed for bundle: %{public}s", bundleName.c_str());
         return false;
@@ -1940,7 +1940,7 @@ int32_t WorkSchedulerService::RegisterTask(const BackgroundLoaderTaskInfo& taskI
         return E_CHECK_WORKINFO_FAILED;
     }
     TaskInfo info = {
-        .taskId_ = taskInfo.GetTaskId();
+        .taskId_ = taskInfo.GetTaskId(),
         .bundleName_ = bundleName,
         .appIndex_ = appIndex,
         .abilityName_ = taskInfo.GetAbilityName()
@@ -1969,7 +1969,7 @@ int32_t WorkSchedulerService::UnregisterTask(const BackgroundLoaderTaskInfo& tas
         return E_CHECK_WORKINFO_FAILED;
     }
     TaskInfo info = {
-        .taskId_ = taskInfo.GetTaskId();
+        .taskId_ = taskInfo.GetTaskId(),
         .bundleName_ = bundleName,
         .appIndex_ = appIndex,
         .abilityName_ = taskInfo.GetAbilityName()
@@ -1998,7 +1998,7 @@ int32_t WorkSchedulerService::FinishTask(const BackgroundLoaderTaskInfo& taskInf
         return E_CHECK_WORKINFO_FAILED;
     }
     TaskInfo info = {
-        .taskId_ = taskInfo.GetTaskId();
+        .taskId_ = taskInfo.GetTaskId(),
         .bundleName_ = bundleName,
         .appIndex_ = appIndex,
         .abilityName_ = taskInfo.GetAbilityName()
@@ -2026,7 +2026,7 @@ int32_t WorkSchedulerService::GetTaskInfo(int32_t taskId, BackgroundLoaderTaskIn
     if (!VerifyAbilityName(bundleName, taskInfo.GetAbilityName(), appIndex)) {
         return E_CHECK_WORKINFO_FAILED;
     }
-    return BackgroundLoaderMgr::GetInstance().GetTaskInfo(taskId, bundleName. appIndex, taskInfo);
+    return BackgroundLoaderMgr::GetInstance().GetTaskInfo(taskId, bundleName, appIndex, taskInfo);
 }
 } // namespace WorkScheduler
 } // namespace OHOS

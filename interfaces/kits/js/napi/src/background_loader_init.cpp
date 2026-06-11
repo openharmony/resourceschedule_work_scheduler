@@ -102,7 +102,7 @@ napi_value EnumBackgroundLoaderStopCodeConstructor(napi_env env, napi_callback_i
 /*
  * Module register function
  */
-__attribute__((constructor)) void InitBackgroundLoaderApi(void)
+__attribute__((constructor)) void RegisterBackgroundLoaderModule(void)
 {
     napi_module_register(&g_backgroundLoaderModule);
 }

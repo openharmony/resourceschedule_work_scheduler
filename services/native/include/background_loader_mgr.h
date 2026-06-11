@@ -19,7 +19,7 @@
 #include <mutex>
 #include <unordered_map>
 #include <functional>
-#include <string
+#include <string>
 
 #include <iremote_object.h>
 #include <nocopyable.h>
@@ -63,7 +63,7 @@ private:
     std::mutex taskLock_;
     std::unordered_map<std::string, TaskInfo> taskMap_;
     std::mutex abilityMapLock_;
-}
+};
 
 }  // namespace WorkScheduler
 }  // namespace OHOS

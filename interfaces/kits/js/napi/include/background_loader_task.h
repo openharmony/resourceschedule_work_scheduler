@@ -27,7 +27,7 @@ namespace WorkScheduler {
 
     napi_value FinishTask(napi_env env, napi_callback_info info);
 
-    napi_value GetTskInfo(napi_env env, napi_callback_info info);
+    napi_value GetTaskInfo(napi_env env, napi_callback_info info);
 }  // namespace WorkScheduler
 }  // namespace OHOS
 
