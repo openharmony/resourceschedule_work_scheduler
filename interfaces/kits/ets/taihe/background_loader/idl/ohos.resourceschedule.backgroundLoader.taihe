@@ -15,7 +15,7 @@
 
 @!namespace("@ohos.resourceschedule.backgroundLoader", "backgroundLoader")
 @!sts_inject("""
-static { loadLibrary("background_loader_ani.z"); }
+static { loadLibrary("backgroundloader_ani.z"); }
 """)
 
 @!sts_inject("""

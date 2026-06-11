@@ -33,7 +33,7 @@ ohos_taihe("run_taihe") {
   ]
 }
 
-taihe_shared_library("background_loader_ani") {
+taihe_shared_library("backgroundloader_ani") {
   branch_protector_ret = "pac_ret"
   shlib_type = "ani"
   sanitize = {
@@ -88,7 +88,7 @@ ohos_prebuilt_etc("background_loader_etc") {
 
 group("background_loader_taihe") {
   deps = [
-    ":background_loader_ani",
+    ":backgroundloader_ani",
     ":background_loader_etc",
   ]
 }

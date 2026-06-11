@@ -2023,9 +2023,6 @@ int32_t WorkSchedulerService::GetTaskInfo(int32_t taskId, BackgroundLoaderTaskIn
         WS_HILOGE("Failed to get bundle for uid %{public}d", callinguid);
         return false;
     }
-    if (!VerifyAbilityName(bundleName, taskInfo.GetAbilityName(), appIndex)) {
-        return E_CHECK_WORKINFO_FAILED;
-    }
     return BackgroundLoaderMgr::GetInstance().GetTaskInfo(taskId, bundleName, appIndex, taskInfo);
 }
 } // namespace WorkScheduler
