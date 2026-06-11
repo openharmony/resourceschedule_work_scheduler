@@ -28,7 +28,7 @@ __attribute__((constructor)) void RegisterBackgroundLoaderModule(void);
 napi_value InitBackgroundLoaderApi(napi_env env, napi_value exports);
 napi_value InitBackgroundLoaderConstProperties(napi_env env, napi_value exports);
 napi_value InitBackgroundLoaderStopCode(napi_env env, napi_value exports);
-napi_value EnumBackgroundLoaderStopConstructor(napi_env env, napi_callback_info info);
+napi_value EnumBackgroundLoaderStopCodeConstructor(napi_env env, napi_callback_info info);
 
 #ifdef __cplusplus
 }

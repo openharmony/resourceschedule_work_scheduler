@@ -23,7 +23,7 @@ const ON_START: string = 'onStart';
 """)
 
 @!sts_inject("""
-const ON_STOP: string = 'obStop';
+const ON_STOP: string = 'onStop';
 """)
 
 struct TaskInfo {
@@ -41,10 +41,8 @@ enum StopCode : i32 {
 }
 
 function RegisterTask(taskInfo: TaskInfo): void;
-
 function UnregisterTask(taskInfo: TaskInfo): void;
 function FinishTask(taskInfo: TaskInfo): void;
-function RegisterTask(taskInfo: TaskInfo): void;
 
 @rename("getTaskInfo")
 @promise function GetTaskInfoPromise(taskId: i32): TaskInfo;

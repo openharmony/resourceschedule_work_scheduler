@@ -78,13 +78,13 @@ napi_value InitBackgroundLoaderStopCode(napi_env env, napi_value exports)
     };
 
     napi_value result = nullptr;
-    napi_define_class(env, "StopCode", NAPI_AUTO_LENGTH, EnumBackgroundLoaderStopConstructor,
+    napi_define_class(env, "StopCode", NAPI_AUTO_LENGTH, EnumBackgroundLoaderStopCodeConstructor,
         nullptr, sizeof(desc) / sizeof(*desc), desc, &result);
     napi_set_named_property(env, exports, "StopCode", result);
     return exports;
 }
 
-napi_value EnumBackgroundLoaderStopConstructor(napi_env env, napi_callback_info info)
+napi_value EnumBackgroundLoaderStopCodeConstructor(napi_env env, napi_callback_info info)
 {
     size_t argc = 0;
     napi_value args[1] = {nullptr};

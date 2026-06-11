@@ -20,16 +20,20 @@
 #include "work_sched_errors.h"
 #include "common.h"
 
+using namespace taihe;
+using namespace ohos::resourceschedule::backgroundLoader;
+using namespace OHOS::WorkScheduler;
+
 void RegisterTask(const ::ohos::resourceschedule::backgroundLoader::TaskInfo& taskInfo)
 {
     WS_HILOGI("RegisterTask called");
     std::string abilityName = taskInfo.abilityName;
     BackgroundLoaderTaskInfo info (taskInfo.taskId, abilityName);
 
-    ErrCode errCode = WorkSchedulerSrvClient::GetInstance.RegisterTask(info);
+    ErrCode errCode = WorkSchedulerSrvClient::GetInstance().RegisterTask(info);
     if (errCode != ERR_OK) {
         WS_HILOGE("RegisterTask fail errCode: %{public}d", FindErrCode(errCode));
-        set_business_error(FindErrCode(errCode), FindErrMsg(errCode))
+        set_business_error(FindErrCode(errCode), FindErrMsg(errCode));
     }
 }
 
@@ -39,10 +43,10 @@ void UnregisterTask(const ::ohos::resourceschedule::backgroundLoader::TaskInfo& 
     std::string abilityName = taskInfo.abilityName;
     BackgroundLoaderTaskInfo info (taskInfo.taskId, abilityName);
 
-    ErrCode errCode = WorkSchedulerSrvClient::GetInstance.UnregisterTask(info);
+    ErrCode errCode = WorkSchedulerSrvClient::GetInstance().UnregisterTask(info);
     if (errCode != ERR_OK) {
         WS_HILOGE("UnregisterTask fail errCode: %{public}d", FindErrCode(errCode));
-        set_business_error(FindErrCode(errCode), FindErrMsg(errCode))
+        set_business_error(FindErrCode(errCode), FindErrMsg(errCode));
     }
 }
 
@@ -52,10 +56,10 @@ void FinishTask(const ::ohos::resourceschedule::backgroundLoader::TaskInfo& task
     std::string abilityName = taskInfo.abilityName;
     BackgroundLoaderTaskInfo info (taskInfo.taskId, abilityName);
 
-    ErrCode errCode = WorkSchedulerSrvClient::GetInstance.FinishTask(info);
+    ErrCode errCode = WorkSchedulerSrvClient::GetInstance().FinishTask(info);
     if (errCode != ERR_OK) {
         WS_HILOGE("FinishTask fail errCode: %{public}d", FindErrCode(errCode));
-        set_business_error(FindErrCode(errCode), FindErrMsg(errCode))
+        set_business_error(FindErrCode(errCode), FindErrMsg(errCode));
     }
 }
 
@@ -65,11 +69,16 @@ void FinishTask(const ::ohos::resourceschedule::backgroundLoader::TaskInfo& task
     std::string abilityName = taskInfo.abilityName;
     BackgroundLoaderTaskInfo info;
 
-    ErrCode errCode = WorkSchedulerSrvClient::GetInstance.GetTaskInfo(taskId, info);
+    ErrCode errCode = WorkSchedulerSrvClient::GetInstance().GetTaskInfo(taskId, info);
     if (errCode != ERR_OK) {
         WS_HILOGE("GetTaskInfoPromise fail errCode: %{public}d", FindErrCode(errCode));
-        set_business_error(FindErrCode(errCode), FindErrMsg(errCode))
+        set_business_error(FindErrCode(errCode), FindErrMsg(errCode));
     }
     ::ohos::resourceschedule::backgroundLoader::TaskInfo taskInfo(info.taskId, info.abilityName);
     return info;
 }
+
+TH_EXPORT_CPP_API_RegisterTask(RegisterTask);
+TH_EXPORT_CPP_API_UnregisterTask(UnregisterTask);
+TH_EXPORT_CPP_API_FinishTask(FinishTask);
+TH_EXPORT_CPP_API_GetTaskInfo(GetTaskInfoPromise);

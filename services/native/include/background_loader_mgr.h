@@ -18,7 +18,8 @@
 #include <memory>
 #include <mutex>
 #include <unordered_map>
-#include <function>
+#include <functional>
+#include <string
 
 #include <iremote_object.h>
 #include <nocopyable.h>
@@ -42,7 +43,7 @@ struct TaskInfo {
     std::string bundleName_;
     std::string abilityName_;
     int32_t appIndex_;
-    int32_t taskId;
+    int32_t taskId_;
 };
 
 class BackgroundLoaderMgr {
@@ -52,7 +53,7 @@ public:
     ErrCode RegisterTask(const TaskInfo& taskInfo);
     ErrCode UnregisterTask(const TaskInfo& taskInfo);
     ErrCode FinishTask(const TaskInfo& taskInfo);
-    ErrCode GeTaskInfo(int32_t taskId, const std::string& bundleName, int32_t appIndex,
+    ErrCode GetTaskInfo(int32_t taskId, const std::string& bundleName, int32_t appIndex,
         BackgroundLoaderTaskInfo& taskInfo);
     int32_t GetTaskId(const std::string& bundleName, const std::string& abilityName, int32_t appIndex);
 private:
