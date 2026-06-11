@@ -96,6 +96,7 @@ ohos_shared_library("backgroundloader_napi") {
   ]
 
   external_deps = [
+    "ability_base:want",
     "c_utils:utils",
     "hilog:libhilog",
     "ipc:ipc_core",
