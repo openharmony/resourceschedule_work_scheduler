@@ -26,6 +26,8 @@ constexpr uint32_t TASK_INFO_INDEX = 0;
 constexpr uint32_t REGISTER_TASK_PARAMS = 1;
 constexpr uint32_t UNREGISTER_TASK_PARAMS = 1;
 constexpr uint32_t FINISH_TASK_PARAMS = 1;
+const char* ABILITY_NAME = "abilityName";
+const char* TASK_ID = "taskId";
 }
 
 namespace OHOS {
@@ -58,8 +60,8 @@ napi_value RegisterTask(napi_env env, napi_callback_info info)
         return Common::NapiGetNull(env);
     }
 
-    int32_t taskId = Common::GetIntProperty(env, argv[TASK_INFO_INDEX], "taskId", E_WORKID_ERR);
-    std::string abilityName = Common::GetStringProperty(env, argv[TASK_INFO_INDEX], "abilityName",
+    int32_t taskId = Common::GetIntProperty(env, argv[TASK_INFO_INDEX], TASK_ID, E_WORKID_ERR);
+    std::string abilityName = Common::GetStringProperty(env, argv[TASK_INFO_INDEX], ABILITY_NAME,
         E_BUNDLE_OR_ABILITY_NAME_ERR);
     if (abilityName == "") {
         WS_HILOGE("abilityName is invalid, failed.");
@@ -90,8 +92,8 @@ napi_value UnregisterTask(napi_env env, napi_callback_info info)
         return Common::NapiGetNull(env);
     }
 
-    int32_t taskId = Common::GetIntProperty(env, argv[TASK_INFO_INDEX], "taskId", E_WORKID_ERR);
-    std::string abilityName = Common::GetStringProperty(env, argv[TASK_INFO_INDEX], "abilityName",
+    int32_t taskId = Common::GetIntProperty(env, argv[TASK_INFO_INDEX], TASK_ID, E_WORKID_ERR);
+    std::string abilityName = Common::GetStringProperty(env, argv[TASK_INFO_INDEX], ABILITY_NAME,
         E_BUNDLE_OR_ABILITY_NAME_ERR);
     if (abilityName == "") {
         WS_HILOGE("abilityName is invalid, failed.");
@@ -122,8 +124,8 @@ napi_value FinishTask(napi_env env, napi_callback_info info)
         return Common::NapiGetNull(env);
     }
 
-    int32_t taskId = Common::GetIntProperty(env, argv[TASK_INFO_INDEX], "taskId", E_WORKID_ERR);
-    std::string abilityName = Common::GetStringProperty(env, argv[TASK_INFO_INDEX], "abilityName",
+    int32_t taskId = Common::GetIntProperty(env, argv[TASK_INFO_INDEX], TASK_ID, E_WORKID_ERR);
+    std::string abilityName = Common::GetStringProperty(env, argv[TASK_INFO_INDEX], ABILITY_NAME,
         E_BUNDLE_OR_ABILITY_NAME_ERR);
     if (abilityName == "") {
         WS_HILOGE("abilityName is invalid, failed.");
@@ -183,12 +185,12 @@ napi_value CreateTaskInfoResult(napi_env env, const BackgroundLoaderTaskInfo& ta
 
     napi_value taskIdValue = nullptr;
     NAPI_CALL(env, napi_create_int32(env, taskInfo.GetTaskId(), &taskIdValue));
-    napi_set_named_property(env, result, "taskId", taskIdValue);
+    napi_set_named_property(env, result, TASK_ID, taskIdValue);
 
     napi_value abilityNameValue = nullptr;
     NAPI_CALL(env, napi_create_string_utf8(env, taskInfo.GetAbilityName().c_str(),
         NAPI_AUTO_LENGTH, &abilityNameValue));
-    napi_set_named_property(env, result, "abilityName", abilityNameValue);
+    napi_set_named_property(env, result, ABILITY_NAME, abilityNameValue);
 
     return result;
 }

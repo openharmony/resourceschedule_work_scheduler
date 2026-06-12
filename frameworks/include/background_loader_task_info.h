@@ -25,7 +25,7 @@ namespace WorkScheduler {
 class BackgroundLoaderTaskInfo : public Parcelable {
 public:
     BackgroundLoaderTaskInfo();
-    BackgroundLoaderTaskInfo(int32_t taskId, std::string& abilityName);
+    BackgroundLoaderTaskInfo(int32_t taskId, const std::string& abilityName);
     ~BackgroundLoaderTaskInfo() override;
 
     /**

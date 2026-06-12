@@ -27,8 +27,7 @@ using namespace OHOS::WorkScheduler;
 void RegisterTask(const ::ohos::resourceschedule::backgroundLoader::TaskInfo& taskInfo)
 {
     WS_HILOGI("RegisterTask called");
-    std::string abilityName = taskInfo.abilityName;
-    BackgroundLoaderTaskInfo info (taskInfo.taskId, abilityName);
+    BackgroundLoaderTaskInfo info (taskInfo.taskId, taskInfo.abilityName);
 
     ErrCode errCode = WorkSchedulerSrvClient::GetInstance().RegisterTask(info);
     if (errCode != ERR_OK) {
@@ -40,8 +39,7 @@ void RegisterTask(const ::ohos::resourceschedule::backgroundLoader::TaskInfo& ta
 void UnregisterTask(const ::ohos::resourceschedule::backgroundLoader::TaskInfo& taskInfo)
 {
     WS_HILOGI("UnregisterTask called");
-    std::string abilityName = taskInfo.abilityName;
-    BackgroundLoaderTaskInfo info (taskInfo.taskId, abilityName);
+    BackgroundLoaderTaskInfo info (taskInfo.taskId, taskInfo.abilityName);
 
     ErrCode errCode = WorkSchedulerSrvClient::GetInstance().UnregisterTask(info);
     if (errCode != ERR_OK) {
@@ -53,8 +51,7 @@ void UnregisterTask(const ::ohos::resourceschedule::backgroundLoader::TaskInfo& 
 void FinishTask(const ::ohos::resourceschedule::backgroundLoader::TaskInfo& taskInfo)
 {
     WS_HILOGI("FinishTask called");
-    std::string abilityName = taskInfo.abilityName;
-    BackgroundLoaderTaskInfo info (taskInfo.taskId, abilityName);
+    BackgroundLoaderTaskInfo info (taskInfo.taskId, taskInfo.abilityName);
 
     ErrCode errCode = WorkSchedulerSrvClient::GetInstance().FinishTask(info);
     if (errCode != ERR_OK) {
