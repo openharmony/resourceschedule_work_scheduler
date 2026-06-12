@@ -17,7 +17,7 @@
 
 namespace OHOS {
 namespace WorkScheduler {
-BackgroundLoaderTaskInfo::BackgroundLoaderTaskInfo(int32_t taskId, std::string& abilityName)
+BackgroundLoaderTaskInfo::BackgroundLoaderTaskInfo(int32_t taskId, const std::string& abilityName)
 {
     taskId_ = taskId;
     abilityName_ = abilityName;

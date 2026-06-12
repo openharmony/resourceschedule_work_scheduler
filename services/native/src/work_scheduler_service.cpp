@@ -1965,9 +1965,6 @@ int32_t WorkSchedulerService::UnregisterTask(const BackgroundLoaderTaskInfo& tas
         WS_HILOGE("Failed to get bundle for uid %{public}d", callinguid);
         return E_CHECK_WORKINFO_FAILED;
     }
-    if (!VerifyAbilityName(bundleName, taskInfo.GetAbilityName(), appIndex)) {
-        return E_CHECK_WORKINFO_FAILED;
-    }
     TaskInfo info = {
         .taskId_ = taskInfo.GetTaskId(),
         .bundleName_ = bundleName,
@@ -1993,9 +1990,6 @@ int32_t WorkSchedulerService::FinishTask(const BackgroundLoaderTaskInfo& taskInf
     if (!GetAppIndexAndBundleNameByUid(callinguid, appIndex, bundleName)) {
         WS_HILOGE("Failed to get bundle for uid %{public}d", callinguid);
         return false;
-    }
-    if (!VerifyAbilityName(bundleName, taskInfo.GetAbilityName(), appIndex)) {
-        return E_CHECK_WORKINFO_FAILED;
     }
     TaskInfo info = {
         .taskId_ = taskInfo.GetTaskId(),

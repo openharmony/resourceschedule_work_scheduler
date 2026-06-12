@@ -48,7 +48,7 @@ void BackgroundLoaderMgr::Init()
 
 std::string BackgroundLoaderMgr::GenerateTaskKey(const std::string& bundleName, int32_t appIndex, int32_t taskId)
 {
-    return bundleName + "_" + std::to_string(taskId) + "_" + std::to_string(appIndex);
+    return bundleName + "_"  + std::to_string(appIndex) + "_" + std::to_string(taskId);
 }
 
 ErrCode BackgroundLoaderMgr::RegisterTask(const TaskInfo& taskInfo)
