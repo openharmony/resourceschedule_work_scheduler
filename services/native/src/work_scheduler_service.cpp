@@ -1935,7 +1935,7 @@ int32_t WorkSchedulerService::RegisterTask(const BackgroundLoaderTaskInfo& taskI
         WS_HILOGE("Failed to get bundle for uid %{public}d", callinguid);
         return false;
     }
-    if (!VerifyAbilityName(bundleName, taskInfo.GetAbilityName(), appIndex)) {
+    if (!VerifyAbilityName(bundleName, taskInfo.GetAbilityName())) {
         return E_CHECK_WORKINFO_FAILED;
     }
     TaskInfo info = {
