@@ -64,8 +64,8 @@ bool GetTaskInfo(napi_env env, napi_callback_info info, BackgroundLoaderTaskInfo
         Common::HandleErrCode(env, E_CHECK_WORKINFO_FAILED);
         return false;
     }
-    BackgroundLoaderTaskInfo newInfo(taskId, abilityName);
-    taskInfo = newInfo;
+    taskInfo.SetAbilityName(abilityName);
+    taskInfo.SetTaskId(taskId);
     return true;
 }
 

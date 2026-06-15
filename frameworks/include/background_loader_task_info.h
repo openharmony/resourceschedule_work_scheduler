@@ -43,6 +43,16 @@ public:
     const std::string& GetAbilityName() const;
 
     /**
+     * @brief Set the id of task.
+     */
+    int32_t SetTaskId() const;
+
+    /**
+     * @brief Set the name of ability.
+     */
+    const std::string& SetAbilityName() const;
+
+    /**
      * @brief Marshalling.
      *
      * @param parcel The parcel.
