@@ -68,7 +68,8 @@ void InitBackgroundLoaderStopCode(napi_env env, napi_value exports)
 
     NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, static_cast<uint32_t>(StopCode::SUCCESS), &success));
     NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, static_cast<uint32_t>(StopCode::SYSTEM_ERROR), &systemError));
-    NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, static_cast<uint32_t>(StopCode::PERCEPTIBLE_ERROR), &perceptibleError));
+    NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env,
+        static_cast<uint32_t>(StopCode::PERCEPTIBLE_ERROR), &perceptibleError));
     NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, static_cast<uint32_t>(StopCode::TIMEOUT_ERROR), &timeoutError));
     NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, static_cast<uint32_t>(StopCode::EXECUTE_ERROR), &executeError));
 
