@@ -20,7 +20,9 @@
 
 namespace OHOS {
 namespace WorkScheduler {
-EXTERN_C_START
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 napi_value InitBackgroundLoaderApi(napi_env env, napi_value exports)
 {
@@ -41,47 +43,47 @@ napi_value InitBackgroundLoaderApi(napi_env env, napi_value exports)
     return exports;
 }
 
-napi_value InitBackgroundLoaderConstProperties(napi_env env, napi_value exports)
+void InitBackgroundLoaderConstProperties(napi_env env, napi_value exports)
 {
     napi_value onStart = nullptr;
-    NAPI_CALL(env, napi_create_string_utf8(env, "onStart", NAPI_AUTO_LENGTH, &onStart));
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, "onStart", NAPI_AUTO_LENGTH, &onStart));
     napi_value onStop = nullptr;
-    NAPI_CALL(env, napi_create_string_utf8(env, "onStop", NAPI_AUTO_LENGTH, &onStop));
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, "onStop", NAPI_AUTO_LENGTH, &onStop));
 
     const napi_property_descriptor properties[] = {
         DECLARE_NAPI_PROPERTY("ON_START", onStart),
         DECLARE_NAPI_PROPERTY("ON_STOP", onStop),
     };
-    NAPI_CALL(env, napi_define_properties(env, exports, sizeof(properties) / sizeof(*properties), properties));
-    return exports;
+    NAPI_CALL_RETURN_VOID(env, napi_define_properties(env, exports,
+        sizeof(properties) / sizeof(properties[0]), properties));
 }
-napi_value InitBackgroundLoaderStopCode(napi_env env, napi_value exports)
-{
-    napi_value success;
-    napi_value systemError;
-    napi_value perceptibleError;
-    napi_value timeoutError;
-    napi_value executeError;
 
-    NAPI_CALL(env, napi_create_uint32(env, static_cast<uint32_t>(StopCode::SUCCESS), &success));
-    NAPI_CALL(env, napi_create_uint32(env, static_cast<uint32_t>(StopCode::SYSTEM_ERROR), &systemError));
-    NAPI_CALL(env, napi_create_uint32(env, static_cast<uint32_t>(StopCode::PERCEIVABLE_ERROR), &perceptibleError));
-    NAPI_CALL(env, napi_create_uint32(env, static_cast<uint32_t>(StopCode::TIMEROUT_ERROR), &timeoutError));
-    NAPI_CALL(env, napi_create_uint32(env, static_cast<uint32_t>(StopCode::EXECUTE_ERROR), &executeError));
+void InitBackgroundLoaderStopCode(napi_env env, napi_value exports)
+{
+    napi_value success == nullptr;
+    napi_value systemError == nullptr;
+    napi_value perceptibleError == nullptr;
+    napi_value timeoutError == nullptr;
+    napi_value executeError == nullptr;
+
+    NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, static_cast<uint32_t>(StopCode::SUCCESS), &success));
+    NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, static_cast<uint32_t>(StopCode::SYSTEM_ERROR), &systemError));
+    NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, static_cast<uint32_t>(StopCode::PERCEPTIBLE_ERROR), &perceptibleError));
+    NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, static_cast<uint32_t>(StopCode::TIMEOUT_ERROR), &timeoutError));
+    NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, static_cast<uint32_t>(StopCode::EXECUTE_ERROR), &executeError));
 
     napi_property_descriptor desc[] = {
         DECLARE_NAPI_STATIC_PROPERTY("SUCCESS", success),
         DECLARE_NAPI_STATIC_PROPERTY("SYSTEM_ERROR", systemError),
-        DECLARE_NAPI_STATIC_PROPERTY("PERCEIVABLE_ERROR", perceptibleError),
+        DECLARE_NAPI_STATIC_PROPERTY("PERCEPTIBLE_ERROR", perceptibleError),
         DECLARE_NAPI_STATIC_PROPERTY("TIMEOUT_ERROR", timeoutError),
         DECLARE_NAPI_STATIC_PROPERTY("EXECUTE_ERROR", executeError),
     };
 
     napi_value result = nullptr;
     napi_define_class(env, "StopCode", NAPI_AUTO_LENGTH, EnumBackgroundLoaderStopCodeConstructor,
-        nullptr, sizeof(desc) / sizeof(*desc), desc, &result);
+        nullptr, sizeof(desc) / sizeof(desc[0]), desc, &result);
     napi_set_named_property(env, exports, "StopCode", result);
-    return exports;
 }
 
 napi_value EnumBackgroundLoaderStopCodeConstructor(napi_env env, napi_callback_info info)
@@ -106,6 +108,8 @@ __attribute__((constructor)) void RegisterBackgroundLoaderModule(void)
 {
     napi_module_register(&g_backgroundLoaderModule);
 }
-EXTERN_C_END
+#ifdef __cplusplus
+}
+#endif
 }  // namespace WorkScheduler
 }  // namespace OHOS

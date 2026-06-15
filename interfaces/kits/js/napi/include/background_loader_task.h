@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2026-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,18 +16,17 @@
 #ifndef FOUNDATION_RESOURCESCHEDULE_WORKSCHEDULER_INTERFACES_KITS_NAPI_INCLUDE_BACKGROUND_LOADER_TASK
 #define FOUNDATION_RESOURCESCHEDULE_WORKSCHEDULER_INTERFACES_KITS_NAPI_INCLUDE_BACKGROUND_LOADER_TASK
 
-
 #include "napi/native_api.h"
 
 namespace OHOS {
 namespace WorkScheduler {
-    napi_value RegisterTask(napi_env env, napi_callback_info info);
+napi_value RegisterTask(napi_env env, napi_callback_info info);
 
-    napi_value UnregisterTask(napi_env env, napi_callback_info info);
+napi_value UnregisterTask(napi_env env, napi_callback_info info);
 
-    napi_value FinishTask(napi_env env, napi_callback_info info);
+napi_value FinishTask(napi_env env, napi_callback_info info);
 
-    napi_value GetTaskInfo(napi_env env, napi_callback_info info);
+napi_value GetTaskInfo(napi_env env, napi_callback_info info);
 }  // namespace WorkScheduler
 }  // namespace OHOS
 

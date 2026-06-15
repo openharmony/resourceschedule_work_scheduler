@@ -70,10 +70,10 @@ ohos_shared_library("workschedservice") {
     "native/src/work_scheduler_connection.cpp",
     "native/src/work_scheduler_service.cpp",
     "native/src/work_standby_state_change_callback.cpp",
+    "native/src/background_loader_mgr.cpp",
     "native/src/work_status.cpp",
     "plugin/src/work_sched_plugin_mgr.cpp",
     "plugin/src/background_task_observer_plugin_adapter.cpp",
-    "native/src/background_loader_mgr.cpp",
   ]
 
   configs = [ ":worksched_private_config" ]
@@ -193,7 +193,6 @@ ohos_static_library("workschedservice_static") {
     "native/src/work_sched_data_manager.cpp",
     "native/src/work_scheduler_connection.cpp",
     "native/src/work_scheduler_service.cpp", 
-     
     "native/src/work_standby_state_change_callback.cpp",
     "native/src/work_status.cpp",
     "plugin/src/work_sched_plugin_mgr.cpp",

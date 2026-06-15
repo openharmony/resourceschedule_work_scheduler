@@ -328,7 +328,5 @@ ErrCode WorkSchedulerSrvClient::GetTaskInfo(int32_t taskId, BackgroundLoaderTask
     }
     return iWorkSchedService_->GetTaskInfo(taskId, taskInfo);
 }
-
-
 } // namespace WorkScheduler
 } // namespace OHOS

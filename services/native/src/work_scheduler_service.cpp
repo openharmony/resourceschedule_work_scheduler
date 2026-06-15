@@ -101,7 +101,7 @@ const std::string WORKSCHEDULER_SERVICE_NAME = "WorkSchedulerService";
 const std::string PRINSTALLED_WORKS_KEY = "work_scheduler_preinstalled_works";
 const std::string EXEMPTION_BUNDLES_KEY = "work_scheduler_eng_exemption_bundles";
 const std::string MIN_REPEAT_TIME_KEY = "work_scheduler_min_repeat_time";
-const std::string BACKGROUND_LOADER_PERMISSION = "ohos.permission.KEEP_BACKGROUND_RUNNING";
+const std::string_view BACKGROUND_LOADER_PERMISSION = "ohos.permission.KEEP_BACKGROUND_RUNNING";
 auto instance = DelayedSingleton<WorkSchedulerService>::GetInstance();
 auto wss = instance.get();
 const bool G_REGISTER_RESULT = SystemAbility::MakeAndRegisterAbility(wss);
@@ -1890,7 +1890,7 @@ bool WorkSchedulerService::VerifyAbilityName(const std::string& bundleName,
         WorkSchedUtil::HiSysEventException(EventErrorCode::WORK_CHECK, "fail to get bundle manager proxy");
         return false;
     }
-    sptr<IBundleMgr> bundleMgr =  iface_cast<IBundleMgr>(remoteObject);
+    sptr<IBundleMgr> bundleMgr = iface_cast<IBundleMgr>(remoteObject);
     if (!bundleMgr) {
         WS_HILOGE("fail to get bundle manager proxy.");
         return false;
@@ -1925,7 +1925,7 @@ int32_t WorkSchedulerService::RegisterTask(const BackgroundLoaderTaskInfo& taskI
         WS_HILOGE("service is not ready.");
         return E_SERVICE_NOT_READY;
     }
-    if (!CheckPermission(BACKGROUND_LOADER_PERMISSION)) {
+    if (!CheckPermission(std::string(BACKGROUND_LOADER_PERMISSION))) {
         return E_PERMISSION_DENIED;
     }
 
@@ -1954,7 +1954,7 @@ int32_t WorkSchedulerService::UnregisterTask(const BackgroundLoaderTaskInfo& tas
         WS_HILOGE("service is not ready.");
         return E_SERVICE_NOT_READY;
     }
-    if (!CheckPermission(BACKGROUND_LOADER_PERMISSION)) {
+    if (!CheckPermission(std::string(BACKGROUND_LOADER_PERMISSION))) {
         return E_PERMISSION_DENIED;
     }
 
@@ -1980,7 +1980,7 @@ int32_t WorkSchedulerService::FinishTask(const BackgroundLoaderTaskInfo& taskInf
         WS_HILOGE("service is not ready.");
         return E_SERVICE_NOT_READY;
     }
-    if (!CheckPermission(BACKGROUND_LOADER_PERMISSION)) {
+    if (!CheckPermission(std::string(BACKGROUND_LOADER_PERMISSION))) {
         return E_PERMISSION_DENIED;
     }
 
@@ -2006,7 +2006,7 @@ int32_t WorkSchedulerService::GetTaskInfo(int32_t taskId, BackgroundLoaderTaskIn
         WS_HILOGE("service is not ready.");
         return E_SERVICE_NOT_READY;
     }
-    if (!CheckPermission(BACKGROUND_LOADER_PERMISSION)) {
+    if (!CheckPermission(std::string(BACKGROUND_LOADER_PERMISSION))) {
         return E_PERMISSION_DENIED;
     }
 

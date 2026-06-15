@@ -35,8 +35,8 @@ struct TaskInfo {
 enum StopCode : i32 {
   SUCCESS = 0,
   SYSTEM_ERROR = 1,
-  PERCEIVABLE_ERROR = 2,
-  TIMEROUT_ERROR = 3,
+  PERCEPTIBLE_ERROR = 2,
+  TIMEOUT_ERROR = 3,
   EXECUTE_ERROR = 4
 }
 
