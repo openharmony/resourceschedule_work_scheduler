@@ -145,7 +145,7 @@ public:
      * @return ErrCode ERR_OK on success, others on failure
      */
     ErrCode StopWorkForSA(int32_t saId);
-    
+
     /**
      * @brief Register background loader task.
      *
