@@ -33,6 +33,16 @@ int32_t BackgroundLoaderTaskInfo::GetTaskId() const
     return taskId_;
 }
 
+void BackgroundLoaderTaskInfo::SetAbilityName(const std::string& abilityName)
+{
+    abilityName_ = abilityName;
+}
+
+void BackgroundLoaderTaskInfo::SetTaskId(int32_t taskId)
+{
+    taskId_ = taskId;
+}
+
 bool BackgroundLoaderTaskInfo::Marshalling(Parcel &parcel) const
 {
     bool ret = parcel.WriteInt32(taskId_);
