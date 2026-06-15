@@ -1869,8 +1869,7 @@ bool WorkSchedulerService::CheckPermission(const std::string &permission)
     return true;
 }
 
-bool WorkSchedulerService::VerifyAbilityName(const std::string& bundleName,
-    const std::string& abilityName, int32_t appIndex)
+bool WorkSchedulerService::VerifyAbilityName(const std::string& bundleName, const std::string& abilityName)
 {
     if (bundleName.empty() || abilityName.empty()) {
         WS_HILOGE("bundleName or abilityName invaild");
