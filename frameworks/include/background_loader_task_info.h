@@ -45,12 +45,12 @@ public:
     /**
      * @brief Set the id of task.
      */
-    int32_t SetTaskId() const;
+    void SetTaskId(int32_t taskId);
 
     /**
      * @brief Set the name of ability.
      */
-    const std::string& SetAbilityName() const;
+    void SetAbilityName(const std::string& abilityName);
 
     /**
      * @brief Marshalling.
