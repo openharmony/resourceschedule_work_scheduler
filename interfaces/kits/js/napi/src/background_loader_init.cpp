@@ -60,11 +60,11 @@ void InitBackgroundLoaderConstProperties(napi_env env, napi_value exports)
 
 void InitBackgroundLoaderStopCode(napi_env env, napi_value exports)
 {
-    napi_value success == nullptr;
-    napi_value systemError == nullptr;
-    napi_value perceptibleError == nullptr;
-    napi_value timeoutError == nullptr;
-    napi_value executeError == nullptr;
+    napi_value success = nullptr;
+    napi_value systemError = nullptr;
+    napi_value perceptibleError = nullptr;
+    napi_value timeoutError = nullptr;
+    napi_value executeError = nullptr;
 
     NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, static_cast<uint32_t>(StopCode::SUCCESS), &success));
     NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, static_cast<uint32_t>(StopCode::SYSTEM_ERROR), &systemError));
