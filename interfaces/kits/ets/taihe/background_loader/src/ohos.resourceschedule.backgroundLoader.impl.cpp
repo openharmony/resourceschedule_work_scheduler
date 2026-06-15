@@ -26,7 +26,6 @@ using namespace OHOS::WorkScheduler;
 
 void RegisterTask(const ::ohos::resourceschedule::backgroundLoader::TaskInfo& taskInfo)
 {
-    WS_HILOGI("RegisterTask called");
     BackgroundLoaderTaskInfo info (taskInfo.taskId, taskInfo.abilityName);
 
     ErrCode errCode = WorkSchedulerSrvClient::GetInstance().RegisterTask(info);
@@ -38,7 +37,6 @@ void RegisterTask(const ::ohos::resourceschedule::backgroundLoader::TaskInfo& ta
 
 void UnregisterTask(const ::ohos::resourceschedule::backgroundLoader::TaskInfo& taskInfo)
 {
-    WS_HILOGI("UnregisterTask called");
     BackgroundLoaderTaskInfo info (taskInfo.taskId, taskInfo.abilityName);
 
     ErrCode errCode = WorkSchedulerSrvClient::GetInstance().UnregisterTask(info);
@@ -50,7 +48,6 @@ void UnregisterTask(const ::ohos::resourceschedule::backgroundLoader::TaskInfo& 
 
 void FinishTask(const ::ohos::resourceschedule::backgroundLoader::TaskInfo& taskInfo)
 {
-    WS_HILOGI("FinishTask called");
     BackgroundLoaderTaskInfo info (taskInfo.taskId, taskInfo.abilityName);
 
     ErrCode errCode = WorkSchedulerSrvClient::GetInstance().FinishTask(info);
@@ -62,10 +59,7 @@ void FinishTask(const ::ohos::resourceschedule::backgroundLoader::TaskInfo& task
 
 ::ohos::resourceschedule::backgroundLoader::TaskInfo GetTaskInfoPromise(int32_t taskId)
 {
-    WS_HILOGI("GetTaskInfoPromise called taskId %{public}d", taskId);
-    std::string abilityName = taskInfo.abilityName;
     BackgroundLoaderTaskInfo info;
-
     ErrCode errCode = WorkSchedulerSrvClient::GetInstance().GetTaskInfo(taskId, info);
     if (errCode != ERR_OK) {
         WS_HILOGE("GetTaskInfoPromise fail errCode: %{public}d", FindErrCode(errCode));

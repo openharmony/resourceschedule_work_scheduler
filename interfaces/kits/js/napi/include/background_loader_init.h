@@ -26,8 +26,8 @@ extern "C" {
 
 __attribute__((constructor)) void RegisterBackgroundLoaderModule(void);
 napi_value InitBackgroundLoaderApi(napi_env env, napi_value exports);
-napi_value InitBackgroundLoaderConstProperties(napi_env env, napi_value exports);
-napi_value InitBackgroundLoaderStopCode(napi_env env, napi_value exports);
+void InitBackgroundLoaderConstProperties(napi_env env, napi_value exports);
+void InitBackgroundLoaderStopCode(napi_env env, napi_value exports);
 napi_value EnumBackgroundLoaderStopCodeConstructor(napi_env env, napi_callback_info info);
 
 #ifdef __cplusplus
@@ -40,8 +40,8 @@ namespace WorkScheduler {
 enum StopCode : uint32_t {
     SUCCESS = 0,
     SYSTEM_ERROR = 1,
-    PERCEIVABLE_ERROR = 2,
-    TIMEROUT_ERROR = 3,
+    PERCEPTIBLE_ERROR = 2,
+    TIMEOUT_ERROR = 3,
     EXECUTE_ERROR = 4
 };
 

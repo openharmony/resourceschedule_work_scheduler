@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2026 Huawei Device Co., Ltd.
+ * Copyright (c) 2026-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,16 +16,6 @@
 #include "background_loader_mgr.h"
 #include "work_sched_errors.h"
 #include "work_sched_hilog.h"
-#include "ffrt.h"
-
-#include <ipc_skeleton.h>
-#include <system_ability.h>
-#include <sstream>
-#include <unordered_map>
-#include <chrono>
-#include "message_parcel.h"
-#include "message_option.h"
-#include "want.h"
 
 namespace OHOS {
 namespace WorkScheduler {
@@ -34,11 +24,7 @@ constexpr std::string_view TIMEOUT_MESSAGE = "timeOut";
 constexpr std::string_view TIMEOUT_TASK_NAME = "BackgroundLoaderTimeout";
 }
 using namespace OHOS::ResourceSchedule;
-BackgroundLoaderMgr& BackgroundLoaderMgr::GetInstance()
-{
-    static auto instance = new BackgroundLoaderMgr();
-    return *instance;
-}
+IMPLEMENT_SINGLE_INSTANCE(BackgroundLoaderMgr)
 
 void BackgroundLoaderMgr::Init()
 {
@@ -59,11 +45,9 @@ ErrCode BackgroundLoaderMgr::RegisterTask(const TaskInfo& taskInfo)
         WS_HILOGE("BackgroundLoaderMgr service is not ready");
         return E_SERVICE_NOT_READY;
     }
-
-    std::lock_guard<std::mutex> lock(taskLock_);
     std::string key = GenerateTaskKey(taskInfo.bundleName_, taskInfo.appIndex_, taskInfo.taskId_);
+    std::lock_guard<std::mutex> lock(taskLock_);
     taskMap_[key] = taskInfo;
-
     return ERR_OK;
 }
 
@@ -122,7 +106,7 @@ ErrCode BackgroundLoaderMgr::GetTaskInfo(int32_t taskId, const std::string& bund
     std::string key = GenerateTaskKey(bundleName, appIndex, taskId);
     auto it = taskMap_.find(key);
     if (it != taskMap_.end()) {
-        TaskInfo info = it->second;
+        TaskInfo& info = it->second;
         BackgroundLoaderTaskInfo newInfo(info.taskId_, info.abilityName_);
         taskInfo = newInfo;
         return ERR_OK;

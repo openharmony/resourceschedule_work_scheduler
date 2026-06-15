@@ -23,9 +23,8 @@
 
 namespace {
 constexpr uint32_t TASK_INFO_INDEX = 0;
-constexpr uint32_t REGISTER_TASK_PARAMS = 1;
-constexpr uint32_t UNREGISTER_TASK_PARAMS = 1;
-constexpr uint32_t FINISH_TASK_PARAMS = 1;
+constexpr uint32_t TASK_INFO_PARAMS = 1;
+
 const char* ABILITY_NAME = "abilityName";
 const char* TASK_ID = "taskId";
 }
@@ -43,21 +42,18 @@ struct GetTaskInfoAsyncContext {
     ErrCode errCode;
 };
 
-napi_value RegisterTask(napi_env env, napi_callback_info info)
+bool GetTaskInfo(napi_env env, napi_callback_info info, BackgroundLoaderTaskInfo& taskInfo)
 {
-    WS_HILOGD("Register task napi begin.");
-
-    // Check params.
-    size_t argc = REGISTER_TASK_PARAMS;
-    napi_value argv[REGISTER_TASK_PARAMS] = {nullptr};
+    size_t argc = TASK_INFO_PARAMS;
+    napi_value argv[TASK_INFO_PARAMS] = {nullptr};
     napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    if (argc != REGISTER_TASK_PARAMS) {
+    if (argc != TASK_INFO_PARAMS) {
         Common::HandleErrCode(env, E_CHECK_WORKINFO_FAILED);
-        return Common::NapiGetNull(env);
+        return false;
     }
     if (!Common::MatchValueType(env, argv[TASK_INFO_INDEX], napi_object)) {
         Common::HandleErrCode(env, E_CHECK_WORKINFO_FAILED);
-        return Common::NapiGetNull(env);
+        return false;
     }
 
     int32_t taskId = Common::GetIntProperty(env, argv[TASK_INFO_INDEX], TASK_ID, E_WORKID_ERR);
@@ -66,9 +62,20 @@ napi_value RegisterTask(napi_env env, napi_callback_info info)
     if (abilityName == "") {
         WS_HILOGE("abilityName is invalid, failed.");
         Common::HandleErrCode(env, E_CHECK_WORKINFO_FAILED);
+        return false;
+    }
+    BackgroundLoaderTaskInfo newInfo(taskId, abilityName);
+    taskInfo = newInfo;
+    return true;
+}
+
+napi_value RegisterTask(napi_env env, napi_callback_info info)
+{
+    WS_HILOGD("Register task napi begin.");
+    BackgroundLoaderTaskInfo taskInfo;
+    if (!GetTaskInfo(env, info, taskInfo)) {
         return Common::NapiGetNull(env);
     }
-    BackgroundLoaderTaskInfo taskInfo(taskId, abilityName);
     ErrCode errCode = WorkSchedulerSrvClient::GetInstance().RegisterTask(taskInfo);
     Common::HandleErrCode(env, errCode);
     WS_HILOGD("Register task napi end.");
@@ -77,30 +84,11 @@ napi_value RegisterTask(napi_env env, napi_callback_info info)
 
 napi_value UnregisterTask(napi_env env, napi_callback_info info)
 {
-    WS_HILOGD("Unregister task napi begin.");
-
-    // Check params.
-    size_t argc = UNREGISTER_TASK_PARAMS;
-    napi_value argv[UNREGISTER_TASK_PARAMS] = {nullptr};
-    napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    if (argc != UNREGISTER_TASK_PARAMS) {
-        Common::HandleErrCode(env, E_CHECK_WORKINFO_FAILED);
+    WS_HILOGD("Register task napi begin.");
+    BackgroundLoaderTaskInfo taskInfo;
+    if (!GetTaskInfo(env, info, taskInfo)) {
         return Common::NapiGetNull(env);
     }
-    if (!Common::MatchValueType(env, argv[TASK_INFO_INDEX], napi_object)) {
-        Common::HandleErrCode(env, E_CHECK_WORKINFO_FAILED);
-        return Common::NapiGetNull(env);
-    }
-
-    int32_t taskId = Common::GetIntProperty(env, argv[TASK_INFO_INDEX], TASK_ID, E_WORKID_ERR);
-    std::string abilityName = Common::GetStringProperty(env, argv[TASK_INFO_INDEX], ABILITY_NAME,
-        E_BUNDLE_OR_ABILITY_NAME_ERR);
-    if (abilityName == "") {
-        WS_HILOGE("abilityName is invalid, failed.");
-        Common::HandleErrCode(env, E_CHECK_WORKINFO_FAILED);
-        return Common::NapiGetNull(env);
-    }
-    BackgroundLoaderTaskInfo taskInfo(taskId, abilityName);
     ErrCode errCode = WorkSchedulerSrvClient::GetInstance().UnregisterTask(taskInfo);
     Common::HandleErrCode(env, errCode);
     WS_HILOGD("Unregister task napi end.");
@@ -111,28 +99,11 @@ napi_value FinishTask(napi_env env, napi_callback_info info)
 {
     WS_HILOGD("Finish task napi begin.");
 
-    // Check params.
-    size_t argc = FINISH_TASK_PARAMS;
-    napi_value argv[FINISH_TASK_PARAMS] = {nullptr};
-    napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    if (argc != FINISH_TASK_PARAMS) {
-        Common::HandleErrCode(env, E_CHECK_WORKINFO_FAILED);
+    WS_HILOGD("Register task napi begin.");
+    BackgroundLoaderTaskInfo taskInfo;
+    if (!GetTaskInfo(env, info, taskInfo)) {
         return Common::NapiGetNull(env);
     }
-    if (!Common::MatchValueType(env, argv[TASK_INFO_INDEX], napi_object)) {
-        Common::HandleErrCode(env, E_CHECK_WORKINFO_FAILED);
-        return Common::NapiGetNull(env);
-    }
-
-    int32_t taskId = Common::GetIntProperty(env, argv[TASK_INFO_INDEX], TASK_ID, E_WORKID_ERR);
-    std::string abilityName = Common::GetStringProperty(env, argv[TASK_INFO_INDEX], ABILITY_NAME,
-        E_BUNDLE_OR_ABILITY_NAME_ERR);
-    if (abilityName == "") {
-        WS_HILOGE("abilityName is invalid, failed.");
-        Common::HandleErrCode(env, E_CHECK_WORKINFO_FAILED);
-        return Common::NapiGetNull(env);
-    }
-    BackgroundLoaderTaskInfo taskInfo(taskId, abilityName);
     ErrCode errCode = WorkSchedulerSrvClient::GetInstance().FinishTask(taskInfo);
     Common::HandleErrCode(env, errCode);
     WS_HILOGD("Finish task napi end.");
@@ -185,12 +156,12 @@ napi_value CreateTaskInfoResult(napi_env env, const BackgroundLoaderTaskInfo& ta
 
     napi_value taskIdValue = nullptr;
     NAPI_CALL(env, napi_create_int32(env, taskInfo.GetTaskId(), &taskIdValue));
-    napi_set_named_property(env, result, TASK_ID, taskIdValue);
+    NAPI_CALL(env, napi_set_named_property(env, result, TASK_ID, taskIdValue));
 
     napi_value abilityNameValue = nullptr;
     NAPI_CALL(env, napi_create_string_utf8(env, taskInfo.GetAbilityName().c_str(),
         NAPI_AUTO_LENGTH, &abilityNameValue));
-    napi_set_named_property(env, result, ABILITY_NAME, abilityNameValue);
+    NAPI_CALL(env, napi_set_named_property(env, result, ABILITY_NAME, abilityNameValue));
 
     return result;
 }
@@ -208,12 +179,12 @@ void HandlePromiseMode(napi_env env, GetTaskInfoAsyncContext* context, napi_valu
         napi_value error = nullptr;
         napi_value eCode = nullptr;
         napi_value eMsg = nullptr;
-        napi_create_int32(env, errCodeInfo, &eCode);
-        napi_create_string_utf8(env, errMsg.c_str(), errMsg.length(), &eMsg);
-        napi_create_object(env, &error);
-        napi_set_named_property(env, error, "code", eCode);
-        napi_set_named_property(env, error, "message", eMsg);
-        napi_reject_deferred(env, context->deferred, error);
+        NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, errCodeInfo, &eCode));
+        NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, errMsg.c_str(), errMsg.length(), &eMsg));
+        NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &error));
+        NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, error, "code", eCode));
+        NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, error, "message", eMsg));
+        NAPI_CALL_RETURN_VOID(env, napi_reject_deferred(env, context->deferred, error));
     }
 }
 
@@ -235,11 +206,11 @@ void GetTaskInfoComplete(napi_env env, napi_status status, void* data)
 napi_value GetTaskInfo(napi_env env, napi_callback_info info)
 {
     WS_HILOGD("Get task info begin.");
-    const uint32_t TASK_ID_INDEX = 0;
-    const uint32_t GET_TASK_INFO_MAX_PARAMS = 1;
+    constexpr uint32_t TASK_ID_INDEX = 0;
+    constexpr uint32_t GET_TASK_INFO_MAX_PARAMS = 1;
     size_t argc = GET_TASK_INFO_MAX_PARAMS;
     napi_value argv[GET_TASK_INFO_MAX_PARAMS] = {nullptr};
-    napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
+    NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr));
     if (argc != GET_TASK_INFO_MAX_PARAMS) {
         Common::HandleErrCode(env, E_CHECK_WORKINFO_FAILED);
         return Common::NapiGetNull(env);
@@ -256,14 +227,14 @@ napi_value GetTaskInfo(napi_env env, napi_callback_info info)
     }
 
     int32_t taskId;
-    napi_get_value_int32(env, argv[TASK_ID_INDEX], &taskId);
+    NAPI_CALL(env, napi_get_value_int32(env, argv[TASK_ID_INDEX], &taskId));
     context->taskId = taskId;
 
     napi_value promise = nullptr;
-    napi_create_promise(env, &context->deferred, &promise);
+    NAPI_CALL(env, napi_create_promise(env, &context->deferred, &promise));
 
     napi_value resource = nullptr;
-    napi_create_string_utf8(env, "GetTaskInfo", NAPI_AUTO_LENGTH, &resource);
+    NAPI_CALL(env, napi_create_string_utf8(env, "GetTaskInfo", NAPI_AUTO_LENGTH, &resource));
     NAPI_CALL(env, napi_create_async_work(env, nullptr, resource, GetTaskInfoExecute, GetTaskInfoComplete,
         static_cast<void*>(context), &context->asyncWork));
     napi_queue_async_work(env, context->asyncWork);
