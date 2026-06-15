@@ -336,7 +336,7 @@ private:
     bool WorkPolicyManagerInit(const std::shared_ptr<AppExecFwk::EventRunner>& runner);
     void OnAddSystemAbility(int32_t systemAbilityId, const std::string& deviceId) override;
     void OnRemoveSystemAbility(int32_t systemAbilityId, const std::string& deviceId) override;
-    bool VerifyAbilityName(const std::string& bundleName, const std::string& abilityName, int32_t appIndex);
+    bool VerifyAbilityName(const std::string& bundleName, const std::string& abilityName);
     bool VerifyTaskInfo(const TaskInfo& taskInfo);
 #ifdef DEVICE_USAGE_STATISTICS_ENABLE
     void GroupObserverInit();

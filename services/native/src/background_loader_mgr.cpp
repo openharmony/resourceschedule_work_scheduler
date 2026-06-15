@@ -23,7 +23,6 @@ namespace {
 constexpr std::string_view TIMEOUT_MESSAGE = "timeOut";
 constexpr std::string_view TIMEOUT_TASK_NAME = "BackgroundLoaderTimeout";
 }
-using namespace OHOS::ResourceSchedule;
 IMPLEMENT_SINGLE_INSTANCE(BackgroundLoaderMgr)
 
 void BackgroundLoaderMgr::Init()

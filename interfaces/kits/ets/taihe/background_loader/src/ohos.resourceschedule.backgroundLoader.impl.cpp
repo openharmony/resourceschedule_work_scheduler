@@ -30,8 +30,9 @@ void RegisterTask(const ::ohos::resourceschedule::backgroundLoader::TaskInfo& ta
 
     ErrCode errCode = WorkSchedulerSrvClient::GetInstance().RegisterTask(info);
     if (errCode != ERR_OK) {
-        WS_HILOGE("RegisterTask fail errCode: %{public}d", FindErrCode(errCode));
-        set_business_error(FindErrCode(errCode), FindErrMsg(errCode));
+        auto errMsg = FindErrMsg(errCode);
+        WS_HILOGE("RegisterTask fail: %{public}s", errMsg.c_str());
+        set_business_error(FindErrCode(errCode), errMsg);
     }
 }
 
@@ -41,8 +42,9 @@ void UnregisterTask(const ::ohos::resourceschedule::backgroundLoader::TaskInfo& 
 
     ErrCode errCode = WorkSchedulerSrvClient::GetInstance().UnregisterTask(info);
     if (errCode != ERR_OK) {
-        WS_HILOGE("UnregisterTask fail errCode: %{public}d", FindErrCode(errCode));
-        set_business_error(FindErrCode(errCode), FindErrMsg(errCode));
+        auto errMsg = FindErrMsg(errCode);
+        WS_HILOGE("UnregisterTask fail: %{public}s", errMsg.c_str());
+        set_business_error(FindErrCode(errCode), errMsg);
     }
 }
 
@@ -52,8 +54,9 @@ void FinishTask(const ::ohos::resourceschedule::backgroundLoader::TaskInfo& task
 
     ErrCode errCode = WorkSchedulerSrvClient::GetInstance().FinishTask(info);
     if (errCode != ERR_OK) {
-        WS_HILOGE("FinishTask fail errCode: %{public}d", FindErrCode(errCode));
-        set_business_error(FindErrCode(errCode), FindErrMsg(errCode));
+        auto errMsg = FindErrMsg(errCode);
+        WS_HILOGE("FinishTask fail: %{public}s", errMsg.c_str());
+        set_business_error(FindErrCode(errCode), errMsg);
     }
 }
 
@@ -62,8 +65,9 @@ void FinishTask(const ::ohos::resourceschedule::backgroundLoader::TaskInfo& task
     BackgroundLoaderTaskInfo info;
     ErrCode errCode = WorkSchedulerSrvClient::GetInstance().GetTaskInfo(taskId, info);
     if (errCode != ERR_OK) {
-        WS_HILOGE("GetTaskInfoPromise fail errCode: %{public}d", FindErrCode(errCode));
-        set_business_error(FindErrCode(errCode), FindErrMsg(errCode));
+        auto errMsg = FindErrMsg(errCode);
+        WS_HILOGE("GetTaskInfoPromise fail: %{public}s", errMsg.c_str());
+        set_business_error(FindErrCode(errCode), errMsg);
     }
     ::ohos::resourceschedule::backgroundLoader::TaskInfo taskInfo(info.taskId, info.abilityName);
     return TaskInfo;

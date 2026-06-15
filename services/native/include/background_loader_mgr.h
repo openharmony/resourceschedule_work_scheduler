@@ -68,5 +68,4 @@ private:
 }  // namespace WorkScheduler
 }  // namespace OHOS
 
-
 #endif // FOUNDATION_RESOURCESCHEDULE_WORKSCHEDULER_BACKGROUND_LOADER_MGR_H

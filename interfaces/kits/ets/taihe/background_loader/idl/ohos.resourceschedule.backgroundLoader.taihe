@@ -31,7 +31,6 @@ struct TaskInfo {
   abilityName: String;
 }
 
-
 enum StopCode : i32 {
   SUCCESS = 0,
   SYSTEM_ERROR = 1,
