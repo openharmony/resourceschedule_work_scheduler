@@ -309,7 +309,7 @@ ErrCode WorkSchedulerSrvClient::UnregisterTask(BackgroundLoaderTaskInfo& taskInf
 
 ErrCode WorkSchedulerSrvClient::FinishTask(BackgroundLoaderTaskInfo& taskInfo)
 {
-    WS_HILOGD("Register background_loader task");
+    WS_HILOGD("Finish background_loader task");
     std::lock_guard<std::mutex> lock(mutex_);
     ErrCode code = Connect();
     if (code != ERR_OK) {

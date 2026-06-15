@@ -84,7 +84,7 @@ napi_value RegisterTask(napi_env env, napi_callback_info info)
 
 napi_value UnregisterTask(napi_env env, napi_callback_info info)
 {
-    WS_HILOGD("Register task napi begin.");
+    WS_HILOGD("Unregister task napi begin.");
     BackgroundLoaderTaskInfo taskInfo;
     if (!GetTaskInfo(env, info, taskInfo)) {
         return Common::NapiGetNull(env);
@@ -98,8 +98,6 @@ napi_value UnregisterTask(napi_env env, napi_callback_info info)
 napi_value FinishTask(napi_env env, napi_callback_info info)
 {
     WS_HILOGD("Finish task napi begin.");
-
-    WS_HILOGD("Register task napi begin.");
     BackgroundLoaderTaskInfo taskInfo;
     if (!GetTaskInfo(env, info, taskInfo)) {
         return Common::NapiGetNull(env);

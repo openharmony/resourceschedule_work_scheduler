@@ -66,7 +66,7 @@ void FinishTask(const ::ohos::resourceschedule::backgroundLoader::TaskInfo& task
         set_business_error(FindErrCode(errCode), FindErrMsg(errCode));
     }
     ::ohos::resourceschedule::backgroundLoader::TaskInfo taskInfo(info.taskId, info.abilityName);
-    return info;
+    return TaskInfo;
 }
 
 TH_EXPORT_CPP_API_RegisterTask(RegisterTask);
