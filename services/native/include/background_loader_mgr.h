@@ -25,6 +25,7 @@
 #include "work_sched_errors.h"
 #include "background_loader_task_info.h"
 #include "single_instance.h"
+#include "ffrt.h"
 
 namespace OHOS {
 namespace WorkScheduler {
