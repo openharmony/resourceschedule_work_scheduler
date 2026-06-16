@@ -1920,22 +1920,30 @@ bool WorkSchedulerService::VerifyAbilityName(const std::string& bundleName, cons
     return false;
 }
 
+int32_t WorkSchedulerService::CheckPermissionAndTaskInfo(std::string& bundleName, int32_t& appIndex)
+{
+    if (!CheckPermission(std::string(BACKGROUND_LOADER_PERMISSION))) {
+        return E_PERMISSION_DENIED;
+    }
+    int32_t callinguid = IPCSkeleton::GetCallingUid();
+    if (!GetAppIndexAndBundleNameByUid(callinguid, appIndex, bundleName)) {
+        WS_HILOGE("Failed to get bundle for uid %{public}d", callinguid);
+        return E_CHECK_WORKINFO_FAILED;
+    }
+    return ERR_OK;
+}
+
 int32_t WorkSchedulerService::RegisterTask(const BackgroundLoaderTaskInfo& taskInfo)
 {
     if (!ready_.load()) {
         WS_HILOGE("service is not ready.");
         return E_SERVICE_NOT_READY;
     }
-    if (!CheckPermission(std::string(BACKGROUND_LOADER_PERMISSION))) {
-        return E_PERMISSION_DENIED;
-    }
-
-    int32_t callinguid = IPCSkeleton::GetCallingUid();
     std::string bundleName = "";
     int32_t appIndex = -1;
-    if (!GetAppIndexAndBundleNameByUid(callinguid, appIndex, bundleName)) {
-        WS_HILOGE("Failed to get bundle for uid %{public}d", callinguid);
-        return false;
+    auto ret = CheckPermissionAndTaskInfo(bundleName, appIndex);
+    if (ret != ERR_OK) {
+        return ret;
     }
     if (!VerifyAbilityName(bundleName, taskInfo.GetAbilityName())) {
         return E_CHECK_WORKINFO_FAILED;
@@ -1955,16 +1963,11 @@ int32_t WorkSchedulerService::UnregisterTask(const BackgroundLoaderTaskInfo& tas
         WS_HILOGE("service is not ready.");
         return E_SERVICE_NOT_READY;
     }
-    if (!CheckPermission(std::string(BACKGROUND_LOADER_PERMISSION))) {
-        return E_PERMISSION_DENIED;
-    }
-
-    int32_t callinguid = IPCSkeleton::GetCallingUid();
-    std::string bundleName;
-    int32_t appIndex;
-    if (!GetAppIndexAndBundleNameByUid(callinguid, appIndex, bundleName)) {
-        WS_HILOGE("Failed to get bundle for uid %{public}d", callinguid);
-        return E_CHECK_WORKINFO_FAILED;
+    std::string bundleName = "";
+    int32_t appIndex = -1;
+    auto ret = CheckPermissionAndTaskInfo(bundleName, appIndex);
+    if (ret != ERR_OK) {
+        return ret;
     }
     TaskInfo info = {
         .taskId_ = taskInfo.GetTaskId(),
@@ -1981,16 +1984,11 @@ int32_t WorkSchedulerService::FinishTask(const BackgroundLoaderTaskInfo& taskInf
         WS_HILOGE("service is not ready.");
         return E_SERVICE_NOT_READY;
     }
-    if (!CheckPermission(std::string(BACKGROUND_LOADER_PERMISSION))) {
-        return E_PERMISSION_DENIED;
-    }
-
-    int32_t callinguid = IPCSkeleton::GetCallingUid();
-    std::string bundleName;
-    int32_t appIndex;
-    if (!GetAppIndexAndBundleNameByUid(callinguid, appIndex, bundleName)) {
-        WS_HILOGE("Failed to get bundle for uid %{public}d", callinguid);
-        return false;
+    std::string bundleName = "";
+    int32_t appIndex = -1;
+    auto ret = CheckPermissionAndTaskInfo(bundleName, appIndex);
+    if (ret != ERR_OK) {
+        return ret;
     }
     TaskInfo info = {
         .taskId_ = taskInfo.GetTaskId(),
@@ -2007,16 +2005,11 @@ int32_t WorkSchedulerService::GetTaskInfo(int32_t taskId, BackgroundLoaderTaskIn
         WS_HILOGE("service is not ready.");
         return E_SERVICE_NOT_READY;
     }
-    if (!CheckPermission(std::string(BACKGROUND_LOADER_PERMISSION))) {
-        return E_PERMISSION_DENIED;
-    }
-
-    int32_t callinguid = IPCSkeleton::GetCallingUid();
-    std::string bundleName;
-    int32_t appIndex;
-    if (!GetAppIndexAndBundleNameByUid(callinguid, appIndex, bundleName)) {
-        WS_HILOGE("Failed to get bundle for uid %{public}d", callinguid);
-        return false;
+    std::string bundleName = "";
+    int32_t appIndex = -1;
+    auto ret = CheckPermissionAndTaskInfo(bundleName, appIndex);
+    if (ret != ERR_OK) {
+        return ret;
     }
     return BackgroundLoaderMgr::GetInstance().GetTaskInfo(taskId, bundleName, appIndex, taskInfo);
 }
