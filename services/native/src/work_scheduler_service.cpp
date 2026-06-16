@@ -1880,8 +1880,7 @@ bool WorkSchedulerService::VerifyAbilityName(const std::string& bundleName, cons
         SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     if (!systemAbilityManager) {
         WS_HILOGE("fail to get system ability mgr.");
-        WorkSchedUtil::HiSysEventException(EventErrorCode::WORK_CHECK, "fail to get 
-             system ability manager");
+        WorkSchedUtil::HiSysEventException(EventErrorCode::WORK_CHECK, "fail to get system ability manager");
         return false;
     }
     sptr<IRemoteObject> remoteObject = systemAbilityManager->GetSystemAbility(BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
