@@ -88,6 +88,7 @@ ohos_unittest("WorkSchedulerClientTest") {
 }
 
 ohos_unittest("BackgroundLoaderTaskInfoTest") {
+  module_out_path = module_output_path
   sources = [
     "${worksched_frameworks_path}/test/unittest/src/background_loader_task_info_test.cpp",
   ]
