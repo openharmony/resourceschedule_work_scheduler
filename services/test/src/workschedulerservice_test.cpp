@@ -1469,28 +1469,28 @@ HWTEST_F(WorkSchedulerServiceTest, CreateNodeFile_001, TestSize.Level1)
 HWTEST_F(WorkSchedulerServiceTest, RegisterTask_ServiceNotReady_001, TestSize.Level1)
 {
     BackgroundLoaderTaskInfo taskInfo(1, "TestAbility");
-    int32_t ret = service_->RegisterTask(taskInfo);
+    int32_t ret = workSchedulerService_->RegisterTask(taskInfo);
     EXPECT_NE(ret, ERR_OK);
 }
 
 HWTEST_F(WorkSchedulerServiceTest, UnregisterTask_ServiceNotReady_001, TestSize.Level1)
 {
     BackgroundLoaderTaskInfo taskInfo(1, "TestAbility");
-    int32_t ret = service_->UnregisterTask(taskInfo);
+    int32_t ret = workSchedulerService_->UnregisterTask(taskInfo);
     EXPECT_NE(ret, ERR_OK);
 }
 
 HWTEST_F(WorkSchedulerServiceTest, FinishTask_ServiceNotReady_001, TestSize.Level1)
 {
     BackgroundLoaderTaskInfo taskInfo(1, "TestAbility");
-    int32_t ret = service_->FinishTask(taskInfo);
+    int32_t ret = workSchedulerService_->FinishTask(taskInfo);
     EXPECT_NE(ret, ERR_OK);
 }
 
 HWTEST_F(WorkSchedulerServiceTest, GetTaskInfo_ServiceNotReady_001, TestSize.Level1)
 {
     BackgroundLoaderTaskInfo taskInfo;
-    int32_t ret = service_->GetTaskInfo(1, taskInfo);
+    int32_t ret = workSchedulerService_->GetTaskInfo(1, taskInfo);
     EXPECT_NE(ret, ERR_OK);
 }
 }

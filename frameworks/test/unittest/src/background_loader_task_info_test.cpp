@@ -112,7 +112,7 @@ HWTEST_F(BackgroundLoaderTaskInfoTest, SetAbilityName_Empty_001, TestSize.Level1
 HWTEST_F(BackgroundLoaderTaskInfoTest, Marshalling_001, TestSize.Level1)
 {
     BackgroundLoaderTaskInfo info(100, "TestAbility");
-    Parcel parcel;
+    OHOS::Parcel parcel;
     bool ret = info.Marshalling(parcel);
     EXPECT_TRUE(ret);
 }
@@ -126,7 +126,7 @@ HWTEST_F(BackgroundLoaderTaskInfoTest, Marshalling_001, TestSize.Level1)
 HWTEST_F(BackgroundLoaderTaskInfoTest, Marshalling_ReadBack_001, TestSize.Level1)
 {
     BackgroundLoaderTaskInfo info(100, "TestAbility");
-    Parcel parcel;
+    OHOS::Parcel parcel;
     bool ret = info.Marshalling(parcel);
     EXPECT_TRUE(ret);
     EXPECT_EQ(parcel.ReadInt32(), 100);
@@ -142,7 +142,7 @@ HWTEST_F(BackgroundLoaderTaskInfoTest, Marshalling_ReadBack_001, TestSize.Level1
 HWTEST_F(BackgroundLoaderTaskInfoTest, Unmarshalling_001, TestSize.Level1)
 {
     BackgroundLoaderTaskInfo info(100, "TestAbility");
-    Parcel parcel;
+    OHOS::Parcel parcel;
     bool ret = info.Marshalling(parcel);
     EXPECT_TRUE(ret);
 
@@ -162,7 +162,7 @@ HWTEST_F(BackgroundLoaderTaskInfoTest, Unmarshalling_001, TestSize.Level1)
 HWTEST_F(BackgroundLoaderTaskInfoTest, Unmarshalling_ZeroValues_001, TestSize.Level1)
 {
     BackgroundLoaderTaskInfo info(0, "");
-    Parcel parcel;
+    OHOS::Parcel parcel;
     bool ret = info.Marshalling(parcel);
     EXPECT_TRUE(ret);
 
@@ -183,7 +183,7 @@ HWTEST_F(BackgroundLoaderTaskInfoTest, MarshallingUnmarshalling_RoundTrip_001, T
 {
     for (int32_t i = -100; i <= 100; i += 50) {
         BackgroundLoaderTaskInfo info(i, "Ability_" + std::to_string(i));
-        Parcel parcel;
+        OHOS::Parcel parcel;
         bool ret = info.Marshalling(parcel);
         EXPECT_TRUE(ret);
         BackgroundLoaderTaskInfo* result = BackgroundLoaderTaskInfo::Unmarshalling(parcel);
@@ -204,7 +204,7 @@ HWTEST_F(BackgroundLoaderTaskInfoTest, Marshalling_LongAbilityName_001, TestSize
 {
     std::string longName(256, 'A');
     BackgroundLoaderTaskInfo info(1, longName);
-    Parcel parcel;
+    OHOS::Parcel parcel;
     bool ret = info.Marshalling(parcel);
     EXPECT_TRUE(ret);
 
