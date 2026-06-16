@@ -45,7 +45,7 @@ ErrCode BackgroundLoaderMgr::RegisterTask(const TaskInfo& taskInfo)
         return E_SERVICE_NOT_READY;
     }
     std::string key = GenerateTaskKey(taskInfo.bundleName_, taskInfo.appIndex_, taskInfo.taskId_);
-    std::lock_guard<std::mutex> lock(taskLock_);
+    std::lock_guard<ffrt::mutex> lock(taskLock_);
     taskMap_[key] = taskInfo;
     return ERR_OK;
 }
@@ -59,7 +59,7 @@ ErrCode BackgroundLoaderMgr::UnregisterTask(const TaskInfo& taskInfo)
         return E_SERVICE_NOT_READY;
     }
 
-    std::lock_guard<std::mutex> lock(taskLock_);
+    std::lock_guard<ffrt::mutex> lock(taskLock_);
     std::string key = GenerateTaskKey(taskInfo.bundleName_, taskInfo.appIndex_, taskInfo.taskId_);
     auto it = taskMap_.find(key);
     if (it == taskMap_.end()) {
@@ -80,7 +80,7 @@ ErrCode BackgroundLoaderMgr::FinishTask(const TaskInfo& taskInfo)
         return E_SERVICE_NOT_READY;
     }
 
-    std::lock_guard<std::mutex> lock(taskLock_);
+    std::lock_guard<ffrt::mutex> lock(taskLock_);
     std::string key = GenerateTaskKey(taskInfo.bundleName_, taskInfo.appIndex_, taskInfo.taskId_);
     auto it = taskMap_.find(key);
     if (it == taskMap_.end()) {
@@ -101,7 +101,7 @@ ErrCode BackgroundLoaderMgr::GetTaskInfo(int32_t taskId, const std::string& bund
         return E_SERVICE_NOT_READY;
     }
 
-    std::lock_guard<std::mutex> lock(taskLock_);
+    std::lock_guard<ffrt::mutex> lock(taskLock_);
     std::string key = GenerateTaskKey(bundleName, appIndex, taskId);
     auto it = taskMap_.find(key);
     if (it != taskMap_.end()) {

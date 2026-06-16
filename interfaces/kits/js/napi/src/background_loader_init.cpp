@@ -14,7 +14,6 @@
  */
 
 #include "background_loader_init.h"
-#include "common.h"
 #include "background_loader_task.h"
 #include "work_sched_hilog.h"
 
