@@ -377,6 +377,7 @@ private:
     void ReportUserDataSizeEvent();
     void DumpParamRestore(std::string& result);
     bool CheckPermission(const std::string &permission);
+    int32_t CheckPermissionAndTaskInfo(std::string& bundleName, int32_t& appIndex);
 
 private:
     std::set<int32_t> whitelist_;
