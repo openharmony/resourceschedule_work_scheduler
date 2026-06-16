@@ -1880,18 +1880,20 @@ bool WorkSchedulerService::VerifyAbilityName(const std::string& bundleName, cons
         SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     if (!systemAbilityManager) {
         WS_HILOGE("fail to get system ability mgr.");
-        WorkSchedUtil::HiSysEventException(EventErrorCode::WORK_CHECK, "fail to get system ability manager");
+        WorkSchedUtil::HiSysEventException(EventErrorCode::WORK_CHECK, "fail to get 
+             system ability manager");
         return false;
     }
     sptr<IRemoteObject> remoteObject = systemAbilityManager->GetSystemAbility(BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
     if (!remoteObject) {
-        WS_HILOGE("fail to get bundle manager proxy.");
-        WorkSchedUtil::HiSysEventException(EventErrorCode::WORK_CHECK, "fail to get bundle manager proxy");
+        WS_HILOGE("fail to get bundle manager remoteObject.");
+        WorkSchedUtil::HiSysEventException(EventErrorCode::WORK_CHECK, "fail to get bundle manager remoteObject");
         return false;
     }
     sptr<IBundleMgr> bundleMgr = iface_cast<IBundleMgr>(remoteObject);
     if (!bundleMgr) {
         WS_HILOGE("fail to get bundle manager proxy.");
+        WorkSchedUtil::HiSysEventException(EventErrorCode::WORK_CHECK, "fail to get bundle manager proxy");
         return false;
     }
 
@@ -1929,8 +1931,8 @@ int32_t WorkSchedulerService::RegisterTask(const BackgroundLoaderTaskInfo& taskI
     }
 
     int32_t callinguid = IPCSkeleton::GetCallingUid();
-    std::string bundleName;
-    int32_t appIndex;
+    std::string bundleName = "";
+    int32_t appIndex = -1;
     if (!GetAppIndexAndBundleNameByUid(callinguid, appIndex, bundleName)) {
         WS_HILOGE("Failed to get bundle for uid %{public}d", callinguid);
         return false;

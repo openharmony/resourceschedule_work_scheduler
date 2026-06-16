@@ -18,32 +18,22 @@
 #include <memory>
 #include <mutex>
 #include <unordered_map>
-#include <functional>
 #include <string>
 
-#include <iremote_object.h>
 #include <nocopyable.h>
-#include <ipc_skeleton.h>
 
 #include "work_sched_errors.h"
 #include "background_loader_task_info.h"
-#include "nlohmann/json.hpp"
 #include "single_instance.h"
-
-#ifdef RESOURCESCHEDULE_BGTASKMGR_ENABLE
-#include "ability_connect_callback_stub.h"
-#include "want.h"
-#include "ability_manager_client.h"
-#endif
 
 namespace OHOS {
 namespace WorkScheduler {
 
 struct TaskInfo {
-    std::string bundleName_;
-    std::string abilityName_;
-    int32_t appIndex_;
-    int32_t taskId_;
+    std::string bundleName_ = "";
+    std::string abilityName_ = "";
+    int32_t appIndex_ = -1;
+    int32_t taskId_ = 0;
 };
 
 class BackgroundLoaderMgr {
@@ -60,9 +50,8 @@ private:
     std::string GenerateTaskKey(const std::string& bundleName, int32_t appIndex, int32_t taskId);
 
     std::atomic<bool> isReady_ {false};
-    std::mutex taskLock_;
+    ffrt::mutex taskLock_;
     std::unordered_map<std::string, TaskInfo> taskMap_;
-    std::mutex abilityMapLock_;
 };
 
 }  // namespace WorkScheduler
