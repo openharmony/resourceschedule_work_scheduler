@@ -1921,6 +1921,10 @@ bool WorkSchedulerService::VerifyAbilityName(const std::string& bundleName, cons
 
 int32_t WorkSchedulerService::CheckPermissionAndTaskInfo(std::string& bundleName, int32_t& appIndex)
 {
+    if (!ready_.load()) {
+        WS_HILOGE("service is not ready.");
+        return E_SERVICE_NOT_READY;
+    }
     if (!CheckPermission(std::string(BACKGROUND_LOADER_PERMISSION))) {
         return E_PERMISSION_DENIED;
     }
@@ -1934,10 +1938,6 @@ int32_t WorkSchedulerService::CheckPermissionAndTaskInfo(std::string& bundleName
 
 int32_t WorkSchedulerService::RegisterTask(const BackgroundLoaderTaskInfo& taskInfo)
 {
-    if (!ready_.load()) {
-        WS_HILOGE("service is not ready.");
-        return E_SERVICE_NOT_READY;
-    }
     std::string bundleName = "";
     int32_t appIndex = -1;
     auto ret = CheckPermissionAndTaskInfo(bundleName, appIndex);
@@ -1958,10 +1958,6 @@ int32_t WorkSchedulerService::RegisterTask(const BackgroundLoaderTaskInfo& taskI
 
 int32_t WorkSchedulerService::UnregisterTask(const BackgroundLoaderTaskInfo& taskInfo)
 {
-    if (!ready_.load()) {
-        WS_HILOGE("service is not ready.");
-        return E_SERVICE_NOT_READY;
-    }
     std::string bundleName = "";
     int32_t appIndex = -1;
     auto ret = CheckPermissionAndTaskInfo(bundleName, appIndex);
@@ -1979,10 +1975,6 @@ int32_t WorkSchedulerService::UnregisterTask(const BackgroundLoaderTaskInfo& tas
     
 int32_t WorkSchedulerService::FinishTask(const BackgroundLoaderTaskInfo& taskInfo)
 {
-    if (!ready_.load()) {
-        WS_HILOGE("service is not ready.");
-        return E_SERVICE_NOT_READY;
-    }
     std::string bundleName = "";
     int32_t appIndex = -1;
     auto ret = CheckPermissionAndTaskInfo(bundleName, appIndex);
