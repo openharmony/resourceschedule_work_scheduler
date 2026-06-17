@@ -64,7 +64,6 @@ HWTEST_F(BackgroundLoaderMgrTest, RegisterTask_NotReady_001, TestSize.Level1)
     BackgroundLoaderMgr::GetInstance().isReady_.store(false);
     ErrCode ret = BackgroundLoaderMgr::GetInstance().RegisterTask(info);
     EXPECT_EQ(ret, E_SERVICE_NOT_READY);
-    BackgroundLoaderMgr::GetInstance().Init();
 }
 
 /**
