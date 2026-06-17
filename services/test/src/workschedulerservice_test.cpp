@@ -1470,28 +1470,28 @@ HWTEST_F(WorkSchedulerServiceTest, RegisterTask_ServiceNotReady_001, TestSize.Le
 {
     BackgroundLoaderTaskInfo taskInfo(1, "TestAbility");
     int32_t ret = workSchedulerService_->RegisterTask(taskInfo);
-    EXPECT_EQ(ret, E_PERMISSION_DENIED)
+    EXPECT_EQ(ret, E_PERMISSION_DENIED);
 }
 
 HWTEST_F(WorkSchedulerServiceTest, UnregisterTask_ServiceNotReady_001, TestSize.Level1)
 {
     BackgroundLoaderTaskInfo taskInfo(1, "TestAbility");
     int32_t ret = workSchedulerService_->UnregisterTask(taskInfo);
-    EXPECT_EQ(ret, E_PERMISSION_DENIED)
+    EXPECT_EQ(ret, E_PERMISSION_DENIED);
 }
 
 HWTEST_F(WorkSchedulerServiceTest, FinishTask_ServiceNotReady_001, TestSize.Level1)
 {
     BackgroundLoaderTaskInfo taskInfo(1, "TestAbility");
     int32_t ret = workSchedulerService_->FinishTask(taskInfo);
-    EXPECT_EQ(ret, E_PERMISSION_DENIED)
+    EXPECT_EQ(ret, E_PERMISSION_DENIED);
 }
 
 HWTEST_F(WorkSchedulerServiceTest, GetTaskInfo_ServiceNotReady_001, TestSize.Level1)
 {
     BackgroundLoaderTaskInfo taskInfo;
     int32_t ret = workSchedulerService_->GetTaskInfo(1, taskInfo);
-    EXPECT_EQ(ret, E_PERMISSION_DENIED)
+    EXPECT_EQ(ret, E_PERMISSION_DENIED);
 }
 }
 }
