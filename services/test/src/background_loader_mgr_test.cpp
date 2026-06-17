@@ -141,7 +141,6 @@ HWTEST_F(BackgroundLoaderMgrTest, UnregisterTask_NotReady_001, TestSize.Level1)
     BackgroundLoaderMgr::GetInstance().isReady_.store(false);
     ErrCode ret = BackgroundLoaderMgr::GetInstance().UnregisterTask(info);
     EXPECT_EQ(ret, E_SERVICE_NOT_READY);
-    BackgroundLoaderMgr::GetInstance().Init();
 }
 
 /**
@@ -199,7 +198,6 @@ HWTEST_F(BackgroundLoaderMgrTest, FinishTask_NotReady_001, TestSize.Level1)
     BackgroundLoaderMgr::GetInstance().isReady_.store(false);
     ErrCode ret = BackgroundLoaderMgr::GetInstance().FinishTask(info);
     EXPECT_EQ(ret, E_SERVICE_NOT_READY);
-    BackgroundLoaderMgr::GetInstance().Init();
 }
 
 /**
@@ -251,7 +249,6 @@ HWTEST_F(BackgroundLoaderMgrTest, GetTaskInfo_NotReady_001, TestSize.Level1)
     BackgroundLoaderMgr::GetInstance().isReady_.store(false);
     ErrCode ret = BackgroundLoaderMgr::GetInstance().GetTaskInfo(1, "com.test.bundle", 0, taskInfo);
     EXPECT_EQ(ret, E_SERVICE_NOT_READY);
-    BackgroundLoaderMgr::GetInstance().Init();
 }
 
 /**
