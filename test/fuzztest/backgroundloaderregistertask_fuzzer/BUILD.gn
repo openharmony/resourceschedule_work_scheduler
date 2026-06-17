@@ -14,8 +14,8 @@
 import("//build/config/components/fuzztester/fuzz_test.gni")
 import("//foundation/resourceschedule/work_scheduler/workscheduler.gni")
 
-ohos_fuzztest("backgroundloaderregistertask_fuzz") {
-  sources = [ "backgroundloaderregistertask_fuzz.cpp" ]
+ohos_fuzztest("backgroundloaderregistertask_fuzzer") {
+  sources = [ "backgroundloaderregistertask_fuzzer.cpp" ]
 
   include_dirs = [
     "${worksched_frameworks_path}/include",
