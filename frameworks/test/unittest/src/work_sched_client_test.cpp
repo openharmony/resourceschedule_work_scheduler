@@ -297,7 +297,7 @@ HWTEST_F(WorkSchedClientTest, RegisterTask_001, TestSize.Level1)
 {
     BackgroundLoaderTaskInfo taskInfo(1, "TestAbility");
     ErrCode ret = WorkSchedulerSrvClient::GetInstance().RegisterTask(taskInfo);
-    EXPECT_EQ(ret, E_SERVICE_NOT_READY)
+    EXPECT_EQ(ret, E_SERVICE_NOT_READY);
 }
 
 /**
@@ -310,7 +310,7 @@ HWTEST_F(WorkSchedClientTest, UnregisterTask_001, TestSize.Level1)
 {
     BackgroundLoaderTaskInfo taskInfo(1, "TestAbility");
     ErrCode ret = WorkSchedulerSrvClient::GetInstance().UnregisterTask(taskInfo);
-    EXPECT_EQ(ret, E_SERVICE_NOT_READY)
+    EXPECT_EQ(ret, E_SERVICE_NOT_READY);
 }
 
 /**
@@ -323,7 +323,7 @@ HWTEST_F(WorkSchedClientTest, FinishTask_001, TestSize.Level1)
 {
     BackgroundLoaderTaskInfo taskInfo(1, "TestAbility");
     ErrCode ret = WorkSchedulerSrvClient::GetInstance().FinishTask(taskInfo);
-    EXPECT_EQ(ret, E_SERVICE_NOT_READY)
+    EXPECT_EQ(ret, E_SERVICE_NOT_READY);
 }
 
 /**
@@ -336,7 +336,7 @@ HWTEST_F(WorkSchedClientTest, GetTaskInfo_001, TestSize.Level1)
 {
     BackgroundLoaderTaskInfo taskInfo;
     ErrCode ret = WorkSchedulerSrvClient::GetInstance().GetTaskInfo(1, taskInfo);
-    EXPECT_EQ(ret, E_SERVICE_NOT_READY)
+    EXPECT_EQ(ret, E_SERVICE_NOT_READY);
 }
 }  // namespace WorkScheduler
 }  // namespace OHOS
