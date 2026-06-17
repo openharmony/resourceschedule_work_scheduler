@@ -19,7 +19,7 @@
 
 using namespace testing::ext;
 using namespace OHOS::WorkScheduler;
-
+using namespace OHOS;
 class BackgroundLoaderMgrTest : public testing::Test {
 public:
     void SetUp() override
