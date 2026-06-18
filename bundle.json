@@ -52,7 +52,8 @@
           "power_manager",
           "resource_schedule_service",
           "runtime_core",
-          "ets_frontend"
+          "ets_frontend",
+          "taihe_ffi_gen"
         ]
       },
       "build": {
