@@ -87,11 +87,35 @@ ohos_unittest("WorkSchedulerClientTest") {
   ]
 }
 
+ohos_unittest("BackgroundLoaderTaskInfoTest") {
+  module_out_path = module_output_path
+  sources = [
+    "${worksched_frameworks_path}/test/unittest/src/background_loader_task_info_test.cpp",
+  ]
+
+  include_dirs = [
+    "${worksched_frameworks_path}/include",
+  ]
+
+  deps = [
+    "${worksched_frameworks_path}:workschedclient",
+  ]
+
+  external_deps = [
+    "c_utils:utils",
+    "hilog:libhilog",
+  ]
+
+  part_name = "${worksched_native_part_name}"
+  subsystem_name = "resourceschedule"
+}
+
 group("workinfotest") {
   testonly = true
 
   deps = [
     ":WorkSchedulerClientTest",
     ":WorkSchedulerWorkInfoTest",
+    ":BackgroundLoaderTaskInfoTest", 
   ]
 }

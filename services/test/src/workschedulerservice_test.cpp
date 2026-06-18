@@ -48,6 +48,7 @@
 #include "work_sched_errors.h"
 #include "work_sched_hilog.h"
 #include "work_policy_manager.h"
+#include "background_loader_task_info.h"
 
 #ifdef DEVICE_STANDBY_ENABLE
 namespace OHOS {
@@ -135,6 +136,10 @@ class MyWorkSchedulerService : public WorkSchedServiceStub {
     int32_t StopWorkForSA(int32_t saId) { return 0; }
     int32_t StartWorkForInner(const WorkInfo& workInfo) { return 0; }
     int32_t StopWorkForInner(const WorkInfo& workInfo, bool needCancel) { return 0; }
+    int32_t RegisterTask(const BackgroundLoaderTaskInfo& taskInfo)  { return 0; }
+    int32_t UnregisterTask(const BackgroundLoaderTaskInfo& taskInfo)  { return 0; }
+    int32_t FinishTask(const BackgroundLoaderTaskInfo& taskInfo) { return 0; }
+    int32_t GetTaskInfo(int32_t taskId, BackgroundLoaderTaskInfo& taskInfo)  { return 0; }
 };
 /**
  * @tc.name: onStart_001
@@ -1458,6 +1463,35 @@ HWTEST_F(WorkSchedulerServiceTest, CreateNodeFile_001, TestSize.Level1)
 {
     bool ret = workSchedulerService_->CreateNodeFile();
     EXPECT_TRUE(ret);
+}
+
+
+HWTEST_F(WorkSchedulerServiceTest, RegisterTask_ServiceNotReady_001, TestSize.Level1)
+{
+    BackgroundLoaderTaskInfo taskInfo(1, "TestAbility");
+    int32_t ret = workSchedulerService_->RegisterTask(taskInfo);
+    EXPECT_EQ(ret, E_PERMISSION_DENIED);
+}
+
+HWTEST_F(WorkSchedulerServiceTest, UnregisterTask_ServiceNotReady_001, TestSize.Level1)
+{
+    BackgroundLoaderTaskInfo taskInfo(1, "TestAbility");
+    int32_t ret = workSchedulerService_->UnregisterTask(taskInfo);
+    EXPECT_EQ(ret, E_PERMISSION_DENIED);
+}
+
+HWTEST_F(WorkSchedulerServiceTest, FinishTask_ServiceNotReady_001, TestSize.Level1)
+{
+    BackgroundLoaderTaskInfo taskInfo(1, "TestAbility");
+    int32_t ret = workSchedulerService_->FinishTask(taskInfo);
+    EXPECT_EQ(ret, E_PERMISSION_DENIED);
+}
+
+HWTEST_F(WorkSchedulerServiceTest, GetTaskInfo_ServiceNotReady_001, TestSize.Level1)
+{
+    BackgroundLoaderTaskInfo taskInfo;
+    int32_t ret = workSchedulerService_->GetTaskInfo(1, taskInfo);
+    EXPECT_EQ(ret, E_PERMISSION_DENIED);
 }
 }
 }
