@@ -48,7 +48,7 @@ void WorkSchedulerConnection::OnAbilityConnectDone(
     }
     sleep(1);
     auto service = DelayedSingleton<WorkSchedulerService>::GetInstance();
-    shared_ptr<WorkStatus> workStatus = service->GetWorkPolicyManager()->FindWorkStatus(*workInfo_,
+    std::shared_ptr<WorkStatus> workStatus = service->GetWorkPolicyManager()->FindWorkStatus(*workInfo_,
         workInfo_->GetUid());
     // idle类型任务满足触发条件后任务拉起，此时延迟任务连接回调还未完成，用户解锁屏幕任务停止失败，当延迟任务连接回调完成时需停止任务
     if (WorkSchedUtils::IsUserMode() && workInfo_->GetDeepIdle() == WorkCondition::DeepIdle::DEEP_IDLE_IN &&
