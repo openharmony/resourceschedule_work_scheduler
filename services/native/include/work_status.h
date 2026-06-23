@@ -217,6 +217,8 @@ public:
     void SetTimeout(bool timeout);
     bool IsSpecial();
     double TimeUntilLast();
+    bool IsDebugTask();
+    void SetDebugTask(bool debugTask);
 private:
     Status currentStatus_;
     time_t baseTime_;
@@ -227,6 +229,7 @@ private:
     static std::map<int32_t, time_t> s_uid_last_time_map;
     std::string conditionStatus_;
     std::atomic<bool> timeout_ {false};
+    std::atomic<bool> debugTask_ {false};
     void MarkTimeout();
     bool IsSameUser();
     bool SetMinInterval();
