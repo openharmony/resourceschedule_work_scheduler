@@ -1212,5 +1212,18 @@ HWTEST_F(WorkStatusTest, SetMinIntervalWhenNotCharging_002, TestSize.Level1)
     EXPECT_EQ(workStatus_->minInterval_, INVALID_VALUE);
 }
 #endif
+
+/**
+ * @tc.name: IsDebugTask_001
+ * @tc.desc: Test WorkStatus IsDebugTask.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(WorkStatusTest, IIsDebugTask_001, TestSize.Level1)
+{
+    workStatus_->debugTask_ = false;
+    workStatus_->SetDebugTask(true);
+    EXPECT_TRUE(workStatus_->IsDebugTask());
+}
 }
 }
