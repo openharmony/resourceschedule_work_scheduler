@@ -1221,6 +1221,7 @@ HWTEST_F(WorkStatusTest, SetMinIntervalWhenNotCharging_002, TestSize.Level1)
  */
 HWTEST_F(WorkStatusTest, IsDebugTask_001, TestSize.Level1)
 {
+    EXPECT_FALSE(workStatus_->IsDebugTask());
     workStatus_->SetDebugTask(true);
     EXPECT_TRUE(workStatus_->IsDebugTask());
 }
