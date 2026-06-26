@@ -821,6 +821,7 @@ void WorkPolicyManager::TriggerIdeWork()
         return;
     }
     topWork->MarkStatus(WorkStatus::Status::RUNNING);
+    topWork->SetDebugTask(true);
     bool ret = workConnManager_->StartWork(topWork);
     if (ret) {
         WS_HILOGI("TriggerIdeWork ok");
@@ -831,6 +832,7 @@ void WorkPolicyManager::TriggerIdeWork()
     } else {
         WS_HILOGE("TriggerIdeWork error");
         topWork->MarkStatus(WorkStatus::Status::WAIT_CONDITION);
+        topWork->SetDebugTask(false);
         ideDebugList.clear();
         return;
     }
