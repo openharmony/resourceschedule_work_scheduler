@@ -893,5 +893,15 @@ bool WorkStatus::IsNeedDiscreteScheduled()
     }
     return true;
 }
+
+void WorkStatus::SetDebugTask(bool debugTask)
+{
+    debugTask_.store(debugTask);
+}
+
+bool WorkStatus::IsDebugTask()
+{
+    return debugTask_.load();
+}
 } // namespace WorkScheduler
 } // namespace OHOS
