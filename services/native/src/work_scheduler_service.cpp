@@ -73,6 +73,7 @@
 #include "work_sched_errors.h"
 #include "work_sched_hilog.h"
 #include "work_sched_utils.h"
+#include "parse_dump_int.h"
 #include "hitrace_meter.h"
 #include "hisysevent.h"
 #include "res_type.h"
@@ -1239,17 +1240,18 @@ void WorkSchedulerService::DumpProcessWorks(const std::string &bundleName, const
 
 void WorkSchedulerService::DumpTriggerWork(const std::string& uIdStr, const std::string& workIdStr, std::string& result)
 {
-    if (uIdStr.empty() || workIdStr.empty() || !std::all_of(uIdStr.begin(), uIdStr.end(), ::isdigit)
-        || !std::all_of(workIdStr.begin(), workIdStr.end(), ::isdigit)) {
+    int32_t uId = 0;
+    int32_t workId = 0;
+    if (!ParseDumpInt32(uIdStr, uId) || !ParseDumpInt32(workIdStr, workId)) {
+        WS_HILOGE("invalid dump trigger work params, uid: %{public}s, workId: %{public}s",
+            uIdStr.c_str(), workIdStr.c_str());
         result.append("param invalid\n");
         return;
     }
-    int32_t uId = std::atoi(uIdStr.c_str());
     if (uId <= 0) {
         result.append("uIdStr param invalid, uIdStr:" + uIdStr + "\n");
         return;
     }
-    int32_t workId = std::atoi(workIdStr.c_str());
     if (workId <= 0) {
         result.append("workIdStr param invalid, workIdStr:" + workIdStr + "\n");
         return;
@@ -1259,12 +1261,13 @@ void WorkSchedulerService::DumpTriggerWork(const std::string& uIdStr, const std:
 
 void WorkSchedulerService::DumpRunningWorks(const std::string &uidStr, const std::string &option, std::string &result)
 {
-    if (!std::all_of(uidStr.begin(), uidStr.end(), ::isdigit) || option.empty()) {
+    int32_t uid = 0;
+    if (!ParseDumpInt32(uidStr, uid) || option.empty()) {
+        WS_HILOGE("invalid dump running works params, uid: %{public}s", uidStr.c_str());
         result.append("param error");
         return;
     }
 
-    int32_t uid = std::atoi(uidStr.c_str());
     if (uid == 0) {
         result.append("uidStr param error, uidStr:" + uidStr);
         return;
@@ -1316,34 +1319,36 @@ std::string WorkSchedulerService::DumpExemptionBundles()
 
 void WorkSchedulerService::DumpParamSet(std::string &key, std::string &value, std::string &result)
 {
-    if (!std::all_of(value.begin(), value.end(), ::isdigit)) {
+    int32_t num = 0;
+    if (!ParseDumpInt32(value, num)) {
+        WS_HILOGE("invalid dump param value: %{public}s", value.c_str());
         result.append("Error params.");
         return;
     }
     if (key == "-memory") {
-        workPolicyManager_->SetMemoryByDump(std::atoi(value.c_str()));
+        workPolicyManager_->SetMemoryByDump(num);
         result.append("Set memory success.");
     } else if (key == "-watchdog_time") {
-        workPolicyManager_->SetWatchdogTimeByDump(std::atoi(value.c_str()));
+        workPolicyManager_->SetWatchdogTimeByDump(num);
         result.append("Set watchdog time success.");
     } else if (key == "-repeat_time_min") {
-        workQueueManager_->SetTimeCycle(std::atoi(value.c_str()));
+        workQueueManager_->SetTimeCycle(num);
         result.append("Set repeat time min value success.");
     } else if (key == "-min_interval") {
-        workQueueManager_->SetMinIntervalByDump(std::atoi(value.c_str()));
+        workQueueManager_->SetMinIntervalByDump(num);
         result.append("Set min interval value success.");
     } else if (key == "-cpu") {
-        workPolicyManager_->SetCpuUsageByDump(std::atoi(value.c_str()));
+        workPolicyManager_->SetCpuUsageByDump(num);
         result.append("Set cpu success.");
     } else if (key == "-nap") {
 #ifdef DEVICE_STANDBY_ENABLE
-        standbyStateObserver_->OnDeviceIdleMode(std::atoi(value.c_str()), 0);
+        standbyStateObserver_->OnDeviceIdleMode(num, 0);
 #endif
     } else if (key == "-count") {
-        workPolicyManager_->SetMaxRunningCountByDump(std::atoi(value.c_str()));
+        workPolicyManager_->SetMaxRunningCountByDump(num);
         result.append("Set max running task count success.");
     } else if (key == "-thermalLevel") {
-        workPolicyManager_->SetThermalLevelByDump(std::atoi(value.c_str()));
+        workPolicyManager_->SetThermalLevelByDump(num);
         result.append("Set thermal level success.");
     } else {
         result.append("Error params.");
@@ -1719,13 +1724,14 @@ bool WorkSchedulerService::LoadSa(std::shared_ptr<WorkStatus> workStatus, const 
 
 void WorkSchedulerService::DumpLoadSaWorks(const std::string &saIdStr, const std::string &uidStr, std::string &result)
 {
-    if (!std::all_of(saIdStr.begin(), saIdStr.end(), ::isdigit) ||
-        !std::all_of(uidStr.begin(), uidStr.end(), ::isdigit)) {
+    int32_t saId = 0;
+    int32_t uid = 0;
+    if (!ParseDumpInt32(saIdStr, saId) || !ParseDumpInt32(uidStr, uid)) {
+        WS_HILOGE("invalid dump load sa params, saId: %{public}s, uid: %{public}s",
+            saIdStr.c_str(), uidStr.c_str());
         result.append("param error.");
         return;
     }
-    int32_t saId = std::atoi(saIdStr.c_str());
-    int32_t uid = std::atoi(uidStr.c_str());
     if (saId <= 0 || uid <= 0) {
         result.append("the parameter is invalid.");
         return;
@@ -1744,12 +1750,14 @@ void WorkSchedulerService::DumpLoadSaWorks(const std::string &saIdStr, const std
 
 void WorkSchedulerService::DumpGetWorks(const std::string &uidStr, const std::string &workIdStr, std::string &result)
 {
-    if (workIdStr.empty() || uidStr.empty()) {
+    int32_t workId = 0;
+    int32_t uid = 0;
+    if (!ParseDumpInt32(workIdStr, workId) || !ParseDumpInt32(uidStr, uid)) {
+        WS_HILOGE("invalid dump get work params, uid: %{public}s, workId: %{public}s",
+            uidStr.c_str(), workIdStr.c_str());
         result.append("param error.");
         return;
     }
-    int32_t workId = std::atoi(workIdStr.c_str());
-    int32_t uid = std::atoi(uidStr.c_str());
     if (uid < 0) {
         result.append("the parameter is invalid.");
         return;
@@ -2452,12 +2460,14 @@ void WorkSchedulerService::DumpTwoParamsSet(std::vector<std::string> &argsInStr,
 
 void WorkSchedulerService::DumpAppGroup(const std::string& uidStr, const std::string& groupStr, std::string& result)
 {
-    if (uidStr.empty() || groupStr.empty()) {
+    int32_t uid = 0;
+    int32_t group = 0;
+    if (!ParseDumpInt32(uidStr, uid) || !ParseDumpInt32(groupStr, group)) {
+        WS_HILOGE("invalid dump app group params, uid: %{public}s, group: %{public}s",
+            uidStr.c_str(), groupStr.c_str());
         result.append("param error");
         return;
     }
-    int32_t uid = std::atoi(uidStr.c_str());
-    int32_t group = std::atoi(groupStr.c_str());
     if (group == INVALID_VALUE) {
         WS_HILOGE("uid: %{public}d add dump app group: %{public}d, group is invalid", uid, group);
         WorkStatus::ClearDumpAppGroup(uid);
@@ -2691,7 +2701,11 @@ void WorkSchedulerService::InitPersistedInfos()
         }
         int32_t appIndex;
         string bundleName;
-        int32_t callingUid = std::atoi(callingUidString.c_str());
+        int32_t callingUid = 0;
+        if (!ParseDumpInt32(callingUidString, callingUid)) {
+            WS_HILOGE("invalid persisted callingUid: %{public}s", callingUidString.c_str());
+            continue;
+        }
         if (!GetAppIndexAndBundleNameByUid(callingUid, appIndex, bundleName)) {
             WS_HILOGE("the app uid: %{public}d dose not exist", callingUid);
             continue;
